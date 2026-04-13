@@ -9,6 +9,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -30,6 +31,7 @@ class ProjectResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationLabel = 'پروژه ها';
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $modelLabel = 'پروژه';
 
@@ -49,11 +51,8 @@ class ProjectResource extends Resource
                             ->label('لینک پروژه')
                             ->url()
                             ->maxLength(255),
-                        TextInput::make('sort_order')
-                            ->label('ترتیب نمایش')
-                            ->numeric()
-                            ->required()
-                            ->default(0),
+                        Hidden::make('sort_order')
+                            ->default(fn () => ((int) Project::query()->max('sort_order')) + 1),
                         TagsInput::make('tags')
                             ->label('تگ ها'),
                         Textarea::make('description')
@@ -65,7 +64,8 @@ class ProjectResource extends Resource
                             ->label('فعال')
                             ->default(true),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -74,6 +74,7 @@ class ProjectResource extends Resource
         return $table
             ->recordTitleAttribute('title')
             ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->columns([
                 TextColumn::make('sort_order')
                     ->label('ترتیب')

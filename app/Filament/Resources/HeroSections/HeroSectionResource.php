@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\HeroSections;
 
-use App\Filament\Resources\HeroSections\Pages\ManageHeroSections;
+use App\Filament\Resources\HeroSections\Pages\CreateHeroSection;
+use App\Filament\Resources\HeroSections\Pages\EditHeroSection;
+use App\Filament\Resources\HeroSections\Pages\ListHeroSections;
 use App\Models\HeroSection;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -29,6 +31,7 @@ class HeroSectionResource extends Resource
     protected static ?string $recordTitleAttribute = 'headline';
 
     protected static ?string $navigationLabel = 'بخش هیرو';
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $modelLabel = 'هیرو';
 
@@ -49,7 +52,8 @@ class HeroSectionResource extends Resource
                         TextInput::make('headline')
                             ->label('تیتر اصلی')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpanFull(),
                         Textarea::make('intro')
                             ->label('توضیح کوتاه')
                             ->required()
@@ -103,10 +107,23 @@ class HeroSectionResource extends Resource
             ]);
     }
 
+    public static function getNavigationUrl(): string
+    {
+        $record = HeroSection::query()->latest('id')->first();
+
+        if ($record) {
+            return static::getUrl('edit', ['record' => $record]);
+        }
+
+        return static::getUrl('create');
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => ManageHeroSections::route('/'),
+            'index' => ListHeroSections::route('/'),
+            'create' => CreateHeroSection::route('/create'),
+            'edit' => EditHeroSection::route('/{record}/edit'),
         ];
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\ContactSections;
 
-use App\Filament\Resources\ContactSections\Pages\ManageContactSections;
+use App\Filament\Resources\ContactSections\Pages\CreateContactSection;
+use App\Filament\Resources\ContactSections\Pages\EditContactSection;
+use App\Filament\Resources\ContactSections\Pages\ListContactSections;
 use App\Models\ContactSection;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -29,6 +31,7 @@ class ContactSectionResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationLabel = 'تماس با من';
+    protected static ?int $navigationSort = 6;
 
     protected static ?string $modelLabel = 'تماس با من';
 
@@ -51,15 +54,23 @@ class ContactSectionResource extends Resource
                         TextInput::make('email')
                             ->label('ایمیل')
                             ->email()
+                            ->prefixIcon(Heroicon::OutlinedAtSymbol)
+                            ->extraInputAttributes(['style' => 'text-align: left;', 'dir' => 'ltr'])
                             ->maxLength(255),
                         TextInput::make('github')
                             ->label('لینک GitHub')
+                            ->prefixIcon(Heroicon::OutlinedCodeBracketSquare)
+                            ->extraInputAttributes(['style' => 'text-align: left;', 'dir' => 'ltr'])
                             ->maxLength(255),
                         TextInput::make('linkedin')
                             ->label('لینک LinkedIn')
+                            ->prefixIcon(Heroicon::OutlinedUserCircle)
+                            ->extraInputAttributes(['style' => 'text-align: left;', 'dir' => 'ltr'])
                             ->maxLength(255),
                         TextInput::make('telegram')
                             ->label('آیدی تلگرام')
+                            ->prefixIcon(Heroicon::OutlinedPaperAirplane)
+                            ->extraInputAttributes(['style' => 'text-align: left;', 'dir' => 'ltr'])
                             ->maxLength(255),
                         Toggle::make('is_active')
                             ->label('فعال')
@@ -99,10 +110,23 @@ class ContactSectionResource extends Resource
             ]);
     }
 
+    public static function getNavigationUrl(): string
+    {
+        $record = ContactSection::query()->latest('id')->first();
+
+        if ($record) {
+            return static::getUrl('edit', ['record' => $record]);
+        }
+
+        return static::getUrl('create');
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => ManageContactSections::route('/'),
+            'index' => ListContactSections::route('/'),
+            'create' => CreateContactSection::route('/create'),
+            'edit' => EditContactSection::route('/{record}/edit'),
         ];
     }
 }

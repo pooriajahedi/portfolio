@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\AboutSections;
 
-use App\Filament\Resources\AboutSections\Pages\ManageAboutSections;
+use App\Filament\Resources\AboutSections\Pages\CreateAboutSection;
+use App\Filament\Resources\AboutSections\Pages\EditAboutSection;
+use App\Filament\Resources\AboutSections\Pages\ListAboutSections;
 use App\Models\AboutSection;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -29,6 +31,7 @@ class AboutSectionResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationLabel = 'درباره من';
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $modelLabel = 'درباره من';
 
@@ -88,10 +91,23 @@ class AboutSectionResource extends Resource
             ]);
     }
 
+    public static function getNavigationUrl(): string
+    {
+        $record = AboutSection::query()->latest('id')->first();
+
+        if ($record) {
+            return static::getUrl('edit', ['record' => $record]);
+        }
+
+        return static::getUrl('create');
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => ManageAboutSections::route('/'),
+            'index' => ListAboutSections::route('/'),
+            'create' => CreateAboutSection::route('/create'),
+            'edit' => EditAboutSection::route('/{record}/edit'),
         ];
     }
 }

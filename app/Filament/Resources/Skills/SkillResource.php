@@ -9,6 +9,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -29,6 +30,7 @@ class SkillResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationLabel = 'مهارت ها';
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $modelLabel = 'مهارت';
 
@@ -44,11 +46,8 @@ class SkillResource extends Resource
                             ->label('عنوان مهارت')
                             ->required()
                             ->maxLength(255),
-                        TextInput::make('sort_order')
-                            ->label('ترتیب نمایش')
-                            ->numeric()
-                            ->default(0)
-                            ->required(),
+                        Hidden::make('sort_order')
+                            ->default(fn () => ((int) Skill::query()->max('sort_order')) + 1),
                         Textarea::make('description')
                             ->label('توضیح')
                             ->rows(4)
@@ -58,7 +57,8 @@ class SkillResource extends Resource
                             ->label('فعال')
                             ->default(true),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -67,6 +67,7 @@ class SkillResource extends Resource
         return $table
             ->recordTitleAttribute('title')
             ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->columns([
                 TextColumn::make('sort_order')
                     ->label('ترتیب')
