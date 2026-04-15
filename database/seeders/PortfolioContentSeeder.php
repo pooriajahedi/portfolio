@@ -60,10 +60,22 @@ class PortfolioContentSeeder extends Seeder
         );
 
         $skills = [
-            ['title' => 'Laravel و معماری بک اند', 'description' => 'طراحی ماژولار، API Resource، Queue، Cache، تست و نگهداری سیستم های قدیمی.'],
-            ['title' => 'بهینه سازی دیتابیس', 'description' => 'تحلیل کوئری های پرتکرار، ایندکس گذاری هدفمند، بهبود ساختار جداول و ستون ها.'],
-            ['title' => 'مقیاس پذیری و پایداری', 'description' => 'طراحی صف برای پردازش های سنگین مثل Push Notification و گزارش گیری.'],
-            ['title' => 'Vue.js و SPA', 'description' => 'ساخت رابط کاربری مدرن، سریع و قابل توسعه با رویکرد کامپوننت محور.'],
+            ['title' => 'JavaScript', 'description' => 'توسعه رابط کاربری پویا و مدرن.', 'category' => Skill::CATEGORY_FRONTEND, 'icon' => 'logos:javascript'],
+            ['title' => 'TypeScript', 'description' => 'کدنویسی type-safe برای فرانت‌اند.', 'category' => Skill::CATEGORY_FRONTEND, 'icon' => 'logos:typescript-icon'],
+            ['title' => 'Vue.js', 'description' => 'ساخت SPA و رابط کاربری قابل توسعه.', 'category' => Skill::CATEGORY_FRONTEND, 'icon' => 'logos:vue'],
+            ['title' => 'Tailwind CSS', 'description' => 'طراحی سریع و سیستماتیک رابط کاربری.', 'category' => Skill::CATEGORY_FRONTEND, 'icon' => 'logos:tailwindcss-icon'],
+            ['title' => 'GSAP', 'description' => 'انیمیشن‌های حرفه‌ای و روان.', 'category' => Skill::CATEGORY_FRONTEND, 'icon' => 'logos:gsap'],
+            ['title' => 'Laravel', 'description' => 'توسعه بک‌اند ماژولار و API محور.', 'category' => Skill::CATEGORY_BACKEND, 'icon' => 'logos:laravel'],
+            ['title' => 'PHP', 'description' => 'منطق تجاری و توسعه سرویس‌های وب.', 'category' => Skill::CATEGORY_BACKEND, 'icon' => 'logos:php'],
+            ['title' => 'Node.js', 'description' => 'پیاده‌سازی سرویس‌های realtime و مقیاس‌پذیر.', 'category' => Skill::CATEGORY_BACKEND, 'icon' => 'logos:nodejs-icon'],
+            ['title' => 'MySQL', 'description' => 'طراحی و بهینه‌سازی دیتابیس رابطه‌ای.', 'category' => Skill::CATEGORY_DATABASE, 'icon' => 'logos:mysql'],
+            ['title' => 'PostgreSQL', 'description' => 'مدیریت داده‌های ساختاریافته با کارایی بالا.', 'category' => Skill::CATEGORY_DATABASE, 'icon' => 'logos:postgresql'],
+            ['title' => 'MongoDB', 'description' => 'مدیریت داده NoSQL برای سناریوهای منعطف.', 'category' => Skill::CATEGORY_DATABASE, 'icon' => 'logos:mongodb-icon'],
+            ['title' => 'Redis', 'description' => 'کش و صف برای سرعت و مقیاس‌پذیری.', 'category' => Skill::CATEGORY_DATABASE, 'icon' => 'logos:redis'],
+            ['title' => 'Git', 'description' => 'کنترل نسخه و همکاری تیمی.', 'category' => Skill::CATEGORY_TOOLS, 'icon' => 'logos:git-icon'],
+            ['title' => 'Docker', 'description' => 'یکپارچه‌سازی محیط توسعه و استقرار.', 'category' => Skill::CATEGORY_TOOLS, 'icon' => 'logos:docker-icon'],
+            ['title' => 'Linux', 'description' => 'مدیریت سرور و محیط عملیاتی.', 'category' => Skill::CATEGORY_TOOLS, 'icon' => 'logos:linux-tux'],
+            ['title' => 'AWS', 'description' => 'زیرساخت ابری و سرویس‌های مقیاس‌پذیر.', 'category' => Skill::CATEGORY_TOOLS, 'icon' => 'logos:aws'],
         ];
 
         foreach ($skills as $index => $skill) {
@@ -71,6 +83,8 @@ class PortfolioContentSeeder extends Seeder
                 ['title' => $skill['title']],
                 [
                     'description' => $skill['description'],
+                    'category' => $skill['category'],
+                    'icon' => $skill['icon'],
                     'sort_order' => $index + 1,
                     'is_active' => true,
                 ],

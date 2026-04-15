@@ -22,9 +22,10 @@ class PortfolioController extends Controller
 
         $skills = Skill::query()
             ->active()
+            ->whereNotNull('icon')
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get(['title', 'description'])
+            ->get(['title', 'description', 'category', 'icon'])
             ->toArray();
 
         $resumeItems = ResumeItem::query()
@@ -74,10 +75,14 @@ class PortfolioController extends Controller
                 [
                     'title' => 'Laravel و معماری بک اند',
                     'description' => 'طراحی ماژولار، API Resource، Queue، Cache، تست و نگهداری سیستم های قدیمی.',
+                    'category' => Skill::CATEGORY_BACKEND,
+                    'icon' => 'logos:laravel',
                 ],
                 [
                     'title' => 'بهینه سازی دیتابیس',
                     'description' => 'تحلیل کوئری های پرتکرار، ایندکس گذاری هدفمند، بهبود ساختار جداول و ستون ها.',
+                    'category' => Skill::CATEGORY_DATABASE,
+                    'icon' => 'logos:mysql',
                 ],
             ],
             'timeline' => array_map(fn (array $item): array => [

@@ -10,6 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -46,6 +47,18 @@ class SkillResource extends Resource
                             ->label('عنوان مهارت')
                             ->required()
                             ->maxLength(255),
+                        Select::make('category')
+                            ->label('دسته بندی')
+                            ->options(Skill::categoryOptions())
+                            ->default(Skill::CATEGORY_FRONTEND)
+                            ->required()
+                            ->native(false),
+                        Select::make('icon')
+                            ->label('آیکن')
+                            ->options(Skill::iconOptions())
+                            ->searchable()
+                            ->placeholder('انتخاب آیکن')
+                            ->native(false),
                         Hidden::make('sort_order')
                             ->default(fn () => ((int) Skill::query()->max('sort_order')) + 1),
                         Textarea::make('description')
@@ -72,9 +85,17 @@ class SkillResource extends Resource
                 TextColumn::make('sort_order')
                     ->label('ترتیب')
                     ->sortable(),
+                TextColumn::make('category')
+                    ->label('دسته')
+                    ->formatStateUsing(fn (string $state): string => Skill::categoryOptions()[$state] ?? $state)
+                    ->badge(),
                 TextColumn::make('title')
                     ->label('عنوان')
                     ->searchable(),
+                TextColumn::make('icon')
+                    ->label('آیکن')
+                    ->placeholder('-')
+                    ->toggleable(),
                 IconColumn::make('is_active')
                     ->label('فعال')
                     ->boolean(),
