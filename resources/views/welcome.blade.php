@@ -50,7 +50,7 @@
         }
 
         html {
-            scroll-behavior: smooth;
+            scroll-behavior: auto;
         }
 
         body {
@@ -59,6 +59,24 @@
             color: var(--text);
             line-height: 1.8;
             min-height: 100vh;
+        }
+
+        @media (pointer: fine) {
+            body,
+            a,
+            button,
+            input,
+            textarea,
+            select,
+            .service-card,
+            .skill-card,
+            .portfolio-card,
+            .blog-card,
+            .contact-item,
+            .tabs a,
+            .submit {
+                cursor: none !important;
+            }
         }
 
         a {
@@ -259,8 +277,12 @@
             scroll-margin-top: 74px;
         }
 
+        .section.is-hidden {
+            display: none;
+        }
+
         .section h2 {
-            font-size: 48px;
+            font-size: clamp(30px, 2.8vw, 38px);
             line-height: 1.15;
             margin-bottom: 6px;
         }
@@ -280,7 +302,6 @@
         }
 
         .service-grid,
-        .skills-grid,
         .blog-grid,
         .portfolio-grid {
             display: grid;
@@ -293,7 +314,6 @@
         }
 
         .service-card,
-        .skill-card,
         .blog-card,
         .portfolio-card,
         .panel {
@@ -314,18 +334,92 @@
             font-size: 20px;
         }
 
-        .skills-grid {
+        .skills-categories {
             margin-top: 20px;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            display: grid;
+            gap: 24px;
+            direction: ltr;
         }
 
-        .skill-card {
-            text-align: center;
-            min-height: 120px;
+        .skill-category-row {
             display: grid;
-            place-items: center;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .skill-category-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            min-height: 42px;
+            padding-left: 4px;
+            width: fit-content;
+        }
+
+        .skill-category-head::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 2px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent-soft), transparent 75%);
+        }
+
+        .skill-category-head iconify-icon {
+            color: var(--accent);
+            font-size: 18px;
+            filter: drop-shadow(0 0 8px rgba(244, 198, 79, 0.45));
+        }
+
+        .skill-category-label {
             font-size: 20px;
-            font-weight: 600;
+            line-height: 1.1;
+            color: #d7dbe2;
+            letter-spacing: 0.6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .skill-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            direction: ltr;
+        }
+
+        .skill-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 7px;
+            min-height: 40px;
+            border-radius: 12px;
+            border: 1px solid #32384a;
+            background: linear-gradient(180deg, #171b25 0%, #141822 100%);
+            padding: 6px 10px;
+            width: fit-content;
+            max-width: 100%;
+        }
+
+        .skill-item iconify-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+            order: 1;
+        }
+
+        .skill-item span {
+            color: #e7ebf2;
+            font-size: 21px;
+            line-height: 1.3;
+            font-weight: 400;
+            text-align: left;
+            direction: ltr;
+            order: 2;
+            white-space: nowrap;
         }
 
         .timeline {
@@ -506,6 +600,32 @@
             cursor: pointer;
         }
 
+        .cursor-icon {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 1;
+            visibility: hidden;
+            width: 30px;
+            height: 30px;
+            transform: translate(-3px, -3px);
+            transition: transform 0.16s ease, filter 0.16s ease;
+            filter: drop-shadow(0 0 12px rgba(244, 198, 79, 0.4));
+        }
+
+        .cursor-icon.cursor-hover {
+            transform: translate(-3px, -3px) scale(1.14);
+            filter: drop-shadow(0 0 16px rgba(244, 198, 79, 0.65));
+        }
+
+        @media (pointer: coarse) {
+            .cursor-icon {
+                display: none !important;
+            }
+        }
+
         @media (max-width: 1160px) {
             .layout {
                 grid-template-columns: 1fr;
@@ -524,9 +644,29 @@
             .service-grid,
             .portfolio-grid,
             .blog-grid,
-            .skills-grid,
+            .skill-items,
             .contact-form {
                 grid-template-columns: 1fr;
+            }
+
+            .skill-category-row {
+                grid-template-columns: 1fr;
+            }
+
+            .skill-category-label {
+                font-size: 18px;
+            }
+
+            .skill-category-head::after {
+                opacity: 0.7;
+            }
+
+            .skill-item {
+                max-width: 100%;
+            }
+
+            .skill-item span {
+                white-space: normal;
             }
 
             .tabs {
@@ -535,7 +675,7 @@
             }
 
             .section h2 {
-                font-size: 36px;
+                font-size: 30px;
             }
 
             .text-block,
@@ -566,19 +706,29 @@
     $currentStatus = $profile['currentStatus']['key'] ?? 'looking_for_job';
 
     $serviceCards = collect($skills)->take(4)->values();
+    $skillsByCategory = collect($skills)
+        ->groupBy(fn ($item) => $item['category'] ?? 'frontend');
+    $skillCategoryLabels = [
+        'frontend' => 'FRONTEND',
+        'backend' => 'BACKEND',
+        'database' => 'DATABASE',
+        'tools' => 'TOOLS',
+    ];
     $blogCards = [
         [
-            'date' => 'Blog • Nov 18, 2024',
-            'title' => 'Flutter Vs. Flock: Cross-Platform Evaluation',
+            'date' => 'وبلاگ • ۱۸ نوامبر ۲۰۲۴',
+            'title' => 'مقایسه Flutter و Flock در توسعه چندسکویی',
             'excerpt' => 'مقایسه عمیق دو رویکرد توسعه کراس پلتفرم و اثر آن روی سرعت تحویل، کیفیت کد و نگهداری طولانی مدت.',
         ],
         [
-            'date' => 'Blog • Nov 13, 2024',
-            'title' => 'Flutter\'s Impact On Future Cross-Platform Apps',
+            'date' => 'وبلاگ • ۱۳ نوامبر ۲۰۲۴',
+            'title' => 'تاثیر Flutter بر آینده اپ‌های چندسکویی',
             'excerpt' => 'بررسی نقش Flutter در آینده توسعه اپلیکیشن‌های چندسکویی برای موبایل، وب و دستگاه‌های هوشمند.',
         ],
     ];
 @endphp
+
+<img class="cursor-icon" id="cursorIcon" src="/images/cursor/cursor-yellow.svg" alt="">
 
 <div class="layout">
     <aside class="sidebar">
@@ -595,21 +745,21 @@
             <div class="contact-item">
                 <div class="contact-icon">✉</div>
                 <div class="contact-meta">
-                    <small>EMAIL</small>
+                    <small>ایمیل</small>
                     <span>{{ $contacts['email'] }}</span>
                 </div>
             </div>
             <div class="contact-item">
                 <div class="contact-icon">☎</div>
                 <div class="contact-meta">
-                    <small>PHONE</small>
+                    <small>تلفن</small>
                     <span>{{ $contacts['telegram'] }}</span>
                 </div>
             </div>
             <div class="contact-item">
                 <div class="contact-icon">⌖</div>
                 <div class="contact-meta">
-                    <small>GITHUB</small>
+                    <small>گیت‌هاب</small>
                     <span>{{ $contacts['github'] }}</span>
                 </div>
             </div>
@@ -624,22 +774,22 @@
 
     <main class="content-shell" id="app">
         <nav class="tabs" id="tabs">
-            <a href="#about" class="active">About</a>
-            <a href="#resume">Resume</a>
-            <a href="#portfolio">Portfolio</a>
-            <a href="#blog">Blog</a>
-            <a href="#contact">Contact</a>
+            <a href="#about" class="active">درباره من</a>
+            <a href="#resume">رزومه</a>
+            <a href="#portfolio">نمونه کارها</a>
+            <a href="#blog">وبلاگ</a>
+            <a href="#contact">تماس با من</a>
         </nav>
 
         <section class="section" id="about">
-            <h2>About Me</h2>
+            <h2>درباره من</h2>
             <div class="underline"></div>
             <p class="text-block">{{ $about['paragraphOne'] }}</p>
             @if(!empty($about['paragraphTwo']))
                 <p class="text-block">{{ $about['paragraphTwo'] }}</p>
             @endif
 
-            <h2 style="font-size: 42px; margin-top: 22px;">What I'm Doing</h2>
+            <h2 style="font-size: clamp(26px, 2.2vw, 32px); margin-top: 22px;">در حال انجام چه کارهایی هستم</h2>
             <div class="service-grid">
                 @foreach($serviceCards as $item)
                     <article class="service-card">
@@ -649,16 +799,35 @@
                 @endforeach
             </div>
 
-            <h2 style="font-size: 42px; margin-top: 30px;">Skills</h2>
-            <div class="skills-grid">
-                @foreach($skills as $item)
-                    <article class="skill-card">{{ $item['title'] }}</article>
+            <h2 style="font-size: clamp(26px, 2.2vw, 32px); margin-top: 30px;">مهارت‌ها</h2>
+            <div class="skills-categories">
+                @foreach($skillCategoryLabels as $categoryKey => $categoryLabel)
+                    @if(($skillsByCategory[$categoryKey] ?? collect())->isNotEmpty())
+                        <div class="skill-category-row">
+                            <div class="skill-category-head">
+                                <iconify-icon icon="mdi:hexagram"></iconify-icon>
+                                <h3 class="skill-category-label">{{ $categoryLabel }}</h3>
+                            </div>
+                            <div class="skill-items">
+                                @foreach($skillsByCategory[$categoryKey] as $item)
+                                    <article class="skill-item">
+                                        <span>{{ $item['title'] }}</span>
+                                        @if(!empty($item['icon']))
+                                            <iconify-icon icon="{{ $item['icon'] }}"></iconify-icon>
+                                        @else
+                                            <iconify-icon icon="mdi:star-four-points-circle"></iconify-icon>
+                                        @endif
+                                    </article>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 @endforeach
             </div>
         </section>
 
         <section class="section" id="resume">
-            <h2>Resume</h2>
+            <h2>رزومه</h2>
             <div class="underline"></div>
             <div class="timeline">
                 @foreach($timeline as $item)
@@ -671,13 +840,13 @@
         </section>
 
         <section class="section" id="portfolio">
-            <h2>Portfolio</h2>
+            <h2>نمونه کارها</h2>
             <div class="underline"></div>
 
             <div class="portfolio-filter">
-                <span class="active">All</span>
-                <span>Applications</span>
-                <span>Web development</span>
+                <span class="active">همه</span>
+                <span>اپلیکیشن‌ها</span>
+                <span>توسعه وب</span>
                 <span>UI/UX</span>
             </div>
 
@@ -688,7 +857,7 @@
                         <h4>{{ $item['title'] }}</h4>
                         <p>{{ $item['text'] }}</p>
                         @if(!empty($item['projectUrl']))
-                            <a href="{{ $item['projectUrl'] }}" target="_blank" rel="noopener noreferrer">View Project</a>
+                            <a href="{{ $item['projectUrl'] }}" target="_blank" rel="noopener noreferrer">مشاهده پروژه</a>
                         @endif
                     </article>
                 @endforeach
@@ -696,7 +865,7 @@
         </section>
 
         <section class="section" id="blog">
-            <h2>Blog</h2>
+            <h2>وبلاگ</h2>
             <div class="underline"></div>
             <div class="blog-grid">
                 @foreach($blogCards as $item)
@@ -710,7 +879,7 @@
         </section>
 
         <section class="section" id="contact">
-            <h2>Contact</h2>
+            <h2>تماس با من</h2>
             <div class="underline"></div>
 
             <div class="map">
@@ -721,44 +890,219 @@
                 </iframe>
             </div>
 
-            <h2 style="font-size: 36px; margin-bottom: 12px;">Contact Form</h2>
+            <h2 style="font-size: clamp(24px, 2vw, 30px); margin-bottom: 12px;">فرم تماس</h2>
             <form class="contact-form" onsubmit="event.preventDefault();">
-                <input type="text" placeholder="Full name">
-                <input type="email" placeholder="Email address" dir="ltr" style="text-align:left;">
-                <input type="text" class="full" placeholder="Subject">
-                <textarea class="full" placeholder="Your Message"></textarea>
-                <button class="submit" type="submit">Send Message</button>
+                <input type="text" placeholder="نام و نام خانوادگی">
+                <input type="email" placeholder="آدرس ایمیل" dir="ltr" style="text-align:left;">
+                <input type="text" class="full" placeholder="موضوع">
+                <textarea class="full" placeholder="پیام شما"></textarea>
+                <button class="submit" type="submit">ارسال پیام</button>
             </form>
         </section>
     </main>
 </div>
 
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.16/dist/lenis.min.js"></script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const lenis = new Lenis({
+        duration: 0.62,
+        smoothWheel: true,
+        wheelMultiplier: 1.18,
+        touchMultiplier: 1.35,
+        syncTouch: true,
+        syncTouchLerp: 0.12,
+    });
+
+    lenis.on('scroll', () => ScrollTrigger.update());
+
+    gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
+
     const links = Array.from(document.querySelectorAll('#tabs a'));
     const sections = links
         .map((link) => document.querySelector(link.getAttribute('href')))
         .filter(Boolean);
+    const sectionsById = Object.fromEntries(sections.map((section) => [section.id, section]));
+    let activeTabId = null;
 
-    const setActive = (id) => {
+    const activateTab = (rawId, options = {}) => {
+        const { shouldScrollTop = false } = options;
+        const fallbackId = sections[0]?.id || 'about';
+        const id = sectionsById[rawId] ? rawId : fallbackId;
+
+        if (!id) return;
+        activeTabId = id;
+
         links.forEach((link) => {
-            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+            const isActive = link.getAttribute('href') === `#${id}`;
+            link.classList.toggle('active', isActive);
         });
+
+        sections.forEach((section) => {
+            section.classList.toggle('is-hidden', section.id !== id);
+        });
+
+        if (location.hash !== `#${id}`) {
+            history.replaceState(null, '', `#${id}`);
+        }
+
+        if (shouldScrollTop) {
+            lenis.scrollTo(document.body, { immediate: true });
+        }
+
+        ScrollTrigger.refresh();
     };
 
-    const observer = new IntersectionObserver((entries) => {
-        const visible = entries
-            .filter((entry) => entry.isIntersecting)
-            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    const initialTab = location.hash?.replace('#', '') || sections[0]?.id || 'about';
+    activateTab(initialTab);
 
-        if (visible?.target?.id) {
-            setActive(visible.target.id);
-        }
-    }, {
-        rootMargin: '-30% 0px -55% 0px',
-        threshold: [0.2, 0.4, 0.6],
+    links.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const id = link.getAttribute('href')?.replace('#', '');
+            if (!id) return;
+            activateTab(id, { shouldScrollTop: true });
+        });
     });
 
-    sections.forEach((section) => observer.observe(section));
+    gsap.from('.sidebar', {
+        x: -36,
+        autoAlpha: 0,
+        duration: 0.9,
+        ease: 'power2.out',
+    });
+
+    gsap.from('.tabs', {
+        y: -24,
+        autoAlpha: 0,
+        duration: 0.8,
+        delay: 0.1,
+        ease: 'power2.out',
+    });
+
+    sections.forEach((section) => {
+        const targets = section.querySelectorAll('h2, .underline, .text-block, .service-card, .skill-item, .timeline-item, .portfolio-card, .blog-card, .map, .contact-form');
+
+        if (!targets.length) return;
+
+        gsap.from(targets, {
+            y: 24,
+            autoAlpha: 0,
+            duration: 0.7,
+            stagger: 0.08,
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: section,
+                start: 'top 78%',
+                once: true,
+            },
+        });
+    });
+
+    gsap.utils.toArray('.service-card, .skill-item, .portfolio-card, .blog-card, .contact-item').forEach((card) => {
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: -4,
+                borderColor: '#3c4250',
+                boxShadow: '0 12px 20px rgba(0,0,0,0.24)',
+                duration: 0.22,
+                ease: 'power2.out',
+            });
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0,
+                borderColor: '#2a2f3b',
+                boxShadow: '0 0 0 rgba(0,0,0,0)',
+                duration: 0.22,
+                ease: 'power2.out',
+            });
+        });
+    });
+
+    if (window.matchMedia('(pointer: fine)').matches) {
+        const cursorIcon = document.getElementById('cursorIcon');
+        const hoverTargets = document.querySelectorAll('a, button, input, textarea, .service-card, .skill-item, .portfolio-card, .blog-card, .contact-item, .tabs a');
+
+        let hasMouseMoved = false;
+        let isCursorVisible = false;
+        let targetX = 0;
+        let targetY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        const minLerp = 0.32;
+        const maxLerp = 0.68;
+
+        const renderCursor = () => {
+            const dx = targetX - currentX;
+            const dy = targetY - currentY;
+            const distance = Math.hypot(dx, dy);
+            const adaptiveLerp = minLerp + (maxLerp - minLerp) * Math.min(1, distance / 180);
+
+            currentX += dx * adaptiveLerp;
+            currentY += dy * adaptiveLerp;
+            cursorIcon.style.transform = `translate(${currentX}px, ${currentY}px) translate(-3px, -3px)`;
+            requestAnimationFrame(renderCursor);
+        };
+        requestAnimationFrame(renderCursor);
+
+        window.addEventListener('mousemove', (event) => {
+            const x = event.clientX;
+            const y = event.clientY;
+
+            if (!hasMouseMoved) {
+                hasMouseMoved = true;
+                cursorIcon.style.visibility = 'visible';
+                gsap.set(cursorIcon, { autoAlpha: 1 });
+                isCursorVisible = true;
+                currentX = x;
+                currentY = y;
+            }
+
+            targetX = x;
+            targetY = y;
+        });
+
+        const hideCursor = () => {
+            if (!isCursorVisible) return;
+            isCursorVisible = false;
+            gsap.to(cursorIcon, { autoAlpha: 0, duration: 0.06, ease: 'none' });
+        };
+
+        const showCursor = () => {
+            if (hasMouseMoved && !isCursorVisible) {
+                isCursorVisible = true;
+                gsap.to(cursorIcon, { autoAlpha: 1, duration: 0.06, ease: 'none' });
+            }
+        };
+
+        window.addEventListener('mouseleave', hideCursor);
+        window.addEventListener('mouseenter', showCursor);
+        window.addEventListener('blur', hideCursor);
+        window.addEventListener('focus', showCursor);
+
+        document.addEventListener('mouseout', (event) => {
+            if (!event.relatedTarget && !event.toElement) {
+                hideCursor();
+            }
+        });
+
+        document.addEventListener('mouseover', showCursor);
+
+        hoverTargets.forEach((target) => {
+            target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-hover'));
+            target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-hover'));
+        });
+    }
 </script>
 </body>
 </html>
