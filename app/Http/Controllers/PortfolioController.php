@@ -34,7 +34,22 @@ class PortfolioController extends Controller
             ->active()
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get(['title', 'description'])
+            ->get([
+                'title',
+                'description',
+                'start_year',
+                'start_month',
+                'start_day',
+                'end_year',
+                'end_month',
+                'end_day',
+                'is_current',
+            ])
+            ->map(fn (ResumeItem $item): array => [
+                'title' => $item->title,
+                'text' => $item->description,
+                'period' => $this->formatResumePeriod($item),
+            ])
             ->toArray();
 
         $projects = Project::query()
@@ -89,13 +104,11 @@ class PortfolioController extends Controller
                     'icon' => 'logos:mysql',
                 ],
             ],
-            'timeline' => array_map(fn (array $item): array => [
-                'title' => $item['title'],
-                'text' => $item['description'],
-            ], $resumeItems) ?: [
+            'timeline' => $resumeItems ?: [
                 [
                     'title' => 'تکامل پروژه در یک شرکت',
                     'text' => 'در طول سال ها روی کدهای چند نسل مختلف کار کردم؛ تمرکزم بازنویسی بخش های پرریسک و کاهش پیچیدگی بود.',
+                    'period' => 'فروردین ۱۳۹۴ تا اکنون',
                 ],
             ],
             'projects' => $projects ?: [
@@ -129,6 +142,65 @@ class PortfolioController extends Controller
 
         return view('welcome', [
             'portfolioData' => $portfolioData,
+        ]);
+    }
+
+    private function formatResumePeriod(ResumeItem $item): ?string
+    {
+        $start = $this->formatJalaliDate($item->start_year, $item->start_month, $item->start_day);
+
+        if ($item->is_current) {
+            return collect([$start, 'تا اکنون'])->filter()->implode(' تا ');
+        }
+
+        $end = $this->formatJalaliDate($item->end_year, $item->end_month, $item->end_day);
+
+        return collect([$start, $end])->filter()->implode(' تا ');
+    }
+
+    private function formatJalaliDate(?int $year, ?int $month, ?int $day): ?string
+    {
+        if (! $year || ! $month || ! $day) {
+            return null;
+        }
+
+        $months = [
+            1 => 'فروردین',
+            2 => 'اردیبهشت',
+            3 => 'خرداد',
+            4 => 'تیر',
+            5 => 'مرداد',
+            6 => 'شهریور',
+            7 => 'مهر',
+            8 => 'آبان',
+            9 => 'آذر',
+            10 => 'دی',
+            11 => 'بهمن',
+            12 => 'اسفند',
+        ];
+
+        $monthLabel = $months[$month] ?? null;
+
+        if (! $monthLabel) {
+            return null;
+        }
+
+        return $this->toPersianDigits((string) $day) . ' ' . $monthLabel . ' ' . $this->toPersianDigits((string) $year);
+    }
+
+    private function toPersianDigits(string $value): string
+    {
+        return strtr($value, [
+            '0' => '۰',
+            '1' => '۱',
+            '2' => '۲',
+            '3' => '۳',
+            '4' => '۴',
+            '5' => '۵',
+            '6' => '۶',
+            '7' => '۷',
+            '8' => '۸',
+            '9' => '۹',
         ]);
     }
 }

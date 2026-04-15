@@ -112,10 +112,44 @@ class PortfolioContentSeeder extends Seeder
         }
 
         $resumeItems = [
-            ['title' => 'تکامل پروژه در یک شرکت', 'description' => 'در طول سال ها روی کدهای چند نسل مختلف کار کردم؛ تمرکزم بازنویسی بخش های پرریسک و کاهش پیچیدگی بود.'],
-            ['title' => 'گزارش گیری چانک/استریم', 'description' => 'سیستم خروجی اکسل را بازطراحی کردم تا انتظار طولانی و خطای 504 حذف شود و تاریخچه گزارش ها ثبت بماند.'],
-            ['title' => 'بازنویسی منطق قیمت گذاری', 'description' => 'منطق هاردکد قدیمی را به ساختار توسعه پذیر تبدیل کردم تا اضافه کردن قوانین جدید ساده شود.'],
-            ['title' => 'بهینه سازی زیرساخت داده', 'description' => 'روی دیتابیسی با 180 جدول، با تحلیل لاگ و کوئری های پرتکرار، ایندکس گذاری و اصلاح ساختار انجام دادم.'],
+            [
+                'title' => 'تکامل پروژه در یک شرکت',
+                'description' => 'در طول سال ها روی کدهای چند نسل مختلف کار کردم؛ تمرکزم بازنویسی بخش های پرریسک و کاهش پیچیدگی بود.',
+                'start_year' => 1394,
+                'start_month' => 1,
+                'start_day' => 1,
+                'is_current' => true,
+            ],
+            [
+                'title' => 'گزارش گیری چانک/استریم',
+                'description' => 'سیستم خروجی اکسل را بازطراحی کردم تا انتظار طولانی و خطای 504 حذف شود و تاریخچه گزارش ها ثبت بماند.',
+                'start_year' => 1398,
+                'start_month' => 4,
+                'start_day' => 1,
+                'end_year' => 1400,
+                'end_month' => 12,
+                'end_day' => 29,
+                'is_current' => false,
+            ],
+            [
+                'title' => 'بازنویسی منطق قیمت گذاری',
+                'description' => 'منطق هاردکد قدیمی را به ساختار توسعه پذیر تبدیل کردم تا اضافه کردن قوانین جدید ساده شود.',
+                'start_year' => 1401,
+                'start_month' => 1,
+                'start_day' => 1,
+                'end_year' => 1402,
+                'end_month' => 12,
+                'end_day' => 29,
+                'is_current' => false,
+            ],
+            [
+                'title' => 'بهینه سازی زیرساخت داده',
+                'description' => 'روی دیتابیسی با 180 جدول، با تحلیل لاگ و کوئری های پرتکرار، ایندکس گذاری و اصلاح ساختار انجام دادم.',
+                'start_year' => 1403,
+                'start_month' => 1,
+                'start_day' => 1,
+                'is_current' => true,
+            ],
         ];
 
         foreach ($resumeItems as $index => $item) {
@@ -123,6 +157,13 @@ class PortfolioContentSeeder extends Seeder
                 ['title' => $item['title']],
                 [
                     'description' => $item['description'],
+                    'start_year' => $item['start_year'] ?? null,
+                    'start_month' => $item['start_month'] ?? null,
+                    'start_day' => $item['start_day'] ?? null,
+                    'end_year' => $item['end_year'] ?? null,
+                    'end_month' => $item['end_month'] ?? null,
+                    'end_day' => $item['end_day'] ?? null,
+                    'is_current' => (bool) ($item['is_current'] ?? false),
                     'sort_order' => $index + 1,
                     'is_active' => true,
                 ],

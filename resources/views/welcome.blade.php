@@ -476,6 +476,14 @@
             margin-bottom: 2px;
         }
 
+        .timeline-period {
+            display: block;
+            color: var(--accent);
+            font-size: 15px;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
         .timeline-item p {
             color: var(--muted);
             font-size: 20px;
@@ -921,6 +929,9 @@
             <div class="timeline">
                 @foreach($timeline as $item)
                     <article class="timeline-item">
+                        @if(!empty($item['period']))
+                            <small class="timeline-period">{{ $item['period'] }}</small>
+                        @endif
                         <h4>{{ $item['title'] }}</h4>
                         <p>{{ $item['text'] }}</p>
                     </article>
