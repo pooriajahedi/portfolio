@@ -71,6 +71,23 @@ class Skill extends Model
         ];
     }
 
+    public static function iconPreviewOptions(): array
+    {
+        $options = [];
+
+        foreach (self::iconOptions() as $icon => $label) {
+            $iconUrl = 'https://api.iconify.design/' . rawurlencode($icon) . '.svg?width=20&height=20';
+            $options[$icon] = sprintf(
+                '<span style="display:inline-flex;align-items:center;gap:.5rem;"><img src="%s" alt="%s" style="width:20px;height:20px;object-fit:contain;"><span>%s</span></span>',
+                $iconUrl,
+                e($label),
+                e($label)
+            );
+        }
+
+        return $options;
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);

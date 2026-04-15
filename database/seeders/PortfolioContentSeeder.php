@@ -27,6 +27,7 @@ class PortfolioContentSeeder extends Seeder
             [
                 'name' => 'پوریا جاهدی',
                 'role' => 'برنامه نویس ارشد بک اند و فول استک',
+                'avatar_image' => '/images/hero/pooria-hero.jpeg',
                 'headline' => 'توسعه دهنده ای که سیستم های واقعی را سریع تر، پایدارتر و قابل توسعه تر می کند.',
                 'intro' => 'حدود ۱۰ سال تجربه توسعه نرم افزار دارم. تمرکز اصلی من روی بهینه سازی سیستم های بزرگ، بازنویسی معماری های فرسوده و تحویل خروجی پایدار در شرایط واقعی کسب وکار است.',
                 'highlight_one' => '۱۰ سال تجربه عملی',
@@ -52,9 +53,13 @@ class PortfolioContentSeeder extends Seeder
                 'title' => 'تماس با من',
                 'description' => 'اگر دنبال همکاری برای بهینه سازی یک محصول در حال اجرا، بازنویسی بخش های حساس یا توسعه فیچر جدید هستید، خوشحال می شوم گفتگو کنیم.',
                 'email' => 'you@example.com',
+                'email_icon' => ContactSection::ICON_EMAIL,
                 'github' => 'github.com/your-username',
+                'github_icon' => ContactSection::ICON_GITHUB,
                 'linkedin' => 'linkedin.com/in/your-username',
+                'linkedin_icon' => ContactSection::ICON_LINKEDIN,
                 'telegram' => '@yourid',
+                'telegram_icon' => ContactSection::ICON_TELEGRAM,
                 'is_active' => true,
             ],
         );

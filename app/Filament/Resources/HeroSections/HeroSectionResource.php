@@ -11,6 +11,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -49,6 +50,15 @@ class HeroSectionResource extends Resource
                         TextInput::make('role')
                             ->label('عنوان شغلی')
                             ->maxLength(255),
+                        FileUpload::make('avatar_image')
+                            ->label('عکس پروفایل')
+                            ->image()
+                            ->disk('public')
+                            ->directory('hero')
+                            ->visibility('public')
+                            ->imageEditor()
+                            ->helperText('تصویر مربعی (مثلا 512x512) بهترین نتیجه را می‌دهد.')
+                            ->columnSpanFull(),
                         TextInput::make('headline')
                             ->label('تیتر اصلی')
                             ->required()

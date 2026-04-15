@@ -17,9 +17,9 @@ class ProfileSetting extends Model
     public static function statusOptions(): array
     {
         return [
-            self::STATUS_UNEMPLOYED => 'بیکارم',
-            self::STATUS_LOOKING_FOR_JOB => 'دنبال کارم',
-            self::STATUS_RESTING => 'در حال استراحتم',
+            self::STATUS_UNEMPLOYED => 'در حال برنامه‌ریزی برای موقعیت حرفه‌ای بعدی',
+            self::STATUS_LOOKING_FOR_JOB => 'آماده همکاری در فرصت‌های حرفه‌ای جدید',
+            self::STATUS_RESTING => 'در دوره بازآموزی و ارتقای مهارت‌ها',
         ];
     }
 

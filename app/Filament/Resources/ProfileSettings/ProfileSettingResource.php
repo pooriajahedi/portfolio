@@ -31,15 +31,15 @@ class ProfileSettingResource extends Resource
 
     protected static ?int $navigationSort = 100;
 
-    protected static ?string $modelLabel = 'وضعیت';
+    protected static ?string $modelLabel = 'وضعیت همکاری';
 
-    protected static ?string $pluralModelLabel = 'تنظیم وضعیت فعلی';
+    protected static ?string $pluralModelLabel = 'تنظیم وضعیت همکاری';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('تنظیمات وضعیت فعالیت')
+                Section::make('تنظیمات وضعیت فعلی')
                     ->schema([
                         Select::make('current_status')
                             ->label('وضعیت فعلی')

@@ -159,9 +159,29 @@
 
         .status-label {
             margin-top: 10px;
+            border: 1px solid #2f3543;
+            background: #1b1f28;
+            border-radius: 16px;
+            padding: 8px 12px;
+            width: 100%;
+            max-width: 280px;
+            margin-inline: auto;
             text-align: center;
+        }
+
+        .status-label strong {
+            display: block;
+            color: #b8c0ce;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .status-label span {
+            display: block;
             color: var(--accent);
-            font-size: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.45;
         }
 
         .contact-list {
@@ -174,7 +194,7 @@
 
         .contact-item {
             display: grid;
-            grid-template-columns: 44px 1fr;
+            grid-template-columns: 52px minmax(0, 1fr);
             gap: 10px;
             align-items: center;
             background: #171a21;
@@ -184,14 +204,19 @@
         }
 
         .contact-icon {
-            width: 44px;
-            height: 44px;
+            width: 52px;
+            height: 52px;
             border-radius: 12px;
             display: grid;
             place-items: center;
             background: #1e222c;
             color: var(--accent);
-            font-size: 18px;
+            font-size: 26px;
+        }
+
+        .contact-icon iconify-icon {
+            font-size: 30px;
+            line-height: 1;
         }
 
         .contact-meta small {
@@ -201,32 +226,22 @@
             line-height: 1.2;
         }
 
-        .contact-meta span {
+        .contact-meta {
+            min-width: 0;
+        }
+
+        .contact-meta span,
+        .contact-meta a {
             display: block;
             color: #e7e9ee;
             font-size: 15px;
             line-height: 1.5;
             direction: ltr;
             text-align: left;
-        }
-
-        .socials {
-            margin-top: 14px;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            color: #b3bbc8;
-        }
-
-        .socials a {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            border: 1px solid #2b3040;
-            display: grid;
-            place-items: center;
-            background: #1b1e26;
-            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
 
         .content-shell {
@@ -704,6 +719,11 @@
     $projects = $portfolioData['projects'];
     $contacts = $portfolioData['contacts'];
     $currentStatus = $profile['currentStatus']['key'] ?? 'looking_for_job';
+    $avatarImage = trim((string) ($profile['avatarImage'] ?? '/images/hero/pooria-hero.jpeg'));
+
+    if ($avatarImage !== '' && !str_starts_with($avatarImage, 'http://') && !str_starts_with($avatarImage, 'https://') && !str_starts_with($avatarImage, '/')) {
+        $avatarImage = '/storage/' . ltrim($avatarImage, '/');
+    }
 
     $serviceCards = collect($skills)->take(4)->values();
     $skillsByCategory = collect($skills)
@@ -726,6 +746,82 @@
             'excerpt' => 'بررسی نقش Flutter در آینده توسعه اپلیکیشن‌های چندسکویی برای موبایل، وب و دستگاه‌های هوشمند.',
         ],
     ];
+
+    $normalizeUrl = static function (?string $value): ?string {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://') || str_starts_with($value, 'mailto:')) {
+            return $value;
+        }
+
+        return 'https://' . ltrim($value, '/');
+    };
+
+    $compactUrl = static function (?string $value): string {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return '';
+        }
+
+        $value = preg_replace('#^https?://#i', '', $value) ?? $value;
+        $value = preg_replace('#^www\.#i', '', $value) ?? $value;
+
+        return rtrim($value, '/');
+    };
+
+    $resolveIcon = static function (?string $icon, string $fallback): string {
+        $icon = trim((string) $icon);
+
+        if ($icon === '' || $icon === null) {
+            return $fallback;
+        }
+
+        // Telegram plane is removed from UI options; normalize old persisted values.
+        if ($icon === 'mdi:telegram-plane' || $icon === 'fa6-brands:telegram-plane') {
+            return 'mdi:telegram';
+        }
+
+        return $icon;
+    };
+
+    $emailAddress = trim((string) ($contacts['email'] ?? ''));
+    $telegramId = ltrim(trim((string) ($contacts['telegram'] ?? '')), '@');
+    $githubUrl = $normalizeUrl($contacts['github'] ?? '');
+    $linkedinUrl = $normalizeUrl($contacts['linkedin'] ?? '');
+
+    $contactItems = array_values(array_filter([
+        [
+            'label' => 'ایمیل',
+            'value' => $emailAddress,
+            'display' => $emailAddress,
+            'icon' => $resolveIcon($contacts['emailIcon'] ?? null, 'logos:google-gmail'),
+            'href' => $emailAddress !== '' ? 'mailto:' . $emailAddress : null,
+        ],
+        [
+            'label' => 'تلگرام',
+            'value' => $telegramId !== '' ? '@' . $telegramId : '',
+            'display' => $telegramId !== '' ? '@' . $telegramId : '',
+            'icon' => $resolveIcon($contacts['telegramIcon'] ?? null, 'mdi:telegram'),
+            'href' => $telegramId !== '' ? 'https://t.me/' . $telegramId : null,
+        ],
+        [
+            'label' => 'گیت‌هاب',
+            'value' => (string) ($contacts['github'] ?? ''),
+            'display' => $compactUrl($contacts['github'] ?? ''),
+            'icon' => $resolveIcon($contacts['githubIcon'] ?? null, 'mdi:github'),
+            'href' => $githubUrl,
+        ],
+        [
+            'label' => 'لینکدین',
+            'value' => (string) ($contacts['linkedin'] ?? ''),
+            'display' => $compactUrl($contacts['linkedin'] ?? ''),
+            'icon' => $resolveIcon($contacts['linkedinIcon'] ?? null, 'mdi:linkedin'),
+            'href' => $linkedinUrl,
+        ],
+    ], static fn (array $item): bool => trim((string) $item['display']) !== ''));
 @endphp
 
 <img class="cursor-icon" id="cursorIcon" src="/images/cursor/cursor-yellow.svg" alt="">
@@ -733,43 +829,35 @@
 <div class="layout">
     <aside class="sidebar">
         <div class="avatar-wrap">
-            <img src="/images/hero/pooria-hero.jpeg" alt="{{ $profile['name'] }}">
+            <img src="{{ $avatarImage }}" alt="{{ $profile['name'] }}">
             <span class="status-dot status-{{ $currentStatus }}"></span>
         </div>
 
         <h1 class="profile-name">{{ $profile['name'] }}</h1>
         <p class="profile-role">{{ $profile['role'] }}</p>
-        <p class="status-label">{{ $profile['currentStatus']['label'] ?? '' }}</p>
+        <p class="status-label">
+            <strong>وضعیت فعلی</strong>
+            <span>{{ $profile['currentStatus']['label'] ?? '' }}</span>
+        </p>
 
         <div class="contact-list">
-            <div class="contact-item">
-                <div class="contact-icon">✉</div>
-                <div class="contact-meta">
-                    <small>ایمیل</small>
-                    <span>{{ $contacts['email'] }}</span>
+            @foreach($contactItems as $item)
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <iconify-icon icon="{{ $item['icon'] }}"></iconify-icon>
+                    </div>
+                    <div class="contact-meta">
+                        <small>{{ $item['label'] }}</small>
+                        @if(!empty($item['href']))
+                            <a href="{{ $item['href'] }}" target="_blank" rel="noopener noreferrer" title="{{ $item['value'] }}">{{ $item['display'] }}</a>
+                        @else
+                            <span title="{{ $item['value'] }}">{{ $item['display'] }}</span>
+                        @endif
+                    </div>
                 </div>
-            </div>
-            <div class="contact-item">
-                <div class="contact-icon">☎</div>
-                <div class="contact-meta">
-                    <small>تلفن</small>
-                    <span>{{ $contacts['telegram'] }}</span>
-                </div>
-            </div>
-            <div class="contact-item">
-                <div class="contact-icon">⌖</div>
-                <div class="contact-meta">
-                    <small>گیت‌هاب</small>
-                    <span>{{ $contacts['github'] }}</span>
-                </div>
-            </div>
+            @endforeach
         </div>
 
-        <div class="socials">
-            <a href="https://{{ ltrim($contacts['linkedin'] ?? '', 'https://') }}" target="_blank" rel="noopener noreferrer">in</a>
-            <a href="https://{{ ltrim($contacts['github'] ?? '', 'https://') }}" target="_blank" rel="noopener noreferrer">gh</a>
-            <a href="https://t.me/{{ ltrim($contacts['telegram'] ?? '', '@') }}" target="_blank" rel="noopener noreferrer">tg</a>
-        </div>
     </aside>
 
     <main class="content-shell" id="app">

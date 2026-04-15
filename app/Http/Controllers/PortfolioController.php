@@ -54,6 +54,7 @@ class PortfolioController extends Controller
             'profile' => [
                 'name' => $hero?->name ?: 'پوریا جاهدی',
                 'role' => $hero?->role ?: 'برنامه نویس ارشد بک اند و فول استک',
+                'avatarImage' => $hero?->avatar_image ?: '/images/hero/pooria-hero.jpeg',
                 'headline' => $hero?->headline ?: 'توسعه دهنده ای که سیستم های واقعی را سریع تر، پایدارتر و قابل توسعه تر می کند.',
                 'intro' => $hero?->intro ?: 'حدود ۱۰ سال تجربه توسعه نرم افزار دارم. تمرکز اصلی من روی بهینه سازی سیستم های بزرگ، بازنویسی معماری های فرسوده و تحویل خروجی پایدار در شرایط واقعی کسب وکار است.',
                 'highlights' => array_values(array_filter([
@@ -106,9 +107,13 @@ class PortfolioController extends Controller
                 'title' => $contact?->title ?: 'تماس با من',
                 'description' => $contact?->description ?: 'اگر دنبال همکاری برای بهینه سازی یک محصول در حال اجرا، بازنویسی بخش های حساس یا توسعه فیچر جدید هستید، خوشحال می شوم گفتگو کنیم.',
                 'email' => $contact?->email ?: 'you@example.com',
+                'emailIcon' => $contact?->email_icon ?: ContactSection::ICON_EMAIL,
                 'github' => $contact?->github ?: 'github.com/your-username',
+                'githubIcon' => $contact?->github_icon ?: ContactSection::ICON_GITHUB,
                 'linkedin' => $contact?->linkedin ?: 'linkedin.com/in/your-username',
+                'linkedinIcon' => $contact?->linkedin_icon ?: ContactSection::ICON_LINKEDIN,
                 'telegram' => $contact?->telegram ?: '@yourid',
+                'telegramIcon' => $contact?->telegram_icon ?: ContactSection::ICON_TELEGRAM,
             ],
         ];
 

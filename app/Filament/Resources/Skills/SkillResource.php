@@ -55,8 +55,9 @@ class SkillResource extends Resource
                             ->native(false),
                         Select::make('icon')
                             ->label('آیکن')
-                            ->options(Skill::iconOptions())
+                            ->options(Skill::iconPreviewOptions())
                             ->searchable()
+                            ->allowHtml()
                             ->placeholder('انتخاب آیکن')
                             ->native(false),
                         Hidden::make('sort_order')

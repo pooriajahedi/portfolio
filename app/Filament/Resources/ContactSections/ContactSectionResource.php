@@ -11,6 +11,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -57,21 +58,49 @@ class ContactSectionResource extends Resource
                             ->prefixIcon(Heroicon::OutlinedAtSymbol)
                             ->extraInputAttributes(['style' => 'text-align: left;', 'dir' => 'ltr'])
                             ->maxLength(255),
+                        Select::make('email_icon')
+                            ->label('آیکن ایمیل')
+                            ->options(ContactSection::contactIconPreviewOptions())
+                            ->default(ContactSection::ICON_EMAIL)
+                            ->searchable()
+                            ->allowHtml()
+                            ->native(false),
                         TextInput::make('github')
                             ->label('لینک GitHub')
                             ->prefixIcon(Heroicon::OutlinedCodeBracketSquare)
                             ->extraInputAttributes(['style' => 'text-align: left;', 'dir' => 'ltr'])
                             ->maxLength(255),
+                        Select::make('github_icon')
+                            ->label('آیکن GitHub')
+                            ->options(ContactSection::contactIconPreviewOptions())
+                            ->default(ContactSection::ICON_GITHUB)
+                            ->searchable()
+                            ->allowHtml()
+                            ->native(false),
                         TextInput::make('linkedin')
                             ->label('لینک LinkedIn')
                             ->prefixIcon(Heroicon::OutlinedUserCircle)
                             ->extraInputAttributes(['style' => 'text-align: left;', 'dir' => 'ltr'])
                             ->maxLength(255),
+                        Select::make('linkedin_icon')
+                            ->label('آیکن LinkedIn')
+                            ->options(ContactSection::contactIconPreviewOptions())
+                            ->default(ContactSection::ICON_LINKEDIN)
+                            ->searchable()
+                            ->allowHtml()
+                            ->native(false),
                         TextInput::make('telegram')
                             ->label('آیدی تلگرام')
                             ->prefixIcon(Heroicon::OutlinedPaperAirplane)
                             ->extraInputAttributes(['style' => 'text-align: left;', 'dir' => 'ltr'])
                             ->maxLength(255),
+                        Select::make('telegram_icon')
+                            ->label('آیکن تلگرام')
+                            ->options(ContactSection::contactIconPreviewOptions())
+                            ->default(ContactSection::ICON_TELEGRAM)
+                            ->searchable()
+                            ->allowHtml()
+                            ->native(false),
                         Toggle::make('is_active')
                             ->label('فعال')
                             ->default(true),

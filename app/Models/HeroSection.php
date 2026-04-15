@@ -10,6 +10,7 @@ class HeroSection extends Model
     protected $fillable = [
         'name',
         'role',
+        'avatar_image',
         'headline',
         'intro',
         'highlight_one',
@@ -21,6 +22,7 @@ class HeroSection extends Model
     protected function casts(): array
     {
         return [
+            'avatar_image' => 'string',
             'is_active' => 'boolean',
         ];
     }
