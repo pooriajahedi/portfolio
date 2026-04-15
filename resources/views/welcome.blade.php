@@ -493,6 +493,7 @@
             display: flex;
             gap: 8px;
             margin-bottom: 14px;
+            flex-wrap: wrap;
         }
 
         .portfolio-filter span {
@@ -501,6 +502,8 @@
             padding: 6px 12px;
             border-radius: 999px;
             font-size: 14px;
+            user-select: none;
+            cursor: pointer;
         }
 
         .portfolio-filter span.active {
@@ -525,6 +528,41 @@
             margin-bottom: 12px;
             text-align: center;
             padding: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .portfolio-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.28s ease;
+        }
+
+        .portfolio-thumb.has-image:hover img {
+            transform: scale(1.08);
+        }
+
+        .portfolio-zoom-trigger {
+            position: absolute;
+            inset: 0;
+            border: 0;
+            background: rgba(8, 10, 16, 0.28);
+            color: #f6d26e;
+            display: grid;
+            place-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 2;
+        }
+
+        .portfolio-zoom-trigger iconify-icon {
+            font-size: 34px;
+            filter: drop-shadow(0 0 12px rgba(244, 198, 79, 0.55));
+        }
+
+        .portfolio-thumb.has-image:hover .portfolio-zoom-trigger {
+            opacity: 1;
         }
 
         .portfolio-card h4 {
@@ -541,6 +579,83 @@
         .portfolio-card a {
             font-size: 13px;
             color: var(--accent);
+        }
+
+        .portfolio-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .portfolio-tag {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #353a47;
+            border-radius: 999px;
+            padding: 3px 9px;
+            font-size: 12px;
+            color: #cbd2dc;
+            background: #1a1e27;
+        }
+
+        .image-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1200;
+            display: none;
+        }
+
+        .image-modal.is-open {
+            display: block;
+        }
+
+        .image-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(4, 6, 10, 0.78);
+            backdrop-filter: blur(4px);
+        }
+
+        .image-modal-dialog {
+            position: relative;
+            z-index: 2;
+            width: min(1100px, 92vw);
+            height: min(84vh, 760px);
+            margin: 6vh auto 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #363d4b;
+            background: #11141b;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 24px 44px rgba(0, 0, 0, 0.5);
+        }
+
+        .image-modal-dialog img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0f1218;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 42px;
+            height: 42px;
+            z-index: 3;
+            border-radius: 12px;
+            border: 1px solid #3a4254;
+            background: rgba(18, 21, 29, 0.9);
+            color: #e8ebf1;
+            display: grid;
+            place-items: center;
+        }
+
+        .image-modal-close iconify-icon {
+            font-size: 24px;
         }
 
         .blog-grid {
@@ -643,9 +758,20 @@
             filter: drop-shadow(0 0 16px rgba(244, 198, 79, 0.65));
         }
 
+        .cursor-icon.cursor-zoom {
+            filter: drop-shadow(0 0 18px rgba(244, 198, 79, 0.85));
+        }
+
         @media (pointer: coarse) {
             .cursor-icon {
                 display: none !important;
+            }
+        }
+
+        @media (pointer: fine) {
+            .portfolio-zoom-trigger,
+            .portfolio-thumb.has-image {
+                cursor: zoom-in !important;
             }
         }
 
@@ -726,6 +852,8 @@
     $skills = $portfolioData['skills'];
     $timeline = $portfolioData['timeline'];
     $projects = $portfolioData['projects'];
+    $projectCategories = $portfolioData['projectCategories'] ?? [];
+    $portfolio = $portfolioData['portfolio'] ?? [];
     $contacts = $portfolioData['contacts'];
     $currentStatus = $profile['currentStatus']['key'] ?? 'looking_for_job';
     $avatarImage = trim((string) ($profile['avatarImage'] ?? '/images/hero/pooria-hero.jpeg'));
@@ -767,6 +895,16 @@
         }
 
         return 'https://' . ltrim($value, '/');
+    };
+
+    $normalizeProjectUrl = static function (?string $value) use ($normalizeUrl): ?string {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        return $normalizeUrl($value);
     };
 
     $compactUrl = static function (?string $value): string {
@@ -940,24 +1078,55 @@
         </section>
 
         <section class="section" id="portfolio">
-            <h2>نمونه کارها</h2>
+            <h2>{{ $portfolio['title'] ?? 'نمونه کارها' }}</h2>
             <div class="underline"></div>
 
             <div class="portfolio-filter">
-                <span class="active">همه</span>
-                <span>اپلیکیشن‌ها</span>
-                <span>توسعه وب</span>
-                <span>UI/UX</span>
+                <span class="active" data-category="all">همه</span>
+                @foreach($projectCategories as $category)
+                    @if(($category['slug'] ?? '') !== 'all')
+                        <span data-category="{{ $category['slug'] ?? '' }}">{{ $category['title'] ?? '' }}</span>
+                    @endif
+                @endforeach
             </div>
 
             <div class="portfolio-grid">
                 @foreach($projects as $item)
-                    <article class="portfolio-card">
-                        <div class="portfolio-thumb">{{ $item['title'] }}</div>
-                        <h4>{{ $item['title'] }}</h4>
+                    @php
+                        $projectCategorySlug = $item['category']['slug'] ?? 'uncategorized';
+                        $projectLink = $normalizeProjectUrl($item['projectUrl'] ?? null);
+                    @endphp
+                    <article class="portfolio-card" data-category="{{ $projectCategorySlug }}">
+                        <div class="portfolio-thumb {{ !empty($item['imageUrl']) ? 'has-image' : '' }}">
+                            @if(!empty($item['imageUrl']))
+                                <img src="{{ $item['imageUrl'] }}" alt="{{ $item['title'] }}">
+                                <button
+                                    type="button"
+                                    class="portfolio-zoom-trigger"
+                                    data-zoom-src="{{ $item['imageUrl'] }}"
+                                    data-zoom-alt="{{ $item['title'] }}"
+                                    aria-label="بزرگ‌نمایی تصویر {{ $item['title'] }}">
+                                    <iconify-icon icon="mdi:magnify-plus"></iconify-icon>
+                                </button>
+                            @else
+                                {{ $item['title'] }}
+                            @endif
+                        </div>
+                        @if($projectLink)
+                            <h4><a href="{{ $projectLink }}" target="_blank" rel="noopener noreferrer">{{ $item['title'] }}</a></h4>
+                        @else
+                            <h4>{{ $item['title'] }}</h4>
+                        @endif
                         <p>{{ $item['text'] }}</p>
-                        @if(!empty($item['projectUrl']))
-                            <a href="{{ $item['projectUrl'] }}" target="_blank" rel="noopener noreferrer">مشاهده پروژه</a>
+                        @if(!empty($item['tags'] ?? []))
+                            <div class="portfolio-tags">
+                                @foreach($item['tags'] as $tag)
+                                    <span class="portfolio-tag">{{ $tag }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                        @if($projectLink)
+                            <a href="{{ $projectLink }}" target="_blank" rel="noopener noreferrer">مشاهده پروژه</a>
                         @endif
                     </article>
                 @endforeach
@@ -1000,6 +1169,16 @@
             </form>
         </section>
     </main>
+</div>
+
+<div class="image-modal" id="imageModal" aria-hidden="true">
+    <div class="image-modal-backdrop" data-close-modal="true"></div>
+    <button class="image-modal-close" type="button" data-close-modal="true" aria-label="بستن تصویر">
+        <iconify-icon icon="mdi:close"></iconify-icon>
+    </button>
+    <div class="image-modal-dialog" role="dialog" aria-modal="true" aria-label="نمایش تصویر پروژه">
+        <img id="imageModalImage" src="" alt="">
+    </div>
 </div>
 
 <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
@@ -1073,6 +1252,74 @@
         });
     });
 
+    const portfolioFilters = Array.from(document.querySelectorAll('.portfolio-filter [data-category]'));
+    const portfolioCards = Array.from(document.querySelectorAll('.portfolio-card[data-category]'));
+
+    const activatePortfolioFilter = (category) => {
+        const selected = category || 'all';
+
+        portfolioFilters.forEach((chip) => {
+            chip.classList.toggle('active', chip.dataset.category === selected);
+        });
+
+        portfolioCards.forEach((card) => {
+            const cardCategory = card.dataset.category || 'uncategorized';
+            const shouldShow = selected === 'all' || cardCategory === selected;
+            card.style.display = shouldShow ? '' : 'none';
+        });
+    };
+
+    if (portfolioFilters.length && portfolioCards.length) {
+        portfolioFilters.forEach((chip) => {
+            chip.addEventListener('click', () => {
+                activatePortfolioFilter(chip.dataset.category);
+            });
+        });
+        activatePortfolioFilter('all');
+    }
+
+    const imageModal = document.getElementById('imageModal');
+    const imageModalImage = document.getElementById('imageModalImage');
+    const zoomTriggers = Array.from(document.querySelectorAll('.portfolio-zoom-trigger[data-zoom-src]'));
+
+    const closeImageModal = () => {
+        if (!imageModal || !imageModalImage) return;
+        imageModal.classList.remove('is-open');
+        imageModal.setAttribute('aria-hidden', 'true');
+        imageModalImage.setAttribute('src', '');
+    };
+
+    const openImageModal = (src, alt = '') => {
+        if (!imageModal || !imageModalImage || !src) return;
+        imageModalImage.setAttribute('src', src);
+        imageModalImage.setAttribute('alt', alt);
+        imageModal.classList.add('is-open');
+        imageModal.setAttribute('aria-hidden', 'false');
+    };
+
+    zoomTriggers.forEach((trigger) => {
+        trigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            openImageModal(trigger.dataset.zoomSrc, trigger.dataset.zoomAlt || '');
+        });
+    });
+
+    if (imageModal) {
+        imageModal.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target instanceof HTMLElement && target.dataset.closeModal === 'true') {
+                closeImageModal();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+
     gsap.from('.sidebar', {
         x: -36,
         autoAlpha: 0,
@@ -1132,6 +1379,7 @@
     if (window.matchMedia('(pointer: fine)').matches) {
         const cursorIcon = document.getElementById('cursorIcon');
         const hoverTargets = document.querySelectorAll('a, button, input, textarea, .service-card, .skill-item, .portfolio-card, .blog-card, .contact-item, .tabs a');
+        const zoomCursorTargets = document.querySelectorAll('.portfolio-zoom-trigger, .portfolio-thumb.has-image');
 
         let hasMouseMoved = false;
         let isCursorVisible = false;
@@ -1201,6 +1449,11 @@
         hoverTargets.forEach((target) => {
             target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-hover'));
             target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-hover'));
+        });
+
+        zoomCursorTargets.forEach((target) => {
+            target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-zoom'));
+            target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-zoom'));
         });
     }
 </script>

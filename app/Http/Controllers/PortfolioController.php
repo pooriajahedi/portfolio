@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\AboutSection;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
+use App\Models\PortfolioSection;
 use App\Models\Project;
+use App\Models\ProjectCategory;
 use App\Models\ResumeItem;
 use App\Models\Skill;
 use Illuminate\Contracts\View\View;
@@ -21,6 +23,7 @@ class PortfolioController extends Controller
             ->latest('id')
             ->first();
         $contact = ContactSection::query()->active()->latest('id')->first();
+        $portfolioSection = PortfolioSection::query()->latest('id')->first();
 
         $skills = Skill::query()
             ->active()
@@ -54,17 +57,50 @@ class PortfolioController extends Controller
 
         $projects = Project::query()
             ->active()
+            ->with('category:id,title,slug')
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get(['title', 'description', 'tags', 'project_url'])
+            ->get([
+                'title',
+                'description',
+                'tags',
+                'project_url',
+                'image_path',
+                'project_category_id',
+            ])
             ->map(function (Project $project): array {
+                $imageUrl = null;
+
+                if (filled($project->image_path)) {
+                    $imagePath = trim((string) $project->image_path);
+                    $imageUrl = str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')
+                        ? $imagePath
+                        : '/storage/' . ltrim($imagePath, '/');
+                }
+
                 return [
                     'title' => $project->title,
                     'text' => $project->description,
                     'tags' => $project->tags ?? [],
                     'projectUrl' => $project->project_url,
+                    'imageUrl' => $imageUrl,
+                    'category' => [
+                        'title' => $project->category?->title,
+                        'slug' => $project->category?->slug,
+                    ],
                 ];
             })
+            ->toArray();
+
+        $projectCategories = ProjectCategory::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['title', 'slug'])
+            ->map(fn (ProjectCategory $category): array => [
+                'title' => $category->title,
+                'slug' => $category->slug,
+            ])
             ->toArray();
 
         $portfolioData = [
@@ -111,13 +147,15 @@ class PortfolioController extends Controller
                     'period' => 'فروردین ۱۳۹۴ تا اکنون',
                 ],
             ],
-            'projects' => $projects ?: [
+            'projects' => $projects,
+            'projectCategories' => $projectCategories ?: [
                 [
-                    'title' => 'سیستم گزارش گیری مقاوم',
-                    'text' => 'گزارش گیری اکسل با Stream و Queue برای حذف Timeout، نمایش وضعیت دریافت و نگهداری تاریخچه فایل ها.',
-                    'tags' => ['Laravel', 'Queue', 'Stream'],
-                    'projectUrl' => null,
+                    'title' => 'همه',
+                    'slug' => 'all',
                 ],
+            ],
+            'portfolio' => [
+                'title' => $portfolioSection?->title ?: 'نمونه کارها',
             ],
             'contacts' => [
                 'title' => $contact?->title ?: 'تماس با من',

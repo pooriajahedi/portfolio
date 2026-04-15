@@ -3,18 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Project extends Model
+class ProjectCategory extends Model
 {
     protected $fillable = [
         'title',
-        'description',
-        'tags',
-        'project_url',
-        'image_path',
-        'project_category_id',
+        'slug',
         'sort_order',
         'is_active',
     ];
@@ -22,16 +18,14 @@ class Project extends Model
     protected function casts(): array
     {
         return [
-            'tags' => 'array',
-            'project_category_id' => 'integer',
             'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
     }
 
-    public function category(): BelongsTo
+    public function projects(): HasMany
     {
-        return $this->belongsTo(ProjectCategory::class, 'project_category_id');
+        return $this->hasMany(Project::class, 'project_category_id');
     }
 
     public function scopeActive(Builder $query): Builder

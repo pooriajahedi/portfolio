@@ -6,7 +6,9 @@ use App\Models\AboutSection;
 use App\Models\AboutServiceCard;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
+use App\Models\PortfolioSection;
 use App\Models\Project;
+use App\Models\ProjectCategory;
 use App\Models\ResumeItem;
 use App\Models\Skill;
 use Illuminate\Database\Seeder;
@@ -75,6 +77,13 @@ class PortfolioContentSeeder extends Seeder
                 'telegram' => '@yourid',
                 'telegram_icon' => ContactSection::ICON_TELEGRAM,
                 'is_active' => true,
+            ],
+        );
+
+        PortfolioSection::query()->updateOrCreate(
+            ['id' => 1],
+            [
+                'title' => 'نمونه کارها',
             ],
         );
 
@@ -170,21 +179,45 @@ class PortfolioContentSeeder extends Seeder
             );
         }
 
+        $projectCategories = [
+            ['title' => 'اپلیکیشن‌ها', 'slug' => 'applications'],
+            ['title' => 'توسعه وب', 'slug' => 'web-development'],
+            ['title' => 'زیرساخت', 'slug' => 'infrastructure'],
+        ];
+
+        $categoryMap = [];
+
+        foreach ($projectCategories as $index => $category) {
+            $record = ProjectCategory::query()->updateOrCreate(
+                ['slug' => $category['slug']],
+                [
+                    'title' => $category['title'],
+                    'sort_order' => $index + 1,
+                    'is_active' => true,
+                ],
+            );
+
+            $categoryMap[$category['slug']] = $record->id;
+        }
+
         $projects = [
             [
                 'title' => 'سیستم گزارش گیری مقاوم',
                 'description' => 'گزارش گیری اکسل با Stream و Queue برای حذف Timeout، نمایش وضعیت دریافت و نگهداری تاریخچه فایل ها.',
                 'tags' => ['Laravel', 'Queue', 'Stream', 'Excel'],
+                'category_slug' => 'web-development',
             ],
             [
                 'title' => 'سامانه Push مقیاس پذیر',
                 'description' => 'ارسال پوش دسته ای با فاصله زمانی، ثبت دقیق تاریخچه و جلوگیری از ارسال تکراری برای کاربران.',
                 'tags' => ['Batch', 'Queue', 'Notification', 'Scalability'],
+                'category_slug' => 'applications',
             ],
             [
                 'title' => 'آپلود رمزگذاری شده ویدیو',
                 'description' => 'آپلود تکه ای، رمزگذاری هر Chunk با aes-128-ctr و اتصال نهایی با پردازش صف برای سبک سازی سرور.',
                 'tags' => ['AES-128-CTR', 'Chunk Upload', 'Queue'],
+                'category_slug' => 'infrastructure',
             ],
         ];
 
@@ -194,6 +227,7 @@ class PortfolioContentSeeder extends Seeder
                 [
                     'description' => $project['description'],
                     'tags' => $project['tags'],
+                    'project_category_id' => $categoryMap[$project['category_slug']] ?? null,
                     'sort_order' => $index + 1,
                     'is_active' => true,
                 ],
