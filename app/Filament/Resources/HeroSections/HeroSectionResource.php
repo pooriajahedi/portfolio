@@ -14,12 +14,10 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -42,7 +40,7 @@ class HeroSectionResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('محتوای بخش هیرو')
+                Section::make()
                     ->schema([
                         Select::make('current_status')
                             ->label('وضعیت فعلی')
@@ -64,10 +62,6 @@ class HeroSectionResource extends Resource
                             ->visibility('public')
                             ->imageEditor()
                             ->helperText('تصویر مربعی (مثلا 512x512) بهترین نتیجه را می‌دهد.')
-                            ->columnSpanFull(),
-                        Toggle::make('is_active')
-                            ->label('فعال')
-                            ->default(true)
                             ->columnSpanFull(),
                     ])
                     ->columns(3)
@@ -92,9 +86,6 @@ class HeroSectionResource extends Resource
                     ->label('وضعیت فعلی')
                     ->formatStateUsing(fn (?string $state): string => HeroSection::statusLabel($state))
                     ->badge(),
-                IconColumn::make('is_active')
-                    ->label('فعال')
-                    ->boolean(),
             ])
             ->filters([
                 //

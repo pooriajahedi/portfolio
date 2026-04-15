@@ -25,7 +25,6 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
@@ -64,9 +63,6 @@ class AboutSectionResource extends Resource
                                     ->required()
                                     ->rows(8)
                                     ->columnSpanFull(),
-                                Toggle::make('is_active')
-                                    ->label('فعال')
-                                    ->default(true),
                             ])
                             ->columns(2),
                         Tab::make('در حال انجام چه کارهایی هستم')
@@ -331,9 +327,6 @@ class AboutSectionResource extends Resource
                 TextColumn::make('title')
                     ->label('عنوان')
                     ->searchable(),
-                IconColumn::make('is_active')
-                    ->label('فعال')
-                    ->boolean(),
             ])
             ->filters([
                 //

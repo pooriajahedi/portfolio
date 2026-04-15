@@ -14,7 +14,7 @@ class PortfolioController extends Controller
 {
     public function index(): View
     {
-        $hero = HeroSection::query()->active()->latest('id')->first();
+        $hero = HeroSection::query()->latest('id')->first();
         $about = AboutSection::query()
             ->active()
             ->with(['serviceCards' => fn ($query) => $query->active()->orderBy('sort_order')->orderBy('id')])

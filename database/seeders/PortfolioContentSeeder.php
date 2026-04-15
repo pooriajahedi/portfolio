@@ -22,7 +22,6 @@ class PortfolioContentSeeder extends Seeder
                 'role' => 'برنامه نویس ارشد بک اند و فول استک',
                 'avatar_image' => '/images/hero/pooria-hero.jpeg',
                 'current_status' => HeroSection::STATUS_LOOKING_FOR_JOB,
-                'is_active' => true,
             ],
         );
 

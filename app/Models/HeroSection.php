@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class HeroSection extends Model
@@ -16,7 +15,6 @@ class HeroSection extends Model
         'role',
         'avatar_image',
         'current_status',
-        'is_active',
     ];
 
     protected function casts(): array
@@ -24,13 +22,7 @@ class HeroSection extends Model
         return [
             'avatar_image' => 'string',
             'current_status' => 'string',
-            'is_active' => 'boolean',
         ];
-    }
-
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where('is_active', true);
     }
 
     public static function statusOptions(): array
