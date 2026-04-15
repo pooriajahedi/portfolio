@@ -15,6 +15,7 @@ class HeroSection extends Model
         'name',
         'role',
         'avatar_image',
+        'resume_file',
         'current_status',
     ];
 
@@ -22,6 +23,7 @@ class HeroSection extends Model
     {
         return [
             'avatar_image' => 'string',
+            'resume_file' => 'string',
             'current_status' => 'string',
         ];
     }

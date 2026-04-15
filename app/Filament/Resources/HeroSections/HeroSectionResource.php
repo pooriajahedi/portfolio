@@ -63,6 +63,21 @@ class HeroSectionResource extends Resource
                             ->imageEditor()
                             ->helperText('تصویر مربعی (مثلا 512x512) بهترین نتیجه را می‌دهد.')
                             ->columnSpanFull(),
+                        FileUpload::make('resume_file')
+                            ->label('فایل رزومه (PDF / DOC / DOCX)')
+                            ->disk('public')
+                            ->directory('resume-files')
+                            ->visibility('public')
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            ])
+                            ->maxSize(10240)
+                            ->downloadable()
+                            ->openable()
+                            ->helperText('حداکثر حجم: 10 مگابایت')
+                            ->columnSpanFull(),
                     ])
                     ->columns(3)
                     ->columnSpanFull(),

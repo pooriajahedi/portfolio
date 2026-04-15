@@ -212,6 +212,49 @@
             line-height: 1.45;
         }
 
+        .resume-download-btn {
+            margin-top: 12px;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid color-mix(in srgb, var(--accent) 62%, #2f3543);
+            background: linear-gradient(
+                135deg,
+                color-mix(in srgb, var(--accent) 26%, #1b1f28) 0%,
+                color-mix(in srgb, var(--accent) 14%, #161a22) 100%
+            );
+            color: #ffffff;
+            border-radius: 14px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: .1px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .28);
+            transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+        }
+
+        .resume-download-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.06);
+            box-shadow: 0 12px 26px rgba(0, 0, 0, .34);
+        }
+
+        .resume-download-btn:active {
+            transform: translateY(0);
+        }
+
+        .resume-download-btn iconify-icon {
+            font-size: 24px;
+            line-height: 1;
+            color: color-mix(in srgb, var(--accent) 78%, #ffffff);
+        }
+
+        .resume-download-btn span {
+            line-height: 1.2;
+        }
+
         .contact-list {
             margin-top: 22px;
             padding-top: 22px;
@@ -515,6 +558,19 @@
         .timeline-item p {
             color: var(--muted);
             font-size: 20px;
+        }
+
+        .resume-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .resume-head .resume-download-btn {
+            width: auto;
+            margin-top: 0;
         }
 
         .portfolio-filter {
@@ -1058,9 +1114,14 @@
     $contacts = $portfolioData['contacts'];
     $currentStatus = $profile['currentStatus']['key'] ?? 'looking_for_job';
     $avatarImage = trim((string) ($profile['avatarImage'] ?? '/images/hero/pooria-hero.jpeg'));
+    $resumeFileUrl = trim((string) ($profile['resumeFile'] ?? ''));
 
     if ($avatarImage !== '' && !str_starts_with($avatarImage, 'http://') && !str_starts_with($avatarImage, 'https://') && !str_starts_with($avatarImage, '/')) {
         $avatarImage = '/storage/' . ltrim($avatarImage, '/');
+    }
+
+    if ($resumeFileUrl !== '' && !str_starts_with($resumeFileUrl, 'http://') && !str_starts_with($resumeFileUrl, 'https://') && !str_starts_with($resumeFileUrl, '/')) {
+        $resumeFileUrl = '/storage/' . ltrim($resumeFileUrl, '/');
     }
 
     $serviceCards = collect($services)->values();
@@ -1174,6 +1235,12 @@
             <strong>وضعیت فعلی</strong>
             <span>{{ $profile['currentStatus']['label'] ?? '' }}</span>
         </p>
+        @if($resumeFileUrl !== '')
+            <a class="resume-download-btn" href="{{ $resumeFileUrl }}" target="_blank" rel="noopener noreferrer" download>
+                <iconify-icon icon="mdi:file-download-outline"></iconify-icon>
+                <span>دانلود رزومه</span>
+            </a>
+        @endif
 
         <div class="contact-list">
             @foreach($contactItems as $item)
@@ -1250,7 +1317,15 @@
         </section>
 
         <section class="section" id="resume">
-            <h2>رزومه</h2>
+            <div class="resume-head">
+                <h2>رزومه</h2>
+                @if($resumeFileUrl !== '')
+                    <a class="resume-download-btn" href="{{ $resumeFileUrl }}" target="_blank" rel="noopener noreferrer" download>
+                        <iconify-icon icon="mdi:file-download-outline"></iconify-icon>
+                        <span>دانلود فایل رزومه</span>
+                    </a>
+                @endif
+            </div>
             <div class="underline"></div>
             <div class="timeline">
                 @foreach($timeline as $item)

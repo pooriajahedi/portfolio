@@ -171,6 +171,7 @@ class PortfolioController extends Controller
                 'name' => $hero?->name ?: 'پوریا جاهدی',
                 'role' => $hero?->role ?: 'برنامه نویس ارشد بک اند و فول استک',
                 'avatarImage' => $hero?->avatar_image ?: '/images/hero/pooria-hero.jpeg',
+                'resumeFile' => $hero?->resume_file,
                 'currentStatus' => [
                     'key' => $hero?->current_status ?: HeroSection::STATUS_LOOKING_FOR_JOB,
                     'label' => HeroSection::statusLabel($hero?->current_status ?: HeroSection::STATUS_LOOKING_FOR_JOB),
