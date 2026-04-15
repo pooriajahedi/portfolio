@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AboutSection;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
+use App\Models\ProfileSetting;
 use App\Models\Project;
 use App\Models\ResumeItem;
 use App\Models\Skill;
@@ -15,6 +16,7 @@ class PortfolioController extends Controller
     public function index(): View
     {
         $hero = HeroSection::query()->active()->latest('id')->first();
+        $profileSetting = ProfileSetting::query()->latest('id')->first();
         $about = AboutSection::query()->active()->latest('id')->first();
         $contact = ContactSection::query()->active()->latest('id')->first();
 
@@ -58,6 +60,10 @@ class PortfolioController extends Controller
                     $hero?->highlight_two,
                     $hero?->highlight_three,
                 ])),
+                'currentStatus' => [
+                    'key' => $profileSetting?->current_status ?: ProfileSetting::STATUS_LOOKING_FOR_JOB,
+                    'label' => ProfileSetting::statusLabel($profileSetting?->current_status ?: ProfileSetting::STATUS_LOOKING_FOR_JOB),
+                ],
             ],
             'about' => [
                 'title' => $about?->title ?: 'درباره من',

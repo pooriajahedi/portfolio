@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\AboutSection;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
+use App\Models\ProfileSetting;
 use App\Models\Project;
 use App\Models\ResumeItem;
 use App\Models\Skill;
@@ -14,6 +15,13 @@ class PortfolioContentSeeder extends Seeder
 {
     public function run(): void
     {
+        ProfileSetting::query()->updateOrCreate(
+            ['id' => 1],
+            [
+                'current_status' => ProfileSetting::STATUS_LOOKING_FOR_JOB,
+            ],
+        );
+
         HeroSection::query()->updateOrCreate(
             ['id' => 1],
             [
