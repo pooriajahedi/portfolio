@@ -135,6 +135,7 @@
             border: 3px solid #232730;
         }
 
+        .status-currently_working { background: #3b82f6; }
         .status-looking_for_job { background: #22c55e; }
         .status-resting { background: #f59e0b; }
         .status-unemployed { background: #ef4444; }
@@ -938,15 +939,6 @@
             }
         }
 
-        @media (pointer: fine) {
-            .portfolio-zoom-trigger,
-            .portfolio-thumb.has-image,
-            .blog-zoom-trigger,
-            .blog-detail-image {
-                cursor: zoom-in !important;
-            }
-        }
-
         @media (max-width: 1160px) {
             .layout {
                 grid-template-columns: 1fr;
@@ -1012,6 +1004,15 @@
             .portfolio-card h4,
             .blog-card h4 {
                 font-size: 24px;
+            }
+        }
+
+        @media (pointer: fine) {
+            .portfolio-zoom-trigger,
+            .portfolio-thumb.has-image,
+            .blog-zoom-trigger,
+            .blog-detail-image {
+                cursor: zoom-in !important;
             }
         }
     </style>
