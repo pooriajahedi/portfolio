@@ -14,11 +14,14 @@ class EditHeroSection extends EditRecord
 
     public function getHeading(): string | Htmlable
     {
-        return '';
+        return 'محتوای نمایه شخصی';
     }
 
-    protected function getRedirectUrl(): string
+    /**
+     * @return array<string>
+     */
+    public function getBreadcrumbs(): array
     {
-        return static::getResource()::getUrl('index');
+        return [];
     }
 }

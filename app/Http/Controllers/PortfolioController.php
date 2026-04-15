@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AboutSection;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
-use App\Models\ProfileSetting;
 use App\Models\Project;
 use App\Models\ResumeItem;
 use App\Models\Skill;
@@ -16,7 +15,6 @@ class PortfolioController extends Controller
     public function index(): View
     {
         $hero = HeroSection::query()->active()->latest('id')->first();
-        $profileSetting = ProfileSetting::query()->latest('id')->first();
         $about = AboutSection::query()
             ->active()
             ->with(['serviceCards' => fn ($query) => $query->active()->orderBy('sort_order')->orderBy('id')])
@@ -59,16 +57,9 @@ class PortfolioController extends Controller
                 'name' => $hero?->name ?: 'پوریا جاهدی',
                 'role' => $hero?->role ?: 'برنامه نویس ارشد بک اند و فول استک',
                 'avatarImage' => $hero?->avatar_image ?: '/images/hero/pooria-hero.jpeg',
-                'headline' => $hero?->headline ?: 'توسعه دهنده ای که سیستم های واقعی را سریع تر، پایدارتر و قابل توسعه تر می کند.',
-                'intro' => $hero?->intro ?: 'حدود ۱۰ سال تجربه توسعه نرم افزار دارم. تمرکز اصلی من روی بهینه سازی سیستم های بزرگ، بازنویسی معماری های فرسوده و تحویل خروجی پایدار در شرایط واقعی کسب وکار است.',
-                'highlights' => array_values(array_filter([
-                    $hero?->highlight_one,
-                    $hero?->highlight_two,
-                    $hero?->highlight_three,
-                ])),
                 'currentStatus' => [
-                    'key' => $profileSetting?->current_status ?: ProfileSetting::STATUS_LOOKING_FOR_JOB,
-                    'label' => ProfileSetting::statusLabel($profileSetting?->current_status ?: ProfileSetting::STATUS_LOOKING_FOR_JOB),
+                    'key' => $hero?->current_status ?: HeroSection::STATUS_LOOKING_FOR_JOB,
+                    'label' => HeroSection::statusLabel($hero?->current_status ?: HeroSection::STATUS_LOOKING_FOR_JOB),
                 ],
             ],
             'about' => [
@@ -134,10 +125,6 @@ class PortfolioController extends Controller
                 'title' => $skill['title'],
                 'description' => $skill['description'],
             ])->values()->all();
-        }
-
-        if (empty($portfolioData['profile']['highlights'])) {
-            $portfolioData['profile']['highlights'] = ['۱۰ سال تجربه عملی', '۱ میلیون کاربر فعال', 'تمرکز روی Laravel و Vue'];
         }
 
         return view('welcome', [

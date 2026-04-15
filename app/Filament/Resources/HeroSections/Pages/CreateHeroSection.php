@@ -14,11 +14,19 @@ class CreateHeroSection extends CreateRecord
 
     public function getHeading(): string | Htmlable
     {
-        return '';
+        return 'محتوای نمایه شخصی';
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getBreadcrumbs(): array
+    {
+        return [];
     }
 
     protected function getRedirectUrl(): string
     {
-        return static::getResource()::getUrl('index');
+        return static::getResource()::getUrl('edit', ['record' => $this->getRecord()]);
     }
 }

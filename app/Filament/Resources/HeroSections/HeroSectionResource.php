@@ -12,7 +12,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -29,21 +29,27 @@ class HeroSectionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
-    protected static ?string $recordTitleAttribute = 'headline';
+    protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationLabel = 'بخش هیرو';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationLabel = 'نمایه شخصی';
+    protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'هیرو';
+    protected static ?string $modelLabel = 'نمایه شخصی';
 
-    protected static ?string $pluralModelLabel = 'بخش هیرو';
+    protected static ?string $pluralModelLabel = 'نمایه شخصی';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('محتوای بخش Hero')
+                Section::make('محتوای بخش هیرو')
                     ->schema([
+                        Select::make('current_status')
+                            ->label('وضعیت فعلی')
+                            ->options(HeroSection::statusOptions())
+                            ->default(HeroSection::STATUS_LOOKING_FOR_JOB)
+                            ->required()
+                            ->native(false),
                         TextInput::make('name')
                             ->label('نام')
                             ->maxLength(255),
@@ -59,46 +65,33 @@ class HeroSectionResource extends Resource
                             ->imageEditor()
                             ->helperText('تصویر مربعی (مثلا 512x512) بهترین نتیجه را می‌دهد.')
                             ->columnSpanFull(),
-                        TextInput::make('headline')
-                            ->label('تیتر اصلی')
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                        Textarea::make('intro')
-                            ->label('توضیح کوتاه')
-                            ->required()
-                            ->rows(4)
-                            ->columnSpanFull(),
-                        TextInput::make('highlight_one')
-                            ->label('نکته برجسته ۱')
-                            ->maxLength(255),
-                        TextInput::make('highlight_two')
-                            ->label('نکته برجسته ۲')
-                            ->maxLength(255),
-                        TextInput::make('highlight_three')
-                            ->label('نکته برجسته ۳')
-                            ->maxLength(255),
                         Toggle::make('is_active')
                             ->label('فعال')
-                            ->default(true),
+                            ->default(true)
+                            ->columnSpanFull(),
                     ])
-                    ->columns(2),
+                    ->columns(3)
+                    ->columnSpanFull(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('headline')
+            ->recordTitleAttribute('name')
             ->defaultSort('id', 'desc')
             ->columns([
-                TextColumn::make('headline')
-                    ->label('تیتر')
-                    ->searchable()
-                    ->limit(45),
                 TextColumn::make('name')
                     ->label('نام')
-                    ->searchable(),
+                    ->searchable()
+                    ->limit(40),
+                TextColumn::make('role')
+                    ->label('عنوان شغلی')
+                    ->limit(50),
+                TextColumn::make('current_status')
+                    ->label('وضعیت فعلی')
+                    ->formatStateUsing(fn (?string $state): string => HeroSection::statusLabel($state))
+                    ->badge(),
                 IconColumn::make('is_active')
                     ->label('فعال')
                     ->boolean(),

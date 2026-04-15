@@ -6,7 +6,6 @@ use App\Models\AboutSection;
 use App\Models\AboutServiceCard;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
-use App\Models\ProfileSetting;
 use App\Models\Project;
 use App\Models\ResumeItem;
 use App\Models\Skill;
@@ -16,24 +15,13 @@ class PortfolioContentSeeder extends Seeder
 {
     public function run(): void
     {
-        ProfileSetting::query()->updateOrCreate(
-            ['id' => 1],
-            [
-                'current_status' => ProfileSetting::STATUS_LOOKING_FOR_JOB,
-            ],
-        );
-
         HeroSection::query()->updateOrCreate(
             ['id' => 1],
             [
                 'name' => 'پوریا جاهدی',
                 'role' => 'برنامه نویس ارشد بک اند و فول استک',
                 'avatar_image' => '/images/hero/pooria-hero.jpeg',
-                'headline' => 'توسعه دهنده ای که سیستم های واقعی را سریع تر، پایدارتر و قابل توسعه تر می کند.',
-                'intro' => 'حدود ۱۰ سال تجربه توسعه نرم افزار دارم. تمرکز اصلی من روی بهینه سازی سیستم های بزرگ، بازنویسی معماری های فرسوده و تحویل خروجی پایدار در شرایط واقعی کسب وکار است.',
-                'highlight_one' => '۱۰ سال تجربه عملی',
-                'highlight_two' => '۱ میلیون کاربر فعال',
-                'highlight_three' => 'تمرکز روی Laravel و Vue',
+                'current_status' => HeroSection::STATUS_LOOKING_FOR_JOB,
                 'is_active' => true,
             ],
         );
