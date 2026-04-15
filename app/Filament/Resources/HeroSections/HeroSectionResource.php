@@ -32,7 +32,7 @@ class HeroSectionResource extends Resource
     protected static ?string $recordTitleAttribute = 'headline';
 
     protected static ?string $navigationLabel = 'بخش هیرو';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $modelLabel = 'هیرو';
 

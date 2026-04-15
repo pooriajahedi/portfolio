@@ -17,7 +17,11 @@ class PortfolioController extends Controller
     {
         $hero = HeroSection::query()->active()->latest('id')->first();
         $profileSetting = ProfileSetting::query()->latest('id')->first();
-        $about = AboutSection::query()->active()->latest('id')->first();
+        $about = AboutSection::query()
+            ->active()
+            ->with(['serviceCards' => fn ($query) => $query->active()->orderBy('sort_order')->orderBy('id')])
+            ->latest('id')
+            ->first();
         $contact = ContactSection::query()->active()->latest('id')->first();
 
         $skills = Skill::query()
@@ -72,6 +76,14 @@ class PortfolioController extends Controller
                 'paragraphOne' => $about?->paragraph_one ?: 'من در طی یک دهه فعالیت حرفه ای، تقریبا تمام چرخه حیات یک محصول را تجربه کرده ام: از نگهداری کدهای قدیمی و پرچالش تا بازنویسی ماژول های کلیدی و مهاجرت کامل سیستم های Legacy به معماری مدرن. رویکرد من همیشه این بوده که علاوه بر حل مشکل امروز، مسیر توسعه فردا را هم باز نگه دارم.',
                 'paragraphTwo' => $about?->paragraph_two ?: 'علاقه اصلی من کم کردن پیچیدگی، استانداردسازی خروجی APIها، بهینه سازی کوئری ها و طراحی جریان های پایدار برای پردازش های سنگین است.',
             ],
+            'services' => $about?->serviceCards
+                ?->map(fn ($card): array => [
+                    'title' => $card->title,
+                    'description' => $card->description,
+                ])
+                ->values()
+                ->all() ?? [],
+            'skillCategoryLabels' => AboutSection::skillCategoryOptions($about?->skill_categories),
             'skills' => $skills ?: [
                 [
                     'title' => 'Laravel و معماری بک اند',
@@ -116,6 +128,13 @@ class PortfolioController extends Controller
                 'telegramIcon' => $contact?->telegram_icon ?: ContactSection::ICON_TELEGRAM,
             ],
         ];
+
+        if (empty($portfolioData['services'])) {
+            $portfolioData['services'] = collect($portfolioData['skills'])->take(4)->map(fn (array $skill): array => [
+                'title' => $skill['title'],
+                'description' => $skill['description'],
+            ])->values()->all();
+        }
 
         if (empty($portfolioData['profile']['highlights'])) {
             $portfolioData['profile']['highlights'] = ['۱۰ سال تجربه عملی', '۱ میلیون کاربر فعال', 'تمرکز روی Laravel و Vue'];

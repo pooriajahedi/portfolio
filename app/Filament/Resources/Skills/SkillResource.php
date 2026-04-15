@@ -50,7 +50,7 @@ class SkillResource extends Resource
                         Select::make('category')
                             ->label('دسته بندی')
                             ->options(Skill::categoryOptions())
-                            ->default(Skill::CATEGORY_FRONTEND)
+                            ->default(fn (): string => array_key_first(Skill::categoryOptions()) ?: Skill::CATEGORY_FRONTEND)
                             ->required()
                             ->native(false),
                         Select::make('icon')
@@ -88,7 +88,7 @@ class SkillResource extends Resource
                     ->sortable(),
                 TextColumn::make('category')
                     ->label('دسته')
-                    ->formatStateUsing(fn (string $state): string => Skill::categoryOptions()[$state] ?? $state)
+                    ->formatStateUsing(fn (?string $state): string => Skill::categoryOptions()[$state] ?? ($state ?: '-'))
                     ->badge(),
                 TextColumn::make('title')
                     ->label('عنوان')

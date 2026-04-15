@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\AboutSection;
+use App\Models\AboutServiceCard;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
 use App\Models\ProfileSetting;
@@ -43,9 +44,35 @@ class PortfolioContentSeeder extends Seeder
                 'title' => 'درباره من',
                 'paragraph_one' => 'من در طی یک دهه فعالیت حرفه ای، تقریبا تمام چرخه حیات یک محصول را تجربه کرده ام: از نگهداری کدهای قدیمی و پرچالش تا بازنویسی ماژول های کلیدی و مهاجرت کامل سیستم های Legacy به معماری مدرن. رویکرد من همیشه این بوده که علاوه بر حل مشکل امروز، مسیر توسعه فردا را هم باز نگه دارم.',
                 'paragraph_two' => 'علاقه اصلی من کم کردن پیچیدگی، استانداردسازی خروجی APIها، بهینه سازی کوئری ها و طراحی جریان های پایدار برای پردازش های سنگین است.',
+                'skill_categories' => AboutSection::DEFAULT_SKILL_CATEGORIES,
                 'is_active' => true,
             ],
         );
+
+        $aboutSectionId = AboutSection::query()->value('id');
+
+        if ($aboutSectionId) {
+            $serviceCards = [
+                ['title' => 'بهینه‌سازی سیستم‌های در حال اجرا', 'description' => 'تحلیل گلوگاه‌ها، کاهش خطاهای زمان‌بر و افزایش پایداری سرویس‌ها.'],
+                ['title' => 'بازنویسی بخش‌های Legacy', 'description' => 'تبدیل منطق‌های قدیمی و هاردکد به معماری قابل توسعه و تست‌پذیر.'],
+                ['title' => 'طراحی API و خروجی استاندارد', 'description' => 'بازطراحی خروجی وب‌سرویس‌ها برای مصرف‌پذیری بهتر و نگهداری ساده‌تر.'],
+                ['title' => 'بهینه‌سازی دیتابیس و کوئری', 'description' => 'ایندکس‌گذاری، بازنویسی کوئری‌های پرتکرار و استفاده هدفمند از کش.'],
+            ];
+
+            foreach ($serviceCards as $index => $card) {
+                AboutServiceCard::query()->updateOrCreate(
+                    [
+                        'about_section_id' => $aboutSectionId,
+                        'title' => $card['title'],
+                    ],
+                    [
+                        'description' => $card['description'],
+                        'sort_order' => $index + 1,
+                        'is_active' => true,
+                    ],
+                );
+            }
+        }
 
         ContactSection::query()->updateOrCreate(
             ['id' => 1],
@@ -83,17 +110,18 @@ class PortfolioContentSeeder extends Seeder
             ['title' => 'AWS', 'description' => 'زیرساخت ابری و سرویس‌های مقیاس‌پذیر.', 'category' => Skill::CATEGORY_TOOLS, 'icon' => 'logos:aws'],
         ];
 
+        // Keep this section strictly as English skills with icons only.
+        Skill::query()->delete();
+
         foreach ($skills as $index => $skill) {
-            Skill::query()->updateOrCreate(
-                ['title' => $skill['title']],
-                [
-                    'description' => $skill['description'],
-                    'category' => $skill['category'],
-                    'icon' => $skill['icon'],
-                    'sort_order' => $index + 1,
-                    'is_active' => true,
-                ],
-            );
+            Skill::query()->create([
+                'title' => $skill['title'],
+                'description' => $skill['description'],
+                'category' => $skill['category'],
+                'icon' => $skill['icon'],
+                'sort_order' => $index + 1,
+                'is_active' => true,
+            ]);
         }
 
         $resumeItems = [

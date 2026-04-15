@@ -33,6 +33,13 @@ class Skill extends Model
 
     public static function categoryOptions(): array
     {
+        $about = AboutSection::query()->active()->latest('id')->first();
+        $options = AboutSection::skillCategoryOptions($about?->skill_categories);
+
+        if ($options !== []) {
+            return $options;
+        }
+
         return [
             self::CATEGORY_FRONTEND => 'Frontend',
             self::CATEGORY_BACKEND => 'Backend',

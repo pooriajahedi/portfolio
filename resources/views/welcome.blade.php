@@ -714,6 +714,7 @@
 @php
     $profile = $portfolioData['profile'];
     $about = $portfolioData['about'];
+    $services = $portfolioData['services'] ?? [];
     $skills = $portfolioData['skills'];
     $timeline = $portfolioData['timeline'];
     $projects = $portfolioData['projects'];
@@ -725,10 +726,10 @@
         $avatarImage = '/storage/' . ltrim($avatarImage, '/');
     }
 
-    $serviceCards = collect($skills)->take(4)->values();
+    $serviceCards = collect($services)->values();
     $skillsByCategory = collect($skills)
         ->groupBy(fn ($item) => $item['category'] ?? 'frontend');
-    $skillCategoryLabels = [
+    $skillCategoryLabels = $portfolioData['skillCategoryLabels'] ?? [
         'frontend' => 'FRONTEND',
         'backend' => 'BACKEND',
         'database' => 'DATABASE',
@@ -870,7 +871,7 @@
         </nav>
 
         <section class="section" id="about">
-            <h2>درباره من</h2>
+            <h2>{{ $about['title'] ?? 'درباره من' }}</h2>
             <div class="underline"></div>
             <p class="text-block">{{ $about['paragraphOne'] }}</p>
             @if(!empty($about['paragraphTwo']))
