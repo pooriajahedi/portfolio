@@ -880,6 +880,34 @@
             cursor: pointer;
         }
 
+        .submit[disabled] {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .form-alert {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .form-alert.is-visible {
+            display: block;
+        }
+
+        .form-alert-success {
+            background: #163321;
+            border: 1px solid #22593a;
+            color: #c8f0d6;
+        }
+
+        .form-alert-error {
+            background: #3a1717;
+            border: 1px solid #7b2a2a;
+            color: #f4cccc;
+        }
+
         .cursor-icon {
             position: fixed;
             top: 0;
@@ -1321,21 +1349,42 @@
             <h2>تماس با من</h2>
             <div class="underline"></div>
 
-            <div class="map">
-                <iframe
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps?q=Kathmandu&output=embed">
-                </iframe>
-            </div>
+            @if(!empty($contacts['description']))
+                <p class="text-block">{{ $contacts['description'] }}</p>
+            @endif
+
+            <div id="contactFormAlert" class="form-alert" aria-live="polite"></div>
+
+            @if(session('contact_success'))
+                <div class="form-alert form-alert-success is-visible">{{ session('contact_success') }}</div>
+            @endif
+            @if(session('contact_error'))
+                <div class="form-alert form-alert-error is-visible">{{ session('contact_error') }}</div>
+            @endif
+            @if($errors->any())
+                <div class="form-alert form-alert-error is-visible">
+                    @foreach($errors->all() as $error)
+                        <p style="margin:4px 0;">{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
 
             <h2 style="font-size: clamp(24px, 2vw, 30px); margin-bottom: 12px;">فرم تماس</h2>
-            <form class="contact-form" onsubmit="event.preventDefault();">
-                <input type="text" placeholder="نام و نام خانوادگی">
-                <input type="email" placeholder="آدرس ایمیل" dir="ltr" style="text-align:left;">
-                <input type="text" class="full" placeholder="موضوع">
-                <textarea class="full" placeholder="پیام شما"></textarea>
-                <button class="submit" type="submit">ارسال پیام</button>
+            <form id="contactForm" class="contact-form" action="{{ route('contact-requests.store') }}" method="POST">
+                @csrf
+                <input type="text" name="name" value="{{ old('name') }}" placeholder="نام و نام خانوادگی" required>
+                <input type="email" name="email" value="{{ old('email') }}" placeholder="آدرس ایمیل" dir="ltr" style="text-align:left;" required>
+                <input type="text" name="subject" value="{{ old('subject') }}" class="full" placeholder="موضوع" required>
+                <textarea name="message" class="full" placeholder="پیام شما" required>{{ old('message') }}</textarea>
+                <input
+                    type="text"
+                    name="company_website"
+                    value=""
+                    tabindex="-1"
+                    autocomplete="off"
+                    aria-hidden="true"
+                    style="position:absolute;left:-9999px;opacity:0;height:0;width:0;pointer-events:none;">
+                <button class="submit" type="submit" id="contactSubmitButton">ارسال پیام</button>
             </form>
         </section>
     </main>
@@ -1528,6 +1577,60 @@
             closeImageModal();
         }
     });
+
+    const contactForm = document.getElementById('contactForm');
+    const contactFormAlert = document.getElementById('contactFormAlert');
+    const contactSubmitButton = document.getElementById('contactSubmitButton');
+
+    const setContactAlert = (type, messages) => {
+        if (!contactFormAlert) return;
+        const normalizedMessages = Array.isArray(messages) ? messages : [messages];
+        contactFormAlert.className = `form-alert is-visible ${type === 'success' ? 'form-alert-success' : 'form-alert-error'}`;
+        contactFormAlert.innerHTML = normalizedMessages.map((message) => `<p style="margin:4px 0;">${message}</p>`).join('');
+    };
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!contactSubmitButton) return;
+
+            contactSubmitButton.disabled = true;
+            contactSubmitButton.textContent = 'در حال ارسال...';
+            if (contactFormAlert) {
+                contactFormAlert.className = 'form-alert';
+                contactFormAlert.innerHTML = '';
+            }
+
+            try {
+                const formData = new FormData(contactForm);
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: formData,
+                });
+
+                const payload = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    const validationErrors = payload?.errors ? Object.values(payload.errors).flat() : [];
+                    const fallbackMessage = payload?.message || 'ارسال فرم با خطا مواجه شد.';
+                    setContactAlert('error', validationErrors.length ? validationErrors : [fallbackMessage]);
+                    return;
+                }
+
+                setContactAlert('success', payload?.message || 'پیام شما با موفقیت ثبت شد.');
+                contactForm.reset();
+            } catch {
+                setContactAlert('error', 'مشکل ارتباط با سرور رخ داد. لطفا دوباره تلاش کنید.');
+            } finally {
+                contactSubmitButton.disabled = false;
+                contactSubmitButton.textContent = 'ارسال پیام';
+            }
+        });
+    }
 
     gsap.from('.sidebar', {
         x: -36,

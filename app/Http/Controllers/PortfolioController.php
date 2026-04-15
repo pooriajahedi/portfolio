@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AboutSection;
 use App\Models\BlogPost;
 use App\Models\ContactSection;
+use App\Models\ContactRequest;
 use App\Models\HeroSection;
 use App\Models\PortfolioSection;
 use App\Models\Project;
@@ -12,6 +13,11 @@ use App\Models\ProjectCategory;
 use App\Models\ResumeItem;
 use App\Models\Skill;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Validator;
 
 class PortfolioController extends Controller
 {
@@ -335,5 +341,88 @@ class PortfolioController extends Controller
             '8' => '۸',
             '9' => '۹',
         ]);
+    }
+
+    public function storeContactRequest(Request $request): RedirectResponse|JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email', 'max:190'],
+            'subject' => ['required', 'string', 'min:3', 'max:180'],
+            'message' => ['required', 'string', 'min:10', 'max:4000'],
+            'company_website' => ['nullable', 'string', 'max:1'],
+        ], [
+            'required' => ':attribute الزامی است.',
+            'email' => 'فرمت :attribute معتبر نیست.',
+            'min.string' => ':attribute باید حداقل :min کاراکتر باشد.',
+            'max.string' => ':attribute نباید بیشتر از :max کاراکتر باشد.',
+        ], [
+            'name' => 'نام',
+            'email' => 'ایمیل',
+            'subject' => 'موضوع',
+            'message' => 'پیام',
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'اطلاعات فرم کامل یا صحیح نیست.',
+                    'errors' => $validator->errors()->toArray(),
+                ], 422);
+            }
+
+            return redirect()->to(url('/') . '#contact')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $validated = $validator->validated();
+
+        // Honeypot: bots usually fill this hidden field.
+        if (filled($validated['company_website'] ?? null)) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'ارسال نامعتبر شناسایی شد.',
+                ], 422);
+            }
+
+            return redirect()->to(url('/') . '#contact')->with('contact_error', 'ارسال نامعتبر شناسایی شد.');
+        }
+
+        $rateKey = 'contact-request:' . sha1((string) $request->ip());
+
+        if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'درخواست‌های پیاپی زیاد بود. لطفا کمی بعد دوباره تلاش کنید.',
+                ], 429);
+            }
+
+            return redirect()->to(url('/') . '#contact')->with('contact_error', 'درخواست‌های پیاپی زیاد بود. لطفا کمی بعد دوباره تلاش کنید.');
+        }
+
+        RateLimiter::hit($rateKey, 60);
+
+        ContactRequest::query()->create([
+            'name' => trim((string) $validated['name']),
+            'email' => trim((string) $validated['email']),
+            'subject' => trim((string) $validated['subject']),
+            'message' => trim((string) $validated['message']),
+            'ip_address' => $request->ip(),
+            'user_agent' => mb_substr((string) $request->userAgent(), 0, 1000),
+            'is_read' => false,
+        ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'پیام شما با موفقیت ثبت شد.',
+            ]);
+        }
+
+        return redirect()->to(url('/') . '#contact')->with('contact_success', 'پیام شما با موفقیت ثبت شد.');
     }
 }
