@@ -4,6 +4,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>پورتفولیو | {{ $portfolioData['profile']['name'] ?? 'برنامه نویس' }}</title>
+    @php
+        $appearance = $portfolioData['appearance'] ?? [];
+        $primaryColor = $appearance['primaryColor'] ?? '#F4C64F';
+        $backgroundMode = $appearance['mode'] ?? 'gradient';
+        $backgroundImageUrl = trim((string) ($appearance['backgroundImageUrl'] ?? ''));
+        $backgroundImageOpacity = max(0, min(1, (float) ($appearance['backgroundImageOpacity'] ?? 0.55)));
+        $backgroundImageOverlayOpacity = max(0, min(1, 1 - $backgroundImageOpacity));
+        $backgroundColorFrom = $appearance['backgroundColorFrom'] ?? '#101829';
+        $backgroundColorTo = $appearance['backgroundColorTo'] ?? '#0B0F19';
+        $hasBackgroundImage = $backgroundMode === 'image' && $backgroundImageUrl !== '';
+    @endphp
 
     <style>
         @font-face {
@@ -37,8 +48,8 @@
             --line: #2a2f3a;
             --text: #f3f4f6;
             --muted: #a6adbb;
-            --accent: #f4c64f;
-            --accent-soft: rgba(244, 198, 79, 0.2);
+            --accent: {{ $primaryColor }};
+            --accent-soft: color-mix(in srgb, var(--accent) 22%, transparent);
             --radius: 22px;
             --sidebar-width: 322px;
         }
@@ -55,7 +66,23 @@
 
         body {
             font-family: "Pinar", sans-serif;
-            background: radial-gradient(circle at 25% 0, #171d2a 0, transparent 30%), var(--bg);
+            @if($hasBackgroundImage)
+            background-image:
+                linear-gradient(
+                    rgba(10, 11, 15, {{ number_format($backgroundImageOverlayOpacity, 3, '.', '') }}),
+                    rgba(10, 11, 15, {{ number_format($backgroundImageOverlayOpacity, 3, '.', '') }})
+                ),
+                url('{{ e($backgroundImageUrl) }}'),
+                radial-gradient(circle at 25% 0, #171d2a 0, transparent 30%),
+                linear-gradient(135deg, {{ $backgroundColorFrom }} 0%, {{ $backgroundColorTo }} 100%);
+            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+            background-position: center center, center center, center top, center center;
+            background-size: cover, cover, auto, auto;
+            @else
+            background:
+                radial-gradient(circle at 25% 0, #171d2a 0, transparent 30%),
+                linear-gradient(135deg, {{ $backgroundColorFrom }} 0%, {{ $backgroundColorTo }} 100%);
+            @endif
             color: var(--text);
             line-height: 1.8;
             min-height: 100vh;

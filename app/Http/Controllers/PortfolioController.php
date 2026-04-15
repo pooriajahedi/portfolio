@@ -11,6 +11,7 @@ use App\Models\PortfolioSection;
 use App\Models\Project;
 use App\Models\ProjectCategory;
 use App\Models\ResumeItem;
+use App\Models\SiteSetting;
 use App\Models\Skill;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -31,6 +32,24 @@ class PortfolioController extends Controller
             ->first();
         $contact = ContactSection::query()->active()->latest('id')->first();
         $portfolioSection = PortfolioSection::query()->latest('id')->first();
+        $siteSettings = SiteSetting::getMany(SiteSetting::defaults());
+
+        $backgroundMode = in_array(
+            (string) ($siteSettings[SiteSetting::KEY_BACKGROUND_MODE] ?? 'gradient'),
+            ['gradient', 'image'],
+            true
+        ) ? (string) $siteSettings[SiteSetting::KEY_BACKGROUND_MODE] : 'gradient';
+
+        $backgroundImage = trim((string) ($siteSettings[SiteSetting::KEY_BACKGROUND_IMAGE] ?? ''));
+        $backgroundImageUrl = null;
+
+        if ($backgroundImage !== '') {
+            $backgroundImageUrl = str_starts_with($backgroundImage, 'http://') || str_starts_with($backgroundImage, 'https://') || str_starts_with($backgroundImage, '/')
+                ? $backgroundImage
+                : '/storage/' . ltrim($backgroundImage, '/');
+        }
+
+        $backgroundImageOpacity = $this->sanitizePercentage($siteSettings[SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY] ?? 55);
 
         $skills = Skill::query()
             ->active()
@@ -214,6 +233,14 @@ class PortfolioController extends Controller
                 'telegram' => $contact?->telegram ?: '@yourid',
                 'telegramIcon' => $contact?->telegram_icon ?: ContactSection::ICON_TELEGRAM,
             ],
+            'appearance' => [
+                'mode' => $backgroundMode,
+                'backgroundImageUrl' => $backgroundImageUrl,
+                'backgroundImageOpacity' => $backgroundImageOpacity / 100,
+                'backgroundColorFrom' => $this->sanitizeHexColor((string) ($siteSettings[SiteSetting::KEY_BACKGROUND_COLOR_FROM] ?? '#101829'), '#101829'),
+                'backgroundColorTo' => $this->sanitizeHexColor((string) ($siteSettings[SiteSetting::KEY_BACKGROUND_COLOR_TO] ?? '#0b0f19'), '#0b0f19'),
+                'primaryColor' => $this->sanitizeHexColor((string) ($siteSettings[SiteSetting::KEY_PRIMARY_COLOR] ?? '#f4c64f'), '#f4c64f'),
+            ],
         ];
 
         if (empty($portfolioData['services'])) {
@@ -341,6 +368,22 @@ class PortfolioController extends Controller
             '8' => '۸',
             '9' => '۹',
         ]);
+    }
+
+    private function sanitizeHexColor(string $value, string $fallback): string
+    {
+        $value = trim($value);
+
+        if (! preg_match('/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $value)) {
+            return $fallback;
+        }
+
+        return strtoupper($value);
+    }
+
+    private function sanitizePercentage(mixed $value): int
+    {
+        return max(0, min(100, (int) $value));
     }
 
     public function storeContactRequest(Request $request): RedirectResponse|JsonResponse

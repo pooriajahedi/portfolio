@@ -17,6 +17,14 @@ class CreateContactSection extends CreateRecord
         return '';
     }
 
+    /**
+     * @return array<string>
+     */
+    public function getBreadcrumbs(): array
+    {
+        return [];
+    }
+
     protected function getRedirectUrl(): string
     {
         return static::getResource()::getUrl('index');
