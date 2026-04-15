@@ -363,6 +363,35 @@
             scroll-margin-top: 74px;
         }
 
+        .site-credit {
+            margin-top: 30px;
+            border-top: 1px solid #2f3441;
+            padding-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: #aeb6c4;
+            font-size: 13px;
+        }
+
+        .site-credit strong {
+            color: #e7ebf2;
+            font-weight: 600;
+        }
+
+        .site-credit-version {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #343949;
+            border-radius: 999px;
+            padding: 4px 10px;
+            color: var(--accent);
+            background: #1a1f2a;
+        }
+
         .section.is-hidden {
             display: none;
         }
@@ -1112,6 +1141,7 @@
     $portfolio = $portfolioData['portfolio'] ?? [];
     $blogPosts = $portfolioData['blogPosts'] ?? [];
     $contacts = $portfolioData['contacts'];
+    $appVersion = (string) config('app.version', '1.0.0');
     $currentStatus = $profile['currentStatus']['key'] ?? 'looking_for_job';
     $avatarImage = trim((string) ($profile['avatarImage'] ?? '/images/hero/pooria-hero.jpeg'));
     $resumeFileUrl = trim((string) ($profile['resumeFile'] ?? ''));
@@ -1490,6 +1520,14 @@
                 <button class="submit" type="submit" id="contactSubmitButton">ارسال پیام</button>
             </form>
         </section>
+
+        <footer class="site-credit">
+            <p>طراحی و توسعه این قالب توسط <strong>{{ $profile['name'] ?? 'پوریا جاهدی' }}</strong> انجام شده است.</p>
+            <span class="site-credit-version">
+                <iconify-icon icon="mdi:tag-outline"></iconify-icon>
+                <span>نسخه {{ $appVersion }}</span>
+            </span>
+        </footer>
     </main>
 </div>
 

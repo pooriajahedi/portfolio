@@ -57,6 +57,20 @@ class PortfolioController extends Controller
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get(['title', 'description', 'category', 'icon'])
+            ->map(function (Skill $skill): array {
+                $icon = (string) ($skill->icon ?? '');
+
+                if ($icon === 'simple-icons:httptoolkit') {
+                    $icon = 'mdi:toolbox-outline';
+                }
+
+                return [
+                    'title' => $skill->title,
+                    'description' => $skill->description,
+                    'category' => $skill->category,
+                    'icon' => $icon,
+                ];
+            })
             ->toArray();
 
         $resumeItems = ResumeItem::query()

@@ -51,30 +51,59 @@ class Skill extends Model
     public static function iconOptions(): array
     {
         return [
+            // Frontend
             'logos:javascript' => 'JavaScript',
             'logos:typescript-icon' => 'TypeScript',
             'logos:react' => 'React',
             'logos:nextjs-icon' => 'Next.js',
             'logos:vue' => 'Vue.js',
             'logos:nuxt-icon' => 'Nuxt',
+            'logos:pinia' => 'Pinia',
+            'logos:redux' => 'Redux',
             'logos:tailwindcss-icon' => 'Tailwind',
             'logos:bootstrap' => 'Bootstrap',
             'logos:sass' => 'Sass',
             'logos:gsap' => 'GSAP',
+            'logos:vitest' => 'Vitest',
+            'logos:jest' => 'Jest',
+
+            // Backend
             'logos:nodejs-icon' => 'Node.js',
             'logos:nestjs' => 'NestJS',
             'logos:laravel' => 'Laravel',
             'logos:php' => 'PHP',
             'logos:express' => 'Express',
+            'logos:graphql' => 'GraphQL',
+
+            // Database
             'logos:mysql' => 'MySQL',
             'logos:postgresql' => 'PostgreSQL',
             'logos:mongodb-icon' => 'MongoDB',
             'logos:redis' => 'Redis',
             'logos:prisma' => 'Prisma',
+
+            // Tools / DevOps
             'logos:docker-icon' => 'Docker',
             'logos:git-icon' => 'Git',
+            'logos:github-icon' => 'GitHub',
+            'logos:gitlab' => 'GitLab',
             'logos:linux-tux' => 'Linux',
             'logos:aws' => 'AWS',
+            'logos:google-cloud' => 'Google Cloud',
+            'logos:firebase' => 'Firebase',
+            'logos:figma' => 'Figma',
+            'logos:postman-icon' => 'Postman',
+            'simple-icons:androidstudio' => 'Android Studio',
+            'simple-icons:bruno' => 'Bruno',
+            'mdi:toolbox-outline' => 'HTTP Toolkit',
+            'simple-icons:insomnia' => 'Insomnia',
+            'simple-icons:swagger' => 'Swagger',
+            'simple-icons:vite' => 'Vite',
+            'simple-icons:pnpm' => 'pnpm',
+            'simple-icons:npm' => 'npm',
+            'simple-icons:yarn' => 'Yarn',
+            'simple-icons:filament' => 'Filament',
+            'logos:visual-studio-code' => 'VS Code',
         ];
     }
 
