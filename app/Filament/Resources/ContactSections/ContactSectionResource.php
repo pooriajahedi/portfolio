@@ -32,7 +32,7 @@ class ContactSectionResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationLabel = 'تماس با من';
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 7;
 
     protected static ?string $modelLabel = 'تماس با من';
 

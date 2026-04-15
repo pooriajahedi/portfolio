@@ -662,11 +662,37 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .blog-grid.is-hidden {
+            display: none;
+        }
+
         .blog-card small {
             color: #9ca5b2;
             display: block;
             margin-bottom: 8px;
             font-size: 14px;
+        }
+
+        .blog-card-image {
+            margin-bottom: 12px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #343b48;
+            background: #131720;
+            position: relative;
+            min-height: 170px;
+        }
+
+        .blog-card-image img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.28s ease;
+        }
+
+        .blog-card:hover .blog-card-image img {
+            transform: scale(1.04);
         }
 
         .blog-card h4 {
@@ -678,6 +704,122 @@
         .blog-card p {
             color: var(--muted);
             font-size: 20px;
+        }
+
+        .blog-card[data-blog-open] {
+            cursor: pointer;
+        }
+
+        .blog-open {
+            margin-top: 10px;
+            border: 1px solid #3a4252;
+            background: #1b202a;
+            color: #e7ebf2;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font: inherit;
+            font-size: 13px;
+            width: max-content;
+        }
+
+        .blog-detail {
+            display: none;
+        }
+
+        .blog-detail.is-open {
+            display: block;
+        }
+
+        .blog-back {
+            border: 1px solid #3a4252;
+            background: #1b202a;
+            color: #e7ebf2;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font: inherit;
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .blog-detail-image {
+            margin-bottom: 14px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #343b48;
+            position: relative;
+            background: #121620;
+        }
+
+        .blog-detail-image img {
+            width: 100%;
+            max-height: 460px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.28s ease;
+        }
+
+        .blog-detail-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .blog-detail-image .blog-zoom-trigger {
+            position: absolute;
+            inset: 0;
+            border: 0;
+            background: rgba(8, 10, 16, 0.28);
+            color: #f6d26e;
+            display: grid;
+            place-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .blog-detail-image:hover .blog-zoom-trigger {
+            opacity: 1;
+        }
+
+        .blog-detail-content {
+            background: #191c23;
+            border: 1px solid #2a2f3b;
+            border-radius: 16px;
+            padding: 18px;
+            color: #d9dee7;
+            line-height: 1.9;
+        }
+
+        .blog-detail-content h1,
+        .blog-detail-content h2,
+        .blog-detail-content h3,
+        .blog-detail-content h4,
+        .blog-detail-content h5,
+        .blog-detail-content h6 {
+            color: #f4f6fb;
+            margin: 14px 0 6px;
+            line-height: 1.45;
+        }
+
+        .blog-detail-content p {
+            margin: 10px 0;
+            color: #cfd5df;
+            font-size: 18px;
+        }
+
+        .blog-detail-content ul,
+        .blog-detail-content ol {
+            margin: 10px 0;
+            padding-right: 22px;
+        }
+
+        .blog-detail-content img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .blog-empty {
+            color: var(--muted);
+            font-size: 18px;
+            padding: 8px 0;
         }
 
         .map {
@@ -770,7 +912,9 @@
 
         @media (pointer: fine) {
             .portfolio-zoom-trigger,
-            .portfolio-thumb.has-image {
+            .portfolio-thumb.has-image,
+            .blog-zoom-trigger,
+            .blog-detail-image {
                 cursor: zoom-in !important;
             }
         }
@@ -854,6 +998,7 @@
     $projects = $portfolioData['projects'];
     $projectCategories = $portfolioData['projectCategories'] ?? [];
     $portfolio = $portfolioData['portfolio'] ?? [];
+    $blogPosts = $portfolioData['blogPosts'] ?? [];
     $contacts = $portfolioData['contacts'];
     $currentStatus = $profile['currentStatus']['key'] ?? 'looking_for_job';
     $avatarImage = trim((string) ($profile['avatarImage'] ?? '/images/hero/pooria-hero.jpeg'));
@@ -871,19 +1016,6 @@
         'database' => 'DATABASE',
         'tools' => 'TOOLS',
     ];
-    $blogCards = [
-        [
-            'date' => 'وبلاگ • ۱۸ نوامبر ۲۰۲۴',
-            'title' => 'مقایسه Flutter و Flock در توسعه چندسکویی',
-            'excerpt' => 'مقایسه عمیق دو رویکرد توسعه کراس پلتفرم و اثر آن روی سرعت تحویل، کیفیت کد و نگهداری طولانی مدت.',
-        ],
-        [
-            'date' => 'وبلاگ • ۱۳ نوامبر ۲۰۲۴',
-            'title' => 'تاثیر Flutter بر آینده اپ‌های چندسکویی',
-            'excerpt' => 'بررسی نقش Flutter در آینده توسعه اپلیکیشن‌های چندسکویی برای موبایل، وب و دستگاه‌های هوشمند.',
-        ],
-    ];
-
     $normalizeUrl = static function (?string $value): ?string {
         $value = trim((string) $value);
         if ($value === '') {
@@ -1136,15 +1268,53 @@
         <section class="section" id="blog">
             <h2>وبلاگ</h2>
             <div class="underline"></div>
-            <div class="blog-grid">
-                @foreach($blogCards as $item)
-                    <article class="blog-card">
-                        <small>{{ $item['date'] }}</small>
-                        <h4>{{ $item['title'] }}</h4>
-                        <p>{{ $item['excerpt'] }}</p>
-                    </article>
-                @endforeach
-            </div>
+
+            @if(empty($blogPosts))
+                <p class="blog-empty">هنوز مقاله‌ای منتشر نشده است.</p>
+            @else
+                <div class="blog-grid" id="blogList">
+                    @foreach($blogPosts as $index => $item)
+                        <article class="blog-card" data-blog-open="{{ $index }}">
+                            @if(!empty($item['imageUrl']))
+                                <div class="blog-card-image">
+                                    <img src="{{ $item['imageUrl'] }}" alt="{{ $item['title'] }}">
+                                </div>
+                            @endif
+                            <small>{{ $item['date'] ?? '' }}</small>
+                            <h4>{{ $item['title'] }}</h4>
+                            <p>{{ $item['excerpt'] }}</p>
+                            <button class="blog-open" type="button" data-blog-open="{{ $index }}">مشاهده مقاله</button>
+                        </article>
+                    @endforeach
+                </div>
+
+                <div class="blog-detail" id="blogDetail">
+                    <button class="blog-back" type="button" id="blogBackButton">بازگشت به لیست مقالات</button>
+
+                    @foreach($blogPosts as $index => $item)
+                        <article class="blog-detail-item" data-blog-detail="{{ $index }}" style="display:none;">
+                            <small style="display:block;color:#9ca5b2;margin-bottom:8px;">{{ $item['date'] ?? '' }}</small>
+                            <h3 style="font-size:clamp(28px,2.4vw,36px);line-height:1.3;margin-bottom:12px;">{{ $item['title'] }}</h3>
+                            @if(!empty($item['imageUrl']))
+                                <div class="blog-detail-image">
+                                    <img src="{{ $item['imageUrl'] }}" alt="{{ $item['title'] }}">
+                                    <button
+                                        type="button"
+                                        class="blog-zoom-trigger"
+                                        data-zoom-src="{{ $item['imageUrl'] }}"
+                                        data-zoom-alt="{{ $item['title'] }}"
+                                        aria-label="بزرگ‌نمایی تصویر {{ $item['title'] }}">
+                                        <iconify-icon icon="mdi:magnify-plus" style="font-size:34px;filter:drop-shadow(0 0 12px rgba(244,198,79,.55));"></iconify-icon>
+                                    </button>
+                                </div>
+                            @endif
+                            <div class="blog-detail-content">
+                                {!! $item['content'] !!}
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            @endif
         </section>
 
         <section class="section" id="contact">
@@ -1176,7 +1346,7 @@
     <button class="image-modal-close" type="button" data-close-modal="true" aria-label="بستن تصویر">
         <iconify-icon icon="mdi:close"></iconify-icon>
     </button>
-    <div class="image-modal-dialog" role="dialog" aria-modal="true" aria-label="نمایش تصویر پروژه">
+    <div class="image-modal-dialog" role="dialog" aria-modal="true" aria-label="نمایش تصویر">
         <img id="imageModalImage" src="" alt="">
     </div>
 </div>
@@ -1278,9 +1448,48 @@
         activatePortfolioFilter('all');
     }
 
+    const blogList = document.getElementById('blogList');
+    const blogDetail = document.getElementById('blogDetail');
+    const blogBackButton = document.getElementById('blogBackButton');
+    const blogOpenButtons = Array.from(document.querySelectorAll('[data-blog-open]'));
+    const blogDetailItems = Array.from(document.querySelectorAll('[data-blog-detail]'));
+
+    const showBlogList = () => {
+        if (!blogList || !blogDetail) return;
+        blogList.classList.remove('is-hidden');
+        blogDetail.classList.remove('is-open');
+        blogDetailItems.forEach((item) => {
+            item.style.display = 'none';
+        });
+    };
+
+    const showBlogDetail = (index) => {
+        if (!blogList || !blogDetail) return;
+        blogList.classList.add('is-hidden');
+        blogDetail.classList.add('is-open');
+
+        blogDetailItems.forEach((item) => {
+            item.style.display = item.dataset.blogDetail === String(index) ? '' : 'none';
+        });
+    };
+
+    blogOpenButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+            if (button.classList.contains('blog-open')) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            showBlogDetail(button.dataset.blogOpen);
+        });
+    });
+
+    if (blogBackButton) {
+        blogBackButton.addEventListener('click', showBlogList);
+    }
+
     const imageModal = document.getElementById('imageModal');
     const imageModalImage = document.getElementById('imageModalImage');
-    const zoomTriggers = Array.from(document.querySelectorAll('.portfolio-zoom-trigger[data-zoom-src]'));
+    const zoomTriggers = Array.from(document.querySelectorAll('[data-zoom-src]'));
 
     const closeImageModal = () => {
         if (!imageModal || !imageModalImage) return;
@@ -1379,7 +1588,7 @@
     if (window.matchMedia('(pointer: fine)').matches) {
         const cursorIcon = document.getElementById('cursorIcon');
         const hoverTargets = document.querySelectorAll('a, button, input, textarea, .service-card, .skill-item, .portfolio-card, .blog-card, .contact-item, .tabs a');
-        const zoomCursorTargets = document.querySelectorAll('.portfolio-zoom-trigger, .portfolio-thumb.has-image');
+        const zoomCursorTargets = document.querySelectorAll('.portfolio-zoom-trigger, .portfolio-thumb.has-image, .blog-zoom-trigger, .blog-detail-image');
 
         let hasMouseMoved = false;
         let isCursorVisible = false;

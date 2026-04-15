@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AboutSection;
+use App\Models\BlogPost;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
 use App\Models\PortfolioSection;
@@ -103,6 +104,43 @@ class PortfolioController extends Controller
             ])
             ->toArray();
 
+        $blogPosts = BlogPost::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get([
+                'title',
+                'excerpt',
+                'content',
+                'image_path',
+                'created_at',
+            ])
+            ->map(function (BlogPost $post): array {
+                $imageUrl = null;
+
+                if (filled($post->image_path)) {
+                    $imagePath = trim((string) $post->image_path);
+                    $imageUrl = str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')
+                        ? $imagePath
+                        : '/storage/' . ltrim($imagePath, '/');
+                }
+
+                $excerpt = trim((string) ($post->excerpt ?? ''));
+
+                if ($excerpt === '') {
+                    $excerpt = mb_substr(trim(strip_tags((string) $post->content)), 0, 180);
+                }
+
+                return [
+                    'title' => $post->title,
+                    'excerpt' => $excerpt,
+                    'content' => (string) $post->content,
+                    'imageUrl' => $imageUrl,
+                    'date' => $this->formatJalaliFromGregorianDateTime($post->created_at),
+                ];
+            })
+            ->toArray();
+
         $portfolioData = [
             'profile' => [
                 'name' => $hero?->name ?: 'پوریا جاهدی',
@@ -157,6 +195,7 @@ class PortfolioController extends Controller
             'portfolio' => [
                 'title' => $portfolioSection?->title ?: 'نمونه کارها',
             ],
+            'blogPosts' => $blogPosts,
             'contacts' => [
                 'title' => $contact?->title ?: 'تماس با من',
                 'description' => $contact?->description ?: 'اگر دنبال همکاری برای بهینه سازی یک محصول در حال اجرا، بازنویسی بخش های حساس یا توسعه فیچر جدید هستید، خوشحال می شوم گفتگو کنیم.',
@@ -224,6 +263,62 @@ class PortfolioController extends Controller
         }
 
         return $this->toPersianDigits((string) $day) . ' ' . $monthLabel . ' ' . $this->toPersianDigits((string) $year);
+    }
+
+    private function formatJalaliFromGregorianDateTime($dateTime): ?string
+    {
+        if (! $dateTime) {
+            return null;
+        }
+
+        $gy = (int) $dateTime->format('Y');
+        $gm = (int) $dateTime->format('m');
+        $gd = (int) $dateTime->format('d');
+
+        [$jy, $jm, $jd] = $this->gregorianToJalali($gy, $gm, $gd);
+
+        return $this->formatJalaliDate($jy, $jm, $jd);
+    }
+
+    private function gregorianToJalali(int $gy, int $gm, int $gd): array
+    {
+        $gDaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        $jDaysInMonth = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
+
+        $gy2 = $gy - 1600;
+        $gm2 = $gm - 1;
+        $gd2 = $gd - 1;
+
+        $gDayNo = 365 * $gy2 + intdiv($gy2 + 3, 4) - intdiv($gy2 + 99, 100) + intdiv($gy2 + 399, 400);
+
+        for ($i = 0; $i < $gm2; $i++) {
+            $gDayNo += $gDaysInMonth[$i];
+        }
+
+        if ($gm2 > 1 && (($gy % 4 === 0 && $gy % 100 !== 0) || $gy % 400 === 0)) {
+            $gDayNo++;
+        }
+
+        $gDayNo += $gd2;
+        $jDayNo = $gDayNo - 79;
+        $jNp = intdiv($jDayNo, 12053);
+        $jDayNo %= 12053;
+        $jy = 979 + 33 * $jNp + 4 * intdiv($jDayNo, 1461);
+        $jDayNo %= 1461;
+
+        if ($jDayNo >= 366) {
+            $jy += intdiv($jDayNo - 1, 365);
+            $jDayNo = ($jDayNo - 1) % 365;
+        }
+
+        for ($i = 0; $i < 11 && $jDayNo >= $jDaysInMonth[$i]; $i++) {
+            $jDayNo -= $jDaysInMonth[$i];
+        }
+
+        $jm = $i + 1;
+        $jd = $jDayNo + 1;
+
+        return [$jy, $jm, $jd];
     }
 
     private function toPersianDigits(string $value): string
