@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\IconAsset;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -57,11 +58,9 @@ class ContactSection extends Model
         $options = [];
 
         foreach (self::contactIconOptions() as $icon => $label) {
-            $iconUrl = 'https://api.iconify.design/' . rawurlencode($icon) . '.svg?width=20&height=20';
             $options[$icon] = sprintf(
-                '<span style="display:inline-flex;align-items:center;gap:.5rem;"><img src="%s" alt="%s" style="width:20px;height:20px;object-fit:contain;"><span>%s</span></span>',
-                $iconUrl,
-                e($label),
+                '<span style="display:inline-flex;align-items:center;gap:.5rem;">%s<span>%s</span></span>',
+                IconAsset::img($icon, $label, 20),
                 e($label)
             );
         }

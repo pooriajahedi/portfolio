@@ -7,6 +7,7 @@ use App\Filament\Resources\AboutSections\Pages\EditAboutSection;
 use App\Filament\Resources\AboutSections\Pages\ListAboutSections;
 use App\Models\AboutSection;
 use App\Models\Skill;
+use App\Support\IconAsset;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -65,7 +66,7 @@ class AboutSectionResource extends Resource
                                     ->columnSpanFull(),
                             ])
                             ->columns(2),
-                        Tab::make('در حال انجام چه کارهایی هستم')
+                        Tab::make('بیشتر روی چه چیزهایی تمرکز دارم')
                             ->schema([
                                 Repeater::make('serviceCards')
                                     ->label('کارت‌ها')
@@ -159,12 +160,10 @@ class AboutSectionResource extends Resource
 
                                         $icon = trim((string) ($state['icon'] ?? ''));
                                         $icon = $icon !== '' ? $icon : 'mdi:star-four-points-circle';
-                                        $iconUrl = 'https://api.iconify.design/' . rawurlencode($icon) . '.svg?width=18&height=18';
-
                                         return new HtmlString(
                                             '<span style="display:inline-flex;align-items:center;gap:.4rem;">' .
                                             '<span>' . e($title) . '</span>' .
-                                            '<img src="' . e($iconUrl) . '" alt="" style="width:18px;height:18px;object-fit:contain;" />' .
+                                            IconAsset::img($icon, '', 18) .
                                             '</span>'
                                         );
                                     })

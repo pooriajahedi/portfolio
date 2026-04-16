@@ -89,19 +89,10 @@
         }
 
         @media (pointer: fine) {
-            body,
-            a,
-            button,
-            input,
-            textarea,
-            select,
-            .service-card,
-            .skill-card,
-            .portfolio-card,
-            .blog-card,
-            .contact-item,
-            .tabs a,
-            .submit {
+            body.cursor-ready,
+            body.cursor-ready *,
+            body.cursor-ready *::before,
+            body.cursor-ready *::after {
                 cursor: none !important;
             }
         }
@@ -245,10 +236,18 @@
             transform: translateY(0);
         }
 
-        .resume-download-btn iconify-icon {
-            font-size: 24px;
-            line-height: 1;
-            color: color-mix(in srgb, var(--accent) 78%, #ffffff);
+        .inline-icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            object-fit: contain;
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+
+        .resume-download-btn .inline-icon {
+            width: 24px;
+            height: 24px;
         }
 
         .resume-download-btn span {
@@ -285,9 +284,9 @@
             font-size: 26px;
         }
 
-        .contact-icon iconify-icon {
-            font-size: 30px;
-            line-height: 1;
+        .contact-icon .inline-icon {
+            width: 30px;
+            height: 30px;
         }
 
         .contact-meta small {
@@ -392,6 +391,11 @@
             background: #1a1f2a;
         }
 
+        .site-credit-version .inline-icon {
+            width: 16px;
+            height: 16px;
+        }
+
         .section.is-hidden {
             display: none;
         }
@@ -435,18 +439,20 @@
             background: #191c23;
             border: 1px solid #2a2f3b;
             border-radius: 16px;
-            padding: 16px;
+            padding: 18px 18px 16px;
         }
 
         .service-title {
             font-weight: 700;
-            font-size: 28px;
-            margin-bottom: 4px;
+            font-size: clamp(20px, 1.6vw, 24px);
+            line-height: 1.35;
+            margin-bottom: 8px;
         }
 
         .service-desc {
             color: var(--muted);
-            font-size: 20px;
+            font-size: clamp(16px, 1.1vw, 18px);
+            line-height: 1.85;
         }
 
         .skills-categories {
@@ -483,9 +489,9 @@
             background: linear-gradient(90deg, var(--accent-soft), transparent 75%);
         }
 
-        .skill-category-head iconify-icon {
-            color: var(--accent);
-            font-size: 18px;
+        .skill-category-head .inline-icon {
+            width: 18px;
+            height: 18px;
             filter: drop-shadow(0 0 8px rgba(244, 198, 79, 0.45));
         }
 
@@ -520,8 +526,9 @@
             max-width: 100%;
         }
 
-        .skill-item iconify-icon {
-            font-size: 28px;
+        .skill-item .inline-icon {
+            width: 28px;
+            height: 28px;
             flex-shrink: 0;
             order: 1;
         }
@@ -669,8 +676,9 @@
             z-index: 2;
         }
 
-        .portfolio-zoom-trigger iconify-icon {
-            font-size: 34px;
+        .portfolio-zoom-trigger .inline-icon {
+            width: 34px;
+            height: 34px;
             filter: drop-shadow(0 0 12px rgba(244, 198, 79, 0.55));
         }
 
@@ -767,8 +775,9 @@
             place-items: center;
         }
 
-        .image-modal-close iconify-icon {
-            font-size: 24px;
+        .image-modal-close .inline-icon {
+            width: 24px;
+            height: 24px;
         }
 
         .blog-grid {
@@ -889,6 +898,12 @@
 
         .blog-detail-image:hover .blog-zoom-trigger {
             opacity: 1;
+        }
+
+        .blog-detail-image .blog-zoom-icon {
+            width: 34px;
+            height: 34px;
+            filter: drop-shadow(0 0 12px rgba(244, 198, 79, 0.55));
         }
 
         .blog-detail-content {
@@ -1115,7 +1130,7 @@
             .timeline-item h4,
             .portfolio-card h4,
             .blog-card h4 {
-                font-size: 24px;
+                font-size: 21px;
             }
         }
 
@@ -1145,6 +1160,7 @@
     $currentStatus = $profile['currentStatus']['key'] ?? 'looking_for_job';
     $avatarImage = trim((string) ($profile['avatarImage'] ?? '/images/hero/pooria-hero.jpeg'));
     $resumeFileUrl = trim((string) ($profile['resumeFile'] ?? ''));
+    $iconAsset = \App\Support\IconAsset::class;
 
     if ($avatarImage !== '' && !str_starts_with($avatarImage, 'http://') && !str_starts_with($avatarImage, 'https://') && !str_starts_with($avatarImage, '/')) {
         $avatarImage = '/storage/' . ltrim($avatarImage, '/');
@@ -1267,7 +1283,7 @@
         </p>
         @if($resumeFileUrl !== '')
             <a class="resume-download-btn" href="{{ $resumeFileUrl }}" target="_blank" rel="noopener noreferrer" download>
-                <iconify-icon icon="mdi:file-download-outline"></iconify-icon>
+                {!! $iconAsset::img('mdi:file-download-outline', 'دانلود رزومه', 24) !!}
                 <span>دانلود رزومه</span>
             </a>
         @endif
@@ -1276,7 +1292,7 @@
             @foreach($contactItems as $item)
                 <div class="contact-item">
                     <div class="contact-icon">
-                        <iconify-icon icon="{{ $item['icon'] }}"></iconify-icon>
+                        {!! $iconAsset::img($item['icon'], $item['label'] ?? '', 30) !!}
                     </div>
                     <div class="contact-meta">
                         <small>{{ $item['label'] }}</small>
@@ -1309,7 +1325,7 @@
                 <p class="text-block">{{ $about['paragraphTwo'] }}</p>
             @endif
 
-            <h2 style="font-size: clamp(26px, 2.2vw, 32px); margin-top: 22px;">در حال انجام چه کارهایی هستم</h2>
+            <h2 style="font-size: clamp(26px, 2.2vw, 32px); margin-top: 22px;">بیشتر روی چه چیزهایی تمرکز دارم</h2>
             <div class="service-grid">
                 @foreach($serviceCards as $item)
                     <article class="service-card">
@@ -1325,7 +1341,7 @@
                     @if(($skillsByCategory[$categoryKey] ?? collect())->isNotEmpty())
                         <div class="skill-category-row">
                             <div class="skill-category-head">
-                                <iconify-icon icon="mdi:hexagram"></iconify-icon>
+                                {!! $iconAsset::img('mdi:hexagram', '', 18) !!}
                                 <h3 class="skill-category-label">{{ $categoryLabel }}</h3>
                             </div>
                             <div class="skill-items">
@@ -1333,9 +1349,9 @@
                                     <article class="skill-item">
                                         <span>{{ $item['title'] }}</span>
                                         @if(!empty($item['icon']))
-                                            <iconify-icon icon="{{ $item['icon'] }}"></iconify-icon>
+                                            {!! $iconAsset::img($item['icon'], $item['title'], 28) !!}
                                         @else
-                                            <iconify-icon icon="mdi:star-four-points-circle"></iconify-icon>
+                                            {!! $iconAsset::img('mdi:star-four-points-circle', $item['title'], 28) !!}
                                         @endif
                                     </article>
                                 @endforeach
@@ -1351,7 +1367,7 @@
                 <h2>رزومه</h2>
                 @if($resumeFileUrl !== '')
                     <a class="resume-download-btn" href="{{ $resumeFileUrl }}" target="_blank" rel="noopener noreferrer" download>
-                        <iconify-icon icon="mdi:file-download-outline"></iconify-icon>
+                        {!! $iconAsset::img('mdi:file-download-outline', 'دانلود فایل رزومه', 24) !!}
                         <span>دانلود فایل رزومه</span>
                     </a>
                 @endif
@@ -1399,7 +1415,7 @@
                                     data-zoom-src="{{ $item['imageUrl'] }}"
                                     data-zoom-alt="{{ $item['title'] }}"
                                     aria-label="بزرگ‌نمایی تصویر {{ $item['title'] }}">
-                                    <iconify-icon icon="mdi:magnify-plus"></iconify-icon>
+                                    {!! $iconAsset::img('mdi:magnify-plus', '', 34) !!}
                                 </button>
                             @else
                                 {{ $item['title'] }}
@@ -1465,7 +1481,7 @@
                                         data-zoom-src="{{ $item['imageUrl'] }}"
                                         data-zoom-alt="{{ $item['title'] }}"
                                         aria-label="بزرگ‌نمایی تصویر {{ $item['title'] }}">
-                                        <iconify-icon icon="mdi:magnify-plus" style="font-size:34px;filter:drop-shadow(0 0 12px rgba(244,198,79,.55));"></iconify-icon>
+                                        {!! $iconAsset::img('mdi:magnify-plus', '', 34, 'inline-icon blog-zoom-icon') !!}
                                     </button>
                                 </div>
                             @endif
@@ -1524,7 +1540,7 @@
         <footer class="site-credit">
             <p>طراحی و توسعه این قالب توسط <strong>{{ $profile['name'] ?? 'پوریا جاهدی' }}</strong> انجام شده است.</p>
             <span class="site-credit-version">
-                <iconify-icon icon="mdi:tag-outline"></iconify-icon>
+                {!! $iconAsset::img('mdi:tag-outline', '', 16) !!}
                 <span>نسخه {{ $appVersion }}</span>
             </span>
         </footer>
@@ -1534,17 +1550,16 @@
 <div class="image-modal" id="imageModal" aria-hidden="true">
     <div class="image-modal-backdrop" data-close-modal="true"></div>
     <button class="image-modal-close" type="button" data-close-modal="true" aria-label="بستن تصویر">
-        <iconify-icon icon="mdi:close"></iconify-icon>
+        {!! $iconAsset::img('mdi:close', 'بستن', 24) !!}
     </button>
     <div class="image-modal-dialog" role="dialog" aria-modal="true" aria-label="نمایش تصویر">
         <img id="imageModalImage" src="" alt="">
     </div>
 </div>
 
-<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.16/dist/lenis.min.js"></script>
-<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="/vendor/lenis/lenis.min.js"></script>
+<script src="/vendor/gsap/gsap.min.js"></script>
+<script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script>
     gsap.registerPlugin(ScrollTrigger);
 
@@ -1834,80 +1849,83 @@
         const hoverTargets = document.querySelectorAll('a, button, input, textarea, .service-card, .skill-item, .portfolio-card, .blog-card, .contact-item, .tabs a');
         const zoomCursorTargets = document.querySelectorAll('.portfolio-zoom-trigger, .portfolio-thumb.has-image, .blog-zoom-trigger, .blog-detail-image');
 
-        let hasMouseMoved = false;
-        let isCursorVisible = false;
-        let targetX = 0;
-        let targetY = 0;
-        let currentX = 0;
-        let currentY = 0;
-        const minLerp = 0.32;
-        const maxLerp = 0.68;
+        if (cursorIcon) {
+            document.body.classList.add('cursor-ready');
+            let hasMouseMoved = false;
+            let isCursorVisible = false;
+            let targetX = 0;
+            let targetY = 0;
+            let currentX = 0;
+            let currentY = 0;
+            const minLerp = 0.32;
+            const maxLerp = 0.68;
 
-        const renderCursor = () => {
-            const dx = targetX - currentX;
-            const dy = targetY - currentY;
-            const distance = Math.hypot(dx, dy);
-            const adaptiveLerp = minLerp + (maxLerp - minLerp) * Math.min(1, distance / 180);
+            const renderCursor = () => {
+                const dx = targetX - currentX;
+                const dy = targetY - currentY;
+                const distance = Math.hypot(dx, dy);
+                const adaptiveLerp = minLerp + (maxLerp - minLerp) * Math.min(1, distance / 180);
 
-            currentX += dx * adaptiveLerp;
-            currentY += dy * adaptiveLerp;
-            cursorIcon.style.transform = `translate(${currentX}px, ${currentY}px) translate(-3px, -3px)`;
+                currentX += dx * adaptiveLerp;
+                currentY += dy * adaptiveLerp;
+                cursorIcon.style.transform = `translate(${currentX}px, ${currentY}px) translate(-3px, -3px)`;
+                requestAnimationFrame(renderCursor);
+            };
             requestAnimationFrame(renderCursor);
-        };
-        requestAnimationFrame(renderCursor);
 
-        window.addEventListener('mousemove', (event) => {
-            const x = event.clientX;
-            const y = event.clientY;
+            window.addEventListener('mousemove', (event) => {
+                const x = event.clientX;
+                const y = event.clientY;
 
-            if (!hasMouseMoved) {
-                hasMouseMoved = true;
-                cursorIcon.style.visibility = 'visible';
-                gsap.set(cursorIcon, { autoAlpha: 1 });
-                isCursorVisible = true;
-                currentX = x;
-                currentY = y;
-            }
+                if (!hasMouseMoved) {
+                    hasMouseMoved = true;
+                    cursorIcon.style.visibility = 'visible';
+                    gsap.set(cursorIcon, { autoAlpha: 1 });
+                    isCursorVisible = true;
+                    currentX = x;
+                    currentY = y;
+                }
 
-            targetX = x;
-            targetY = y;
-        });
+                targetX = x;
+                targetY = y;
+            });
 
-        const hideCursor = () => {
-            if (!isCursorVisible) return;
-            isCursorVisible = false;
-            gsap.to(cursorIcon, { autoAlpha: 0, duration: 0.06, ease: 'none' });
-        };
+            const hideCursor = () => {
+                if (!isCursorVisible) return;
+                isCursorVisible = false;
+                gsap.to(cursorIcon, { autoAlpha: 0, duration: 0.06, ease: 'none' });
+            };
 
-        const showCursor = () => {
-            if (hasMouseMoved && !isCursorVisible) {
-                isCursorVisible = true;
-                gsap.to(cursorIcon, { autoAlpha: 1, duration: 0.06, ease: 'none' });
-            }
-        };
+            const showCursor = () => {
+                if (hasMouseMoved && !isCursorVisible) {
+                    isCursorVisible = true;
+                    gsap.to(cursorIcon, { autoAlpha: 1, duration: 0.06, ease: 'none' });
+                }
+            };
 
-        window.addEventListener('mouseleave', hideCursor);
-        window.addEventListener('mouseenter', showCursor);
-        window.addEventListener('blur', hideCursor);
-        window.addEventListener('focus', showCursor);
+            window.addEventListener('mouseleave', hideCursor);
+            window.addEventListener('mouseenter', showCursor);
+            window.addEventListener('blur', hideCursor);
+            window.addEventListener('focus', showCursor);
 
-        document.addEventListener('mouseout', (event) => {
-            if (!event.relatedTarget && !event.toElement) {
-                hideCursor();
-            }
-        });
+            document.addEventListener('mouseout', (event) => {
+                if (!event.relatedTarget && !event.toElement) {
+                    hideCursor();
+                }
+            });
 
-        document.addEventListener('mouseover', showCursor);
+            document.addEventListener('mouseover', showCursor);
 
-        hoverTargets.forEach((target) => {
-            target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-hover'));
-            target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-hover'));
-        });
+            hoverTargets.forEach((target) => {
+                target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-hover'));
+                target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-hover'));
+            });
 
-        zoomCursorTargets.forEach((target) => {
-            target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-zoom'));
-            target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-zoom'));
-        });
+            zoomCursorTargets.forEach((target) => {
+                target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-zoom'));
+                target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-zoom'));
+            });
+        }
     }
 </script>
 </body>
