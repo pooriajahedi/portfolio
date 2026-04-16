@@ -88,15 +88,6 @@
             min-height: 100vh;
         }
 
-        @media (pointer: fine) {
-            body.cursor-ready,
-            body.cursor-ready *,
-            body.cursor-ready *::before,
-            body.cursor-ready *::after {
-                cursor: none !important;
-            }
-        }
-
         a {
             color: inherit;
             text-decoration: none;
@@ -1036,36 +1027,6 @@
             color: #f4cccc;
         }
 
-        .cursor-icon {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 1;
-            visibility: hidden;
-            width: 30px;
-            height: 30px;
-            transform: translate(-3px, -3px);
-            transition: transform 0.16s ease, filter 0.16s ease;
-            filter: drop-shadow(0 0 12px rgba(244, 198, 79, 0.4));
-        }
-
-        .cursor-icon.cursor-hover {
-            transform: translate(-3px, -3px) scale(1.14);
-            filter: drop-shadow(0 0 16px rgba(244, 198, 79, 0.65));
-        }
-
-        .cursor-icon.cursor-zoom {
-            filter: drop-shadow(0 0 18px rgba(244, 198, 79, 0.85));
-        }
-
-        @media (pointer: coarse) {
-            .cursor-icon {
-                display: none !important;
-            }
-        }
-
         @media (max-width: 1160px) {
             .layout {
                 grid-template-columns: 1fr;
@@ -1265,8 +1226,6 @@
         ],
     ], static fn (array $item): bool => trim((string) $item['display']) !== ''));
 @endphp
-
-<img class="cursor-icon" id="cursorIcon" src="/images/cursor/cursor-yellow.svg" alt="">
 
 <div class="layout">
     <aside class="sidebar">
@@ -1587,8 +1546,31 @@
     const sectionsById = Object.fromEntries(sections.map((section) => [section.id, section]));
     let activeTabId = null;
 
+    const getSectionAnimationTargets = (section) => {
+        return section?.querySelectorAll('h2, .underline, .text-block, .service-card, .skill-item, .timeline-item, .portfolio-card, .blog-card, .blog-detail-item, .contact-form, .resume-download-btn, .site-credit') ?? [];
+    };
+
+    const animateSectionOnTabOpen = (id) => {
+        const section = sectionsById[id];
+        if (!section) return;
+
+        const targets = Array.from(getSectionAnimationTargets(section));
+        if (!targets.length) return;
+
+        gsap.killTweensOf(targets);
+        gsap.set(targets, { autoAlpha: 0, y: 18 });
+        gsap.to(targets, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.55,
+            stagger: 0.04,
+            ease: 'power2.out',
+            clearProps: 'transform,opacity',
+        });
+    };
+
     const activateTab = (rawId, options = {}) => {
-        const { shouldScrollTop = false } = options;
+        const { shouldScrollTop = false, animate = true } = options;
         const fallbackId = sections[0]?.id || 'about';
         const id = sectionsById[rawId] ? rawId : fallbackId;
 
@@ -1613,10 +1595,14 @@
         }
 
         ScrollTrigger.refresh();
+
+        if (animate) {
+            requestAnimationFrame(() => animateSectionOnTabOpen(id));
+        }
     };
 
     const initialTab = location.hash?.replace('#', '') || sections[0]?.id || 'about';
-    activateTab(initialTab);
+    activateTab(initialTab, { animate: true });
 
     links.forEach((link) => {
         link.addEventListener('click', (event) => {
@@ -1844,89 +1830,9 @@
         });
     });
 
-    if (window.matchMedia('(pointer: fine)').matches) {
-        const cursorIcon = document.getElementById('cursorIcon');
-        const hoverTargets = document.querySelectorAll('a, button, input, textarea, .service-card, .skill-item, .portfolio-card, .blog-card, .contact-item, .tabs a');
-        const zoomCursorTargets = document.querySelectorAll('.portfolio-zoom-trigger, .portfolio-thumb.has-image, .blog-zoom-trigger, .blog-detail-image');
-
-        if (cursorIcon) {
-            document.body.classList.add('cursor-ready');
-            let hasMouseMoved = false;
-            let isCursorVisible = false;
-            let targetX = 0;
-            let targetY = 0;
-            let currentX = 0;
-            let currentY = 0;
-            const minLerp = 0.32;
-            const maxLerp = 0.68;
-
-            const renderCursor = () => {
-                const dx = targetX - currentX;
-                const dy = targetY - currentY;
-                const distance = Math.hypot(dx, dy);
-                const adaptiveLerp = minLerp + (maxLerp - minLerp) * Math.min(1, distance / 180);
-
-                currentX += dx * adaptiveLerp;
-                currentY += dy * adaptiveLerp;
-                cursorIcon.style.transform = `translate(${currentX}px, ${currentY}px) translate(-3px, -3px)`;
-                requestAnimationFrame(renderCursor);
-            };
-            requestAnimationFrame(renderCursor);
-
-            window.addEventListener('mousemove', (event) => {
-                const x = event.clientX;
-                const y = event.clientY;
-
-                if (!hasMouseMoved) {
-                    hasMouseMoved = true;
-                    cursorIcon.style.visibility = 'visible';
-                    gsap.set(cursorIcon, { autoAlpha: 1 });
-                    isCursorVisible = true;
-                    currentX = x;
-                    currentY = y;
-                }
-
-                targetX = x;
-                targetY = y;
-            });
-
-            const hideCursor = () => {
-                if (!isCursorVisible) return;
-                isCursorVisible = false;
-                gsap.to(cursorIcon, { autoAlpha: 0, duration: 0.06, ease: 'none' });
-            };
-
-            const showCursor = () => {
-                if (hasMouseMoved && !isCursorVisible) {
-                    isCursorVisible = true;
-                    gsap.to(cursorIcon, { autoAlpha: 1, duration: 0.06, ease: 'none' });
-                }
-            };
-
-            window.addEventListener('mouseleave', hideCursor);
-            window.addEventListener('mouseenter', showCursor);
-            window.addEventListener('blur', hideCursor);
-            window.addEventListener('focus', showCursor);
-
-            document.addEventListener('mouseout', (event) => {
-                if (!event.relatedTarget && !event.toElement) {
-                    hideCursor();
-                }
-            });
-
-            document.addEventListener('mouseover', showCursor);
-
-            hoverTargets.forEach((target) => {
-                target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-hover'));
-                target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-hover'));
-            });
-
-            zoomCursorTargets.forEach((target) => {
-                target.addEventListener('mouseenter', () => cursorIcon.classList.add('cursor-zoom'));
-                target.addEventListener('mouseleave', () => cursorIcon.classList.remove('cursor-zoom'));
-            });
-        }
-    }
+    document.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+    });
 </script>
 </body>
 </html>
