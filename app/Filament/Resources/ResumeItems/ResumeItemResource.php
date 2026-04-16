@@ -71,7 +71,8 @@ class ResumeItemResource extends Resource
                                 Select::make('start_day')
                                     ->label('روز شروع')
                                     ->options(fn (): array => self::jalaliDayOptions())
-                                    ->required()
+                                    ->placeholder('اختیاری')
+                                    ->nullable()
                                     ->native(false),
                                 Toggle::make('is_current')
                                     ->label('در حال حاضر مشغول هستم')
@@ -103,7 +104,8 @@ class ResumeItemResource extends Resource
                                 Select::make('end_day')
                                     ->label('روز پایان')
                                     ->options(fn (): array => self::jalaliDayOptions())
-                                    ->required(fn (Get $get): bool => ! (bool) $get('is_current'))
+                                    ->placeholder('اختیاری')
+                                    ->nullable()
                                     ->hidden(fn (Get $get): bool => (bool) $get('is_current'))
                                     ->dehydrated(fn (Get $get): bool => ! (bool) $get('is_current'))
                                     ->native(false),
@@ -199,10 +201,10 @@ class ResumeItemResource extends Resource
 
     private static function formatPeriod(ResumeItem $record): string
     {
-        $start = self::formatJalaliDate($record->start_year, $record->start_month, $record->start_day);
+        $start = self::formatJalaliMonthYear($record->start_year, $record->start_month);
 
         if (! $record->is_current) {
-            $end = self::formatJalaliDate($record->end_year, $record->end_month, $record->end_day);
+            $end = self::formatJalaliMonthYear($record->end_year, $record->end_month);
 
             return collect([$start, $end])->filter()->implode(' تا ');
         }
@@ -210,9 +212,9 @@ class ResumeItemResource extends Resource
         return collect([$start, 'تا اکنون'])->filter()->implode(' تا ');
     }
 
-    private static function formatJalaliDate(?int $year, ?int $month, ?int $day): ?string
+    private static function formatJalaliMonthYear(?int $year, ?int $month): ?string
     {
-        if (! $year || ! $month || ! $day) {
+        if (! $year || ! $month) {
             return null;
         }
 
@@ -222,7 +224,7 @@ class ResumeItemResource extends Resource
             return null;
         }
 
-        return self::toPersianDigits((string) $day) . ' ' . $monthLabel . ' ' . self::toPersianDigits((string) $year);
+        return $monthLabel . ' ' . self::toPersianDigits((string) $year);
     }
 
     private static function toPersianDigits(string $value): string
