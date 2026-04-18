@@ -6,12 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SiteSetting extends Model
 {
-    public const KEY_BACKGROUND_MODE = 'site_background_mode';
-    public const KEY_BACKGROUND_IMAGE = 'site_background_image';
-    public const KEY_BACKGROUND_IMAGE_OPACITY = 'site_background_image_opacity';
-    public const KEY_BACKGROUND_COLOR_FROM = 'site_background_color_from';
-    public const KEY_BACKGROUND_COLOR_TO = 'site_background_color_to';
-    public const KEY_PRIMARY_COLOR = 'site_primary_color';
+    public const KEY_THEME_STYLE = 'site_theme_style';
 
     protected $fillable = [
         'key',
@@ -21,12 +16,7 @@ class SiteSetting extends Model
     public static function defaults(): array
     {
         return [
-            self::KEY_BACKGROUND_MODE => 'gradient',
-            self::KEY_BACKGROUND_IMAGE => null,
-            self::KEY_BACKGROUND_IMAGE_OPACITY => '55',
-            self::KEY_BACKGROUND_COLOR_FROM => '#101829',
-            self::KEY_BACKGROUND_COLOR_TO => '#0B0F19',
-            self::KEY_PRIMARY_COLOR => '#F4C64F',
+            self::KEY_THEME_STYLE => 'gold',
         ];
     }
 

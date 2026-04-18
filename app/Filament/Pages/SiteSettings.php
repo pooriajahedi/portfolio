@@ -4,17 +4,12 @@ namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
 use BackedEnum;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Slider;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
@@ -48,53 +43,18 @@ class SiteSettings extends Page implements HasForms
     {
         return $schema
             ->components([
-                Section::make()
+                Section::make('تم سایت')
                     ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Select::make(SiteSetting::KEY_BACKGROUND_MODE)
-                                    ->label('نوع پس‌زمینه')
-                                    ->options([
-                                        'gradient' => 'گرادیانت رنگی',
-                                        'image' => 'تصویر',
-                                    ])
-                                    ->default('gradient')
-                                    ->native(false)
-                                    ->live(),
-                                Slider::make(SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY)
-                                    ->label('شفافیت تصویر پس‌زمینه (%)')
-                                    ->range(0, 100)
-                                    ->step(1)
-                                    ->default(55)
-                                    ->visible(fn (Get $get): bool => $get(SiteSetting::KEY_BACKGROUND_MODE) === 'image'),
-                                ColorPicker::make(SiteSetting::KEY_PRIMARY_COLOR)
-                                    ->label('رنگ پرایمری سایت')
-                                    ->default('#F4C64F')
-                                    ->required(),
-                            ]),
-                        FileUpload::make(SiteSetting::KEY_BACKGROUND_IMAGE)
-                            ->label('تصویر پس‌زمینه')
-                            ->image()
-                            ->disk('public')
-                            ->directory('site/backgrounds')
-                            ->visibility('public')
-                            ->imagePreviewHeight('220')
-                            ->panelLayout('compact')
-                            ->downloadable()
-                            ->openable()
-                            ->visible(fn (Get $get): bool => $get(SiteSetting::KEY_BACKGROUND_MODE) === 'image')
-                            ->helperText('تصویر پیشنهاد شده: عرض حداقل 1920 پیکسل.'),
-                        Grid::make(2)
-                            ->schema([
-                                ColorPicker::make(SiteSetting::KEY_BACKGROUND_COLOR_FROM)
-                                    ->label('رنگ اول گرادیانت')
-                                    ->default('#101829')
-                                    ->required(),
-                                ColorPicker::make(SiteSetting::KEY_BACKGROUND_COLOR_TO)
-                                    ->label('رنگ دوم گرادیانت')
-                                    ->default('#0B0F19')
-                                    ->required(),
-                            ]),
+                        Select::make(SiteSetting::KEY_THEME_STYLE)
+                            ->label('تم رنگی سایت')
+                            ->options([
+                                'gold' => 'طلایی',
+                                'green' => 'سبز',
+                            ])
+                            ->default('gold')
+                            ->native(false)
+                            ->required()
+                            ->helperText('تنها همین گزینه روی ظاهر سایت اعمال می‌شود.'),
                     ])
                     ->columnSpanFull(),
             ])
@@ -107,14 +67,9 @@ class SiteSettings extends Page implements HasForms
         $state = $this->form->getState();
 
         SiteSetting::setMany([
-            SiteSetting::KEY_BACKGROUND_MODE => in_array(($state[SiteSetting::KEY_BACKGROUND_MODE] ?? 'gradient'), ['gradient', 'image'], true)
-                ? $state[SiteSetting::KEY_BACKGROUND_MODE]
-                : 'gradient',
-            SiteSetting::KEY_BACKGROUND_IMAGE => $state[SiteSetting::KEY_BACKGROUND_IMAGE] ?? null,
-            SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY => max(0, min(100, (int) ($state[SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY] ?? 55))),
-            SiteSetting::KEY_BACKGROUND_COLOR_FROM => $state[SiteSetting::KEY_BACKGROUND_COLOR_FROM] ?? '#101829',
-            SiteSetting::KEY_BACKGROUND_COLOR_TO => $state[SiteSetting::KEY_BACKGROUND_COLOR_TO] ?? '#0B0F19',
-            SiteSetting::KEY_PRIMARY_COLOR => $state[SiteSetting::KEY_PRIMARY_COLOR] ?? '#F4C64F',
+            SiteSetting::KEY_THEME_STYLE => in_array(($state[SiteSetting::KEY_THEME_STYLE] ?? 'gold'), ['gold', 'green'], true)
+                ? $state[SiteSetting::KEY_THEME_STYLE]
+                : 'gold',
         ]);
 
         Notification::make()

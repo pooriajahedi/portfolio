@@ -34,22 +34,11 @@ class PortfolioController extends Controller
         $portfolioSection = PortfolioSection::query()->latest('id')->first();
         $siteSettings = SiteSetting::getMany(SiteSetting::defaults());
 
-        $backgroundMode = in_array(
-            (string) ($siteSettings[SiteSetting::KEY_BACKGROUND_MODE] ?? 'gradient'),
-            ['gradient', 'image'],
+        $themeStyle = in_array(
+            (string) ($siteSettings[SiteSetting::KEY_THEME_STYLE] ?? 'gold'),
+            ['gold', 'green'],
             true
-        ) ? (string) $siteSettings[SiteSetting::KEY_BACKGROUND_MODE] : 'gradient';
-
-        $backgroundImage = trim((string) ($siteSettings[SiteSetting::KEY_BACKGROUND_IMAGE] ?? ''));
-        $backgroundImageUrl = null;
-
-        if ($backgroundImage !== '') {
-            $backgroundImageUrl = str_starts_with($backgroundImage, 'http://') || str_starts_with($backgroundImage, 'https://') || str_starts_with($backgroundImage, '/')
-                ? $backgroundImage
-                : '/storage/' . ltrim($backgroundImage, '/');
-        }
-
-        $backgroundImageOpacity = $this->sanitizePercentage($siteSettings[SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY] ?? 55);
+        ) ? (string) $siteSettings[SiteSetting::KEY_THEME_STYLE] : 'gold';
 
         $skills = Skill::query()
             ->active()
@@ -249,12 +238,7 @@ class PortfolioController extends Controller
                 'telegramIcon' => $contact?->telegram_icon ?: ContactSection::ICON_TELEGRAM,
             ],
             'appearance' => [
-                'mode' => $backgroundMode,
-                'backgroundImageUrl' => $backgroundImageUrl,
-                'backgroundImageOpacity' => $backgroundImageOpacity / 100,
-                'backgroundColorFrom' => $this->sanitizeHexColor((string) ($siteSettings[SiteSetting::KEY_BACKGROUND_COLOR_FROM] ?? '#101829'), '#101829'),
-                'backgroundColorTo' => $this->sanitizeHexColor((string) ($siteSettings[SiteSetting::KEY_BACKGROUND_COLOR_TO] ?? '#0b0f19'), '#0b0f19'),
-                'primaryColor' => $this->sanitizeHexColor((string) ($siteSettings[SiteSetting::KEY_PRIMARY_COLOR] ?? '#f4c64f'), '#f4c64f'),
+                'themeStyle' => $themeStyle,
             ],
         ];
 

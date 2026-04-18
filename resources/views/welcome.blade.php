@@ -6,14 +6,9 @@
     <title>پورتفولیو | {{ $portfolioData['profile']['name'] ?? 'برنامه نویس' }}</title>
     @php
         $appearance = $portfolioData['appearance'] ?? [];
-        $primaryColor = $appearance['primaryColor'] ?? '#F4C64F';
-        $backgroundMode = $appearance['mode'] ?? 'gradient';
-        $backgroundImageUrl = trim((string) ($appearance['backgroundImageUrl'] ?? ''));
-        $backgroundImageOpacity = max(0, min(1, (float) ($appearance['backgroundImageOpacity'] ?? 0.55)));
-        $backgroundImageOverlayOpacity = max(0, min(1, 1 - $backgroundImageOpacity));
-        $backgroundColorFrom = $appearance['backgroundColorFrom'] ?? '#101829';
-        $backgroundColorTo = $appearance['backgroundColorTo'] ?? '#0B0F19';
-        $hasBackgroundImage = $backgroundMode === 'image' && $backgroundImageUrl !== '';
+        $themeStyle = in_array(($appearance['themeStyle'] ?? 'gold'), ['gold', 'green'], true)
+            ? (string) $appearance['themeStyle']
+            : 'gold';
     @endphp
 
     <style>
@@ -48,10 +43,46 @@
             --line: #2a2f3a;
             --text: #f3f4f6;
             --muted: #a6adbb;
-            --accent: {{ $primaryColor }};
+            --accent: oklch(0.72 0.1 82);
             --accent-soft: color-mix(in srgb, var(--accent) 22%, transparent);
             --radius: 22px;
             --sidebar-width: 322px;
+            --theme-border-rgb: 217 174 92;
+            --theme-button-start: oklch(0.36 0.08 82);
+            --theme-button-mid: oklch(0.44 0.1 78);
+            --theme-button-end: oklch(0.53 0.12 74);
+            --theme-button-text: #fff2cf;
+            --theme-button-shadow-1: rgb(32 20 5 / 36%);
+            --theme-button-shadow-2: rgb(255 226 170 / 14%);
+            --theme-button-shadow-3: rgb(219 176 96 / 20%);
+            --theme-button-hover-1: rgb(28 18 5 / 42%);
+            --theme-button-hover-2: rgb(255 232 188 / 22%);
+            --theme-button-hover-3: rgb(214 168 82 / 26%);
+            --theme-status-bg-a: rgba(36, 26, 10, 0.72);
+            --theme-status-bg-b: rgba(27, 19, 7, 0.66);
+            --theme-status-border: rgba(223, 182, 97, 0.3);
+            --theme-status-glow: rgba(223, 182, 97, 0.15);
+            --theme-status-strip-a: rgba(250, 207, 120, 0.95);
+            --theme-status-strip-b: rgba(213, 162, 74, 0.45);
+            --theme-highlight: #d8ab5a;
+            --theme-highlight-rgb: 217, 174, 92;
+            --theme-input-bg: rgba(31, 23, 10, 0.58);
+            --theme-input-text: #fff1d6;
+            --theme-input-placeholder: #d2b47a;
+            --theme-submit-start: oklch(0.72 0.1 82);
+            --theme-submit-end: oklch(0.58 0.1 70);
+            --theme-submit-text: #251803;
+            --theme-submit-shadow: rgba(58, 40, 10, 0.32);
+            --theme-accent-strong: oklch(0.82 0.12 86);
+            --theme-filter-bg: rgba(26, 19, 8, 0.52);
+            --theme-filter-bg-active-text: #1a1306;
+            --theme-underline-start: oklch(0.72 0.1 82);
+            --theme-underline-end: oklch(0.82 0.12 86);
+            --theme-tab-active-start: oklch(0.72 0.1 82);
+            --theme-tab-active-end: oklch(0.82 0.12 86);
+            --theme-filter-active-start: oklch(0.72 0.1 82);
+            --theme-filter-active-end: oklch(0.82 0.12 86);
+            --matrix-rain-rgb: 231, 188, 102;
         }
 
         * {
@@ -66,26 +97,49 @@
 
         body {
             font-family: "Pinar", sans-serif;
-            @if($hasBackgroundImage)
-            background-image:
-                linear-gradient(
-                    rgba(10, 11, 15, {{ number_format($backgroundImageOverlayOpacity, 3, '.', '') }}),
-                    rgba(10, 11, 15, {{ number_format($backgroundImageOverlayOpacity, 3, '.', '') }})
-                ),
-                url('{{ e($backgroundImageUrl) }}'),
-                radial-gradient(circle at 25% 0, #171d2a 0, transparent 30%),
-                linear-gradient(135deg, {{ $backgroundColorFrom }} 0%, {{ $backgroundColorTo }} 100%);
-            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-            background-position: center center, center center, center top, center center;
-            background-size: cover, cover, auto, auto;
-            @else
-            background:
-                radial-gradient(circle at 25% 0, #171d2a 0, transparent 30%),
-                linear-gradient(135deg, {{ $backgroundColorFrom }} 0%, {{ $backgroundColorTo }} 100%);
-            @endif
             color: var(--text);
             line-height: 1.8;
             min-height: 100vh;
+        }
+
+        body[data-theme-style="green"] {
+            --accent: oklch(0.72 0.18 148);
+            --theme-border-rgb: 106 255 174;
+            --theme-button-start: oklch(0.34 0.09 152);
+            --theme-button-mid: oklch(0.39 0.1 151);
+            --theme-button-end: oklch(0.46 0.12 150);
+            --theme-button-text: #dfffea;
+            --theme-button-shadow-1: rgb(3 28 17 / 36%);
+            --theme-button-shadow-2: rgb(178 255 211 / 14%);
+            --theme-button-shadow-3: rgb(58 255 148 / 18%);
+            --theme-button-hover-1: rgb(2 23 14 / 42%);
+            --theme-button-hover-2: rgb(194 255 220 / 20%);
+            --theme-button-hover-3: rgb(56 255 150 / 24%);
+            --theme-status-bg-a: rgba(10, 32, 20, 0.72);
+            --theme-status-bg-b: rgba(7, 24, 16, 0.66);
+            --theme-status-border: rgba(72, 255, 154, 0.28);
+            --theme-status-glow: rgba(72, 255, 154, 0.14);
+            --theme-status-strip-a: rgba(103, 255, 179, 0.95);
+            --theme-status-strip-b: rgba(52, 231, 130, 0.45);
+            --theme-highlight: #38e890;
+            --theme-highlight-rgb: 72, 255, 154;
+            --theme-input-bg: rgba(8, 25, 18, 0.58);
+            --theme-input-text: #e6fff2;
+            --theme-input-placeholder: #98c9ae;
+            --theme-submit-start: oklch(0.62 0.16 148);
+            --theme-submit-end: oklch(0.5 0.13 152);
+            --theme-submit-text: #042012;
+            --theme-submit-shadow: rgba(8, 48, 29, 0.32);
+            --theme-accent-strong: oklch(0.79 0.2 148);
+            --theme-filter-bg: rgba(6, 30, 20, 0.52);
+            --theme-filter-bg-active-text: #032113;
+            --theme-underline-start: oklch(0.62 0.16 148);
+            --theme-underline-end: oklch(0.79 0.2 148);
+            --theme-tab-active-start: oklch(0.62 0.16 148);
+            --theme-tab-active-end: oklch(0.79 0.2 148);
+            --theme-filter-active-start: oklch(0.62 0.16 148);
+            --theme-filter-active-end: oklch(0.79 0.2 148);
+            --matrix-rain-rgb: 48, 255, 140;
         }
 
         a {
@@ -201,17 +255,17 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            border: 1px solid rgb(106 255 174 / 30%);
-            background: linear-gradient(120deg, oklch(0.34 0.09 152) 0%, oklch(0.39 0.1 151) 46%, oklch(0.46 0.12 150) 100%);
+            border: 1px solid rgb(var(--theme-border-rgb) / 38%);
+            background: linear-gradient(120deg, var(--theme-button-start) 0%, var(--theme-button-mid) 46%, var(--theme-button-end) 100%);
             background-size: 170% 170%;
             background-position: 0% 50%;
-            color: #dfffea;
+            color: var(--theme-button-text);
             border-radius: 14px;
             padding: 10px 14px;
             font-size: 14px;
             font-weight: 700;
             letter-spacing: .1px;
-            box-shadow: 0 8px 20px rgb(3 28 17 / 36%), 0 0 0 1px rgb(178 255 211 / 14%) inset, 0 0 12px rgb(58 255 148 / 18%);
+            box-shadow: 0 8px 20px var(--theme-button-shadow-1), 0 0 0 1px var(--theme-button-shadow-2) inset, 0 0 12px var(--theme-button-shadow-3);
             transition: transform .22s ease, box-shadow .22s ease, filter .22s ease, background-position .35s ease;
             position: relative;
             overflow: hidden;
@@ -222,7 +276,7 @@
             transform: translateY(-2px);
             filter: brightness(1.03);
             background-position: 100% 50%;
-            box-shadow: 0 12px 24px rgb(2 23 14 / 42%), 0 0 0 1px rgb(194 255 220 / 20%) inset, 0 0 16px rgb(56 255 150 / 24%);
+            box-shadow: 0 12px 24px var(--theme-button-hover-1), 0 0 0 1px var(--theme-button-hover-2) inset, 0 0 16px var(--theme-button-hover-3);
         }
 
         .resume-download-btn:active {
@@ -583,7 +637,7 @@
             height: 16px;
             border-radius: 999px;
             background: var(--accent);
-            box-shadow: 0 0 0 4px rgba(244, 198, 79, 0.2);
+            box-shadow: 0 0 0 4px rgba(var(--theme-highlight-rgb), 0.2);
         }
 
         .timeline-item h4 {
@@ -677,7 +731,7 @@
             inset: 0;
             border: 0;
             background: rgba(8, 10, 16, 0.28);
-            color: #f6d26e;
+            color: var(--theme-highlight);
             display: grid;
             place-items: center;
             opacity: 0;
@@ -688,7 +742,7 @@
         .portfolio-zoom-trigger .inline-icon {
             width: 34px;
             height: 34px;
-            filter: drop-shadow(0 0 12px rgba(244, 198, 79, 0.55));
+            filter: drop-shadow(0 0 12px rgba(var(--theme-highlight-rgb), 0.55));
         }
 
         .portfolio-thumb.has-image:hover .portfolio-zoom-trigger {
@@ -724,7 +778,7 @@
         }
 
         .portfolio-card.is-link:focus-visible {
-            outline: 2px solid rgb(80 255 161 / 55%);
+            outline: 2px solid rgb(var(--theme-border-rgb) / 55%);
             outline-offset: 3px;
         }
 
@@ -915,7 +969,7 @@
             inset: 0;
             border: 0;
             background: rgba(8, 10, 16, 0.28);
-            color: #f6d26e;
+            color: var(--theme-highlight);
             display: grid;
             place-items: center;
             opacity: 0;
@@ -929,7 +983,7 @@
         .blog-detail-image .blog-zoom-icon {
             width: 34px;
             height: 34px;
-            filter: drop-shadow(0 0 12px rgba(244, 198, 79, 0.55));
+            filter: drop-shadow(0 0 12px rgba(var(--theme-highlight-rgb), 0.55));
         }
 
         .blog-detail-content {
@@ -1071,31 +1125,31 @@
             --card-foreground: oklch(0.95 0.01 250);
             --popover: oklch(0.15 0.02 270);
             --popover-foreground: oklch(0.95 0.01 250);
-            --primary: oklch(0.74 0.2 148);
-            --primary-foreground: oklch(0.12 0.03 160);
+            --primary: oklch(0.75 0.11 84);
+            --primary-foreground: oklch(0.14 0.02 75);
             --secondary: oklch(0.22 0.03 270);
             --secondary-foreground: oklch(0.95 0.01 250);
             --muted: oklch(0.2 0.02 270);
             --muted-foreground: oklch(0.62 0.02 260);
-            --accent: oklch(0.72 0.18 148);
+            --accent: oklch(0.72 0.1 82);
             --accent-foreground: oklch(0.14 0.02 270);
             --destructive: oklch(0.55 0.2 25);
             --destructive-foreground: oklch(0.98 0 0);
             --border: oklch(1 0 0 / 8%);
             --input: oklch(1 0 0 / 7%);
-            --ring: oklch(0.74 0.2 148 / 50%);
+            --ring: oklch(0.75 0.11 84 / 50%);
             --glass: oklch(1 0 0 / 4%);
             --glass-strong: oklch(1 0 0 / 7%);
             --glass-border: oklch(1 0 0 / 9%);
             --gradient-bg: radial-gradient(circle at 15% 20%, oklch(0.28 0.1 260 / 0.5), transparent 55%), radial-gradient(circle at 85% 15%, oklch(0.28 0.1 295 / 0.4), transparent 50%), radial-gradient(circle at 70% 90%, oklch(0.28 0.1 195 / 0.45), transparent 55%), linear-gradient(180deg, oklch(0.14 0.03 260), oklch(0.1 0.03 270));
-            --gradient-gold: linear-gradient(135deg, oklch(0.78 0.2 148), oklch(0.56 0.18 154));
+            --gradient-gold: linear-gradient(135deg, oklch(0.78 0.12 86), oklch(0.58 0.11 70));
             --shadow-glass: 0 6px 22px 0 oklch(0 0 0 / 0.28);
             --shadow-glow: 0 0 22px oklch(0.72 0.09 85 / 0.18);
             --blur-glass: 18px;
             --tabs-bg: linear-gradient(180deg, oklch(0.22 0.03 260 / 0.72), oklch(0.18 0.03 270 / 0.68));
             --tabs-link: oklch(0.86 0.02 250);
             --tabs-link-active: oklch(0.97 0.01 250);
-            --accent-strong: oklch(0.8 0.22 148);
+            --accent-strong: var(--theme-accent-strong);
             --text-strong: var(--foreground);
             --text-soft: var(--muted-foreground);
         }
@@ -1175,7 +1229,7 @@
             height: 300px;
             top: 50%;
             left: 10%;
-            background: oklch(0.68 0.17 150);
+            background: oklch(0.76 0.12 86);
             opacity: 0.32;
             animation: float-4 65s ease-in-out infinite;
         }
@@ -1273,9 +1327,9 @@
         }
 
         .status-label {
-            background: linear-gradient(135deg, rgba(10, 32, 20, 0.72), rgba(7, 24, 16, 0.66));
-            border: 1px solid rgba(72, 255, 154, 0.28);
-            box-shadow: inset 0 0 10px rgba(72, 255, 154, 0.14), 0 6px 14px rgba(2, 18, 11, 0.28);
+            background: linear-gradient(135deg, var(--theme-status-bg-a), var(--theme-status-bg-b));
+            border: 1px solid var(--theme-status-border);
+            box-shadow: inset 0 0 10px var(--theme-status-glow), 0 6px 14px rgba(22, 14, 4, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -1285,7 +1339,7 @@
             position: absolute;
             inset: 0 auto 0 0;
             width: 2px;
-            background: linear-gradient(180deg, rgba(103, 255, 179, 0.95), rgba(52, 231, 130, 0.45));
+            background: linear-gradient(180deg, var(--theme-status-strip-a), var(--theme-status-strip-b));
             pointer-events: none;
         }
 
@@ -1294,12 +1348,12 @@
         }
 
         .resume-download-btn {
-            border-color: rgb(106 255 174 / 30%);
-            background: linear-gradient(120deg, oklch(0.34 0.09 152) 0%, oklch(0.39 0.1 151) 46%, oklch(0.46 0.12 150) 100%);
+            border-color: rgb(var(--theme-border-rgb) / 38%);
+            background: linear-gradient(120deg, var(--theme-button-start) 0%, var(--theme-button-mid) 46%, var(--theme-button-end) 100%);
             background-size: 170% 170%;
             background-position: 0% 50%;
-            color: #dfffea;
-            box-shadow: 0 8px 20px rgb(3 28 17 / 36%), 0 0 0 1px rgb(178 255 211 / 14%) inset, 0 0 12px rgb(58 255 148 / 18%);
+            color: var(--theme-button-text);
+            box-shadow: 0 8px 20px var(--theme-button-shadow-1), 0 0 0 1px var(--theme-button-shadow-2) inset, 0 0 12px var(--theme-button-shadow-3);
         }
 
         .sidebar .resume-download-btn {
@@ -1308,7 +1362,7 @@
 
         .resume-download-btn:hover {
             background-position: 100% 50%;
-            box-shadow: 0 12px 24px rgb(2 23 14 / 42%), 0 0 0 1px rgb(194 255 220 / 20%) inset, 0 0 16px rgb(56 255 150 / 24%);
+            box-shadow: 0 12px 24px var(--theme-button-hover-1), 0 0 0 1px var(--theme-button-hover-2) inset, 0 0 16px var(--theme-button-hover-3);
         }
 
         .contact-list {
@@ -1326,7 +1380,7 @@
 
         .contact-icon {
             background: rgb(20 40 88 / 0%);
-            border: 1px solid rgb(72 255 154 / 33%);
+            border: 1px solid rgb(var(--theme-border-rgb) / 33%);
         }
 
         .contact-meta small {
@@ -1361,7 +1415,7 @@
 
         .tabs a.active::after {
             height: 3px;
-            background: linear-gradient(90deg, oklch(0.72 0.18 148), oklch(0.82 0.2 148));
+            background: linear-gradient(90deg, var(--theme-tab-active-start), var(--theme-tab-active-end));
         }
 
         .section h2 {
@@ -1369,8 +1423,13 @@
         }
 
         .section .underline {
-            background: linear-gradient(90deg, var(--accent), var(--accent-strong));
-            box-shadow: 0 0 10px rgba(72, 255, 154, 0.24);
+            background: linear-gradient(90deg, var(--theme-underline-start), var(--theme-underline-end));
+            box-shadow: 0 0 10px rgba(var(--theme-highlight-rgb), 0.26);
+        }
+
+        body[data-theme-style="green"] .section .underline {
+            background: linear-gradient(90deg, var(--theme-underline-start), var(--theme-underline-end));
+            box-shadow: 0 0 10px rgba(var(--theme-highlight-rgb), 0.3);
         }
 
         .text-block,
@@ -1417,18 +1476,18 @@
         }
 
         .timeline-period {
-            color: #38e890;
+            color: var(--theme-highlight);
         }
 
         .portfolio-filter span {
             border-color: rgba(161, 201, 247, 0.24);
             color: #cfe1f7;
-            background: rgba(15, 31, 67, 0.4);
+            background: var(--theme-filter-bg);
         }
 
         .portfolio-filter span.active {
-            color: #0e172e;
-            background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+            color: var(--theme-filter-bg-active-text);
+            background: linear-gradient(90deg, var(--theme-filter-active-start), var(--theme-filter-active-end));
             border-color: transparent;
         }
 
@@ -1456,31 +1515,30 @@
         }
 
         .map {
-            border-color: rgba(76, 255, 158, 0.24);
+            border-color: rgba(var(--theme-highlight-rgb), 0.24);
         }
 
         .contact-form input,
         .contact-form textarea {
-            border-color: rgba(76, 255, 158, 0.26);
-            background: rgba(8, 25, 18, 0.58);
-            color: #e6fff2;
+            border-color: rgba(var(--theme-highlight-rgb), 0.3);
+            color: var(--theme-input-text);
         }
 
         .contact-form input::placeholder,
         .contact-form textarea::placeholder {
-            color: #98c9ae;
+            color: var(--theme-input-placeholder);
         }
 
         .contact-form input:focus,
         .contact-form textarea:focus {
-            border-color: rgba(102, 255, 179, 0.44);
-            box-shadow: 0 0 0 3px rgba(72, 255, 154, 0.12);
+            border-color: rgba(var(--theme-highlight-rgb), 0.44);
+            box-shadow: 0 0 0 3px rgba(var(--theme-highlight-rgb), 0.14);
         }
 
         .submit {
-            background: linear-gradient(100deg, oklch(0.62 0.16 148), oklch(0.5 0.13 152));
-            color: #042012;
-            box-shadow: 0 6px 16px rgba(8, 48, 29, 0.32);
+            background: linear-gradient(100deg, var(--theme-submit-start), var(--theme-submit-end));
+            color: var(--theme-submit-text);
+            box-shadow: 0 6px 16px var(--theme-submit-shadow);
         }
 
         .site-credit {
@@ -1493,9 +1551,9 @@
         }
 
         .site-credit-version {
-            border-color: #38e890;
+            border-color: var(--theme-highlight);
             background: transparent;
-            color: #38e890;
+            color: var(--theme-highlight);
         }
 
         @media (max-width: 1160px) {
@@ -1591,7 +1649,7 @@
         }
     </style>
 </head>
-<body>
+<body data-theme-style="{{ $themeStyle }}">
 @php
     $profile = $portfolioData['profile'];
     $about = $portfolioData['about'];
@@ -1661,6 +1719,26 @@
         return rtrim($value, '/');
     };
 
+    $linkedinDisplayId = static function (?string $value): string {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return '';
+        }
+
+        $normalized = preg_replace('#^https?://#i', '', $value) ?? $value;
+        $normalized = preg_replace('#^www\.#i', '', $normalized) ?? $normalized;
+        $normalized = trim($normalized, '/');
+
+        if (preg_match('~linkedin\.com/(?:in|company)/([^/?#]+)~i', $normalized, $matches) === 1) {
+            return trim((string) $matches[1]);
+        }
+
+        $segments = explode('/', $normalized);
+        $lastSegment = trim((string) end($segments));
+
+        return $lastSegment !== '' ? $lastSegment : $normalized;
+    };
+
     $resolveIcon = static function (?string $icon, string $fallback): string {
         $icon = trim((string) $icon);
 
@@ -1706,7 +1784,7 @@
         [
             'label' => 'لینکدین',
             'value' => (string) ($contacts['linkedin'] ?? ''),
-            'display' => $compactUrl($contacts['linkedin'] ?? ''),
+            'display' => $linkedinDisplayId($contacts['linkedin'] ?? ''),
             'icon' => $resolveIcon($contacts['linkedinIcon'] ?? null, 'mdi:linkedin'),
             'href' => $linkedinUrl,
         ],
@@ -2051,7 +2129,8 @@
             context.fillRect(0, 0, width, height);
 
             context.font = `${fontSize}px monospace`;
-            context.fillStyle = 'rgba(48, 255, 140, 0.5)';
+            const matrixColor = getComputedStyle(document.body).getPropertyValue('--matrix-rain-rgb').trim() || '231, 188, 102';
+            context.fillStyle = `rgba(${matrixColor}, 0.56)`;
 
             for (let i = 0; i < drops.length; i += 1) {
                 const text = letters[Math.floor(Math.random() * letters.length)];
