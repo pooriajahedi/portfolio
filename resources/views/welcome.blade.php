@@ -195,36 +195,59 @@
         }
 
         .resume-download-btn {
-            margin-top: 12px;
+            margin-top: 0;
             width: 100%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            border: 1px solid color-mix(in srgb, var(--accent) 62%, #2f3543);
-            background: linear-gradient(
-                135deg,
-                color-mix(in srgb, var(--accent) 26%, #1b1f28) 0%,
-                color-mix(in srgb, var(--accent) 14%, #161a22) 100%
-            );
-            color: #ffffff;
+            border: 1px solid rgb(106 255 174 / 30%);
+            background: linear-gradient(120deg, oklch(0.34 0.09 152) 0%, oklch(0.39 0.1 151) 46%, oklch(0.46 0.12 150) 100%);
+            background-size: 170% 170%;
+            background-position: 0% 50%;
+            color: #dfffea;
             border-radius: 14px;
             padding: 10px 14px;
             font-size: 14px;
             font-weight: 700;
             letter-spacing: .1px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, .28);
-            transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+            box-shadow: 0 8px 20px rgb(3 28 17 / 36%), 0 0 0 1px rgb(178 255 211 / 14%) inset, 0 0 12px rgb(58 255 148 / 18%);
+            transition: transform .22s ease, box-shadow .22s ease, filter .22s ease, background-position .35s ease;
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
         }
 
         .resume-download-btn:hover {
             transform: translateY(-2px);
-            filter: brightness(1.06);
-            box-shadow: 0 12px 26px rgba(0, 0, 0, .34);
+            filter: brightness(1.03);
+            background-position: 100% 50%;
+            box-shadow: 0 12px 24px rgb(2 23 14 / 42%), 0 0 0 1px rgb(194 255 220 / 20%) inset, 0 0 16px rgb(56 255 150 / 24%);
         }
 
         .resume-download-btn:active {
             transform: translateY(0);
+        }
+
+        .resume-download-btn::before {
+            content: "";
+            position: absolute;
+            inset: -140% auto -140% -38%;
+            width: 34%;
+            background: linear-gradient(115deg, transparent 0%, rgb(255 255 255 / 25%) 50%, transparent 100%);
+            transform: rotate(18deg);
+            transition: left .42s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .resume-download-btn:hover::before {
+            left: 112%;
+        }
+
+        .resume-download-btn > * {
+            position: relative;
+            z-index: 1;
         }
 
         .inline-icon {
@@ -349,7 +372,7 @@
         }
 
         .section {
-            padding-top: 28px;
+            padding-top: 32px;
             scroll-margin-top: 74px;
         }
 
@@ -407,7 +430,7 @@
 
         .text-block {
             color: var(--muted);
-            font-size: 22px;
+            font-size: clamp(17px, 1.15vw, 19px);
             margin-bottom: 16px;
         }
 
@@ -415,7 +438,7 @@
         .blog-grid,
         .portfolio-grid {
             display: grid;
-            gap: 14px;
+            gap: 16px;
         }
 
         .service-grid {
@@ -430,19 +453,19 @@
             background: #191c23;
             border: 1px solid #2a2f3b;
             border-radius: 16px;
-            padding: 18px 18px 16px;
+            padding: 18px;
         }
 
         .service-title {
             font-weight: 700;
-            font-size: clamp(20px, 1.6vw, 24px);
+            font-size: clamp(20px, 1.45vw, 22px);
             line-height: 1.35;
             margin-bottom: 8px;
         }
 
         .service-desc {
             color: var(--muted);
-            font-size: clamp(16px, 1.1vw, 18px);
+            font-size: clamp(16px, 1vw, 17px);
             line-height: 1.85;
         }
 
@@ -463,7 +486,7 @@
         .skill-category-head {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0;
             position: relative;
             min-height: 42px;
             padding-left: 4px;
@@ -478,12 +501,6 @@
             bottom: 2px;
             height: 1px;
             background: linear-gradient(90deg, var(--accent-soft), transparent 75%);
-        }
-
-        .skill-category-head .inline-icon {
-            width: 18px;
-            height: 18px;
-            filter: drop-shadow(0 0 8px rgba(244, 198, 79, 0.45));
         }
 
         .skill-category-label {
@@ -526,7 +543,7 @@
 
         .skill-item span {
             color: #e7ebf2;
-            font-size: 21px;
+            font-size: 16px;
             line-height: 1.3;
             font-weight: 400;
             text-align: left;
@@ -570,7 +587,7 @@
         }
 
         .timeline-item h4 {
-            font-size: 28px;
+            font-size: clamp(22px, 1.8vw, 25px);
             margin-bottom: 2px;
         }
 
@@ -584,7 +601,7 @@
 
         .timeline-item p {
             color: var(--muted);
-            font-size: 20px;
+            font-size: clamp(16px, 1.05vw, 18px);
         }
 
         .resume-head {
@@ -626,6 +643,7 @@
 
         .portfolio-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
+            align-items: stretch;
         }
 
         .portfolio-thumb {
@@ -678,19 +696,36 @@
         }
 
         .portfolio-card h4 {
-            font-size: 24px;
-            margin-bottom: 2px;
+            font-size: clamp(21px, 1.6vw, 24px);
+            line-height: 1.35;
+            margin-bottom: 8px;
         }
 
         .portfolio-card p {
             color: var(--muted);
-            font-size: 18px;
-            margin-bottom: 10px;
+            font-size: clamp(16px, 1.02vw, 17px);
+            line-height: 1.85;
+            margin-bottom: 12px;
         }
 
         .portfolio-card a {
             font-size: 13px;
             color: var(--accent);
+        }
+
+        .portfolio-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .portfolio-card.is-link {
+            cursor: pointer;
+        }
+
+        .portfolio-card.is-link:focus-visible {
+            outline: 2px solid rgb(80 255 161 / 55%);
+            outline-offset: 3px;
         }
 
         .portfolio-tags {
@@ -809,14 +844,14 @@
         }
 
         .blog-card h4 {
-            font-size: 32px;
+            font-size: clamp(22px, 1.8vw, 26px);
             line-height: 1.3;
             margin-bottom: 8px;
         }
 
         .blog-card p {
             color: var(--muted);
-            font-size: 20px;
+            font-size: 17px;
         }
 
         .blog-card[data-blog-open] {
@@ -920,7 +955,7 @@
         .blog-detail-content p {
             margin: 10px 0;
             color: #cfd5df;
-            font-size: 18px;
+            font-size: 17px;
         }
 
         .blog-detail-content ul,
@@ -1027,6 +1062,442 @@
             color: #f4cccc;
         }
 
+        /* Glass redesign */
+        :root {
+            --radius: 1.25rem;
+            --background: oklch(0.12 0.02 270);
+            --foreground: oklch(0.95 0.01 250);
+            --card: oklch(0.16 0.02 270);
+            --card-foreground: oklch(0.95 0.01 250);
+            --popover: oklch(0.15 0.02 270);
+            --popover-foreground: oklch(0.95 0.01 250);
+            --primary: oklch(0.74 0.2 148);
+            --primary-foreground: oklch(0.12 0.03 160);
+            --secondary: oklch(0.22 0.03 270);
+            --secondary-foreground: oklch(0.95 0.01 250);
+            --muted: oklch(0.2 0.02 270);
+            --muted-foreground: oklch(0.62 0.02 260);
+            --accent: oklch(0.72 0.18 148);
+            --accent-foreground: oklch(0.14 0.02 270);
+            --destructive: oklch(0.55 0.2 25);
+            --destructive-foreground: oklch(0.98 0 0);
+            --border: oklch(1 0 0 / 8%);
+            --input: oklch(1 0 0 / 7%);
+            --ring: oklch(0.74 0.2 148 / 50%);
+            --glass: oklch(1 0 0 / 4%);
+            --glass-strong: oklch(1 0 0 / 7%);
+            --glass-border: oklch(1 0 0 / 9%);
+            --gradient-bg: radial-gradient(circle at 15% 20%, oklch(0.28 0.1 260 / 0.5), transparent 55%), radial-gradient(circle at 85% 15%, oklch(0.28 0.1 295 / 0.4), transparent 50%), radial-gradient(circle at 70% 90%, oklch(0.28 0.1 195 / 0.45), transparent 55%), linear-gradient(180deg, oklch(0.14 0.03 260), oklch(0.1 0.03 270));
+            --gradient-gold: linear-gradient(135deg, oklch(0.78 0.2 148), oklch(0.56 0.18 154));
+            --shadow-glass: 0 6px 22px 0 oklch(0 0 0 / 0.28);
+            --shadow-glow: 0 0 22px oklch(0.72 0.09 85 / 0.18);
+            --blur-glass: 18px;
+            --tabs-bg: linear-gradient(180deg, oklch(0.22 0.03 260 / 0.72), oklch(0.18 0.03 270 / 0.68));
+            --tabs-link: oklch(0.86 0.02 250);
+            --tabs-link-active: oklch(0.97 0.01 250);
+            --accent-strong: oklch(0.8 0.22 148);
+            --text-strong: var(--foreground);
+            --text-soft: var(--muted-foreground);
+        }
+
+        body {
+            position: relative;
+            isolation: isolate;
+            background: var(--background);
+            color: var(--text-strong);
+            overflow-x: hidden;
+        }
+
+
+        .glass-panel {
+            backdrop-filter: blur(var(--blur-glass));
+            -webkit-backdrop-filter: blur(var(--blur-glass));
+            box-shadow: var(--shadow-glass);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+        }
+
+        .bg-orbs {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+            display: none;
+        }
+
+        .matrix-rain {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            opacity: 0.22;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            will-change: transform;
+        }
+
+        .orb-1 {
+            width: 420px;
+            height: 420px;
+            top: -80px;
+            left: -100px;
+            background: oklch(0.6 0.18 260);
+            animation: float-1 55s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            width: 360px;
+            height: 360px;
+            top: 20%;
+            right: -120px;
+            background: oklch(0.76 0.18 95);
+            animation: float-2 70s ease-in-out infinite;
+        }
+
+        .orb-3 {
+            width: 480px;
+            height: 480px;
+            bottom: -120px;
+            left: 30%;
+            background: oklch(0.55 0.2 295);
+            animation: float-3 80s ease-in-out infinite;
+        }
+
+        .orb-4 {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 10%;
+            background: oklch(0.68 0.17 150);
+            opacity: 0.32;
+            animation: float-4 65s ease-in-out infinite;
+        }
+
+        .orb-5 {
+            width: 340px;
+            height: 340px;
+            bottom: 10%;
+            right: 15%;
+            background: oklch(0.6 0.18 230);
+            animation: float-5 75s ease-in-out infinite;
+        }
+
+        @keyframes float-1 {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(70vw, 20vh) scale(1.2); }
+            50% { transform: translate(60vw, 70vh) scale(0.9); }
+            75% { transform: translate(10vw, 50vh) scale(1.1); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        @keyframes float-2 {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-60vw, 30vh) scale(1.1); }
+            50% { transform: translate(-70vw, 65vh) scale(1.25); }
+            75% { transform: translate(-20vw, 20vh) scale(0.95); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        @keyframes float-3 {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-30vw, -50vh) scale(1.15); }
+            50% { transform: translate(40vw, -60vh) scale(0.9); }
+            75% { transform: translate(20vw, -20vh) scale(1.2); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        @keyframes float-4 {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(60vw, -40vh) scale(1.15); }
+            66% { transform: translate(40vw, 50vh) scale(0.95); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        @keyframes float-5 {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-50vw, -30vh) scale(1.1); }
+            50% { transform: translate(-70vw, 30vh) scale(1.2); }
+            75% { transform: translate(-30vw, 60vh) scale(0.95); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        .layout {
+            position: relative;
+            z-index: 2;
+            width: min(1320px, 95%);
+            margin: 24px auto;
+            gap: 22px;
+        }
+
+        .sidebar,
+        .content-shell {
+            backdrop-filter: blur(var(--blur-glass));
+            -webkit-backdrop-filter: blur(var(--blur-glass));
+            box-shadow: var(--shadow-glass);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+        }
+
+        .sidebar {
+            padding: 26px 22px 20px;
+        }
+
+        .avatar-wrap {
+            border: 1px solid rgba(187, 221, 255, 0.3);
+            background: rgba(14, 26, 56, 0.68);
+            box-shadow: 0 14px 34px rgba(7, 20, 45, 0.55);
+        }
+
+        .status-dot {
+            border-color: rgba(8, 16, 37, 0.8);
+            box-shadow: 0 0 0 5px rgba(12, 25, 56, 0.46);
+        }
+
+        .profile-name {
+            color: var(--text-strong);
+            text-shadow: 0 3px 20px rgba(0, 0, 0, 0.38);
+        }
+
+        .profile-role {
+            background: rgba(20, 37, 80, 0.64);
+            color: #d7e7ff;
+            border: 1px solid rgba(170, 209, 255, 0.22);
+        }
+
+        .status-label {
+            background: linear-gradient(135deg, rgba(10, 32, 20, 0.72), rgba(7, 24, 16, 0.66));
+            border: 1px solid rgba(72, 255, 154, 0.28);
+            box-shadow: inset 0 0 10px rgba(72, 255, 154, 0.14), 0 6px 14px rgba(2, 18, 11, 0.28);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-label::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 2px;
+            background: linear-gradient(180deg, rgba(103, 255, 179, 0.95), rgba(52, 231, 130, 0.45));
+            pointer-events: none;
+        }
+
+        .status-label strong {
+            color: #b7c8c0;
+        }
+
+        .resume-download-btn {
+            border-color: rgb(106 255 174 / 30%);
+            background: linear-gradient(120deg, oklch(0.34 0.09 152) 0%, oklch(0.39 0.1 151) 46%, oklch(0.46 0.12 150) 100%);
+            background-size: 170% 170%;
+            background-position: 0% 50%;
+            color: #dfffea;
+            box-shadow: 0 8px 20px rgb(3 28 17 / 36%), 0 0 0 1px rgb(178 255 211 / 14%) inset, 0 0 12px rgb(58 255 148 / 18%);
+        }
+
+        .sidebar .resume-download-btn {
+            margin-top: 16px;
+        }
+
+        .resume-download-btn:hover {
+            background-position: 100% 50%;
+            box-shadow: 0 12px 24px rgb(2 23 14 / 42%), 0 0 0 1px rgb(194 255 220 / 20%) inset, 0 0 16px rgb(56 255 150 / 24%);
+        }
+
+        .contact-list {
+            border-top-color: rgba(166, 203, 248, 0.2);
+        }
+
+        .contact-item {
+            backdrop-filter: blur(var(--blur-glass));
+            -webkit-backdrop-filter: blur(var(--blur-glass));
+            box-shadow: var(--shadow-glass);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+        }
+
+        .contact-icon {
+            background: rgb(20 40 88 / 0%);
+            border: 1px solid rgb(72 255 154 / 33%);
+        }
+
+        .contact-meta small {
+            color: #9db4d4;
+        }
+
+        .contact-meta span,
+        .contact-meta a {
+            color: #edf5ff;
+        }
+
+        .content-shell > .tabs {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: calc(var(--radius) - 0.3rem);
+            backdrop-filter: blur(var(--blur-glass));
+            -webkit-backdrop-filter: blur(var(--blur-glass));
+            box-shadow: var(--shadow-glass);
+            align-items: center;
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .tabs a {
+            color: var(--tabs-link);
+        }
+
+        .tabs a:hover,
+        .tabs a.active {
+            color: var(--tabs-link-active);
+        }
+
+        .tabs a.active::after {
+            height: 3px;
+            background: linear-gradient(90deg, oklch(0.72 0.18 148), oklch(0.82 0.2 148));
+        }
+
+        .section h2 {
+            color: #eff6ff;
+        }
+
+        .section .underline {
+            background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+            box-shadow: 0 0 10px rgba(72, 255, 154, 0.24);
+        }
+
+        .text-block,
+        .timeline-item p,
+        .portfolio-card p,
+        .blog-card p,
+        .service-desc,
+        .blog-empty {
+            color: oklch(0.86 0 0);
+        }
+
+        .service-card,
+        .blog-card,
+        .portfolio-card,
+        .panel,
+        .blog-detail-content {
+            backdrop-filter: blur(var(--blur-glass));
+            -webkit-backdrop-filter: blur(var(--blur-glass));
+            box-shadow: var(--shadow-glass);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+        }
+
+        .skill-category-label {
+            color: #deecff;
+        }
+
+        .skill-item {
+            border-color: rgba(163, 203, 250, 0.2);
+            background: linear-gradient(140deg, rgba(20, 40, 86, 0.46), rgba(11, 22, 49, 0.58));
+        }
+
+        .skill-item span {
+            color: #f1f7ff;
+        }
+
+        .timeline::before {
+            background: linear-gradient(to bottom, rgba(153, 195, 245, 0.18), rgba(134, 183, 241, 0.42), rgba(153, 195, 245, 0.18));
+        }
+
+        .timeline-item::before {
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 8px color-mix(in srgb, var(--accent) 32%, transparent);
+        }
+
+        .timeline-period {
+            color: #38e890;
+        }
+
+        .portfolio-filter span {
+            border-color: rgba(161, 201, 247, 0.24);
+            color: #cfe1f7;
+            background: rgba(15, 31, 67, 0.4);
+        }
+
+        .portfolio-filter span.active {
+            color: #0e172e;
+            background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+            border-color: transparent;
+        }
+
+        .portfolio-tag {
+            border-color: rgb(0 0 0 / 24%);
+            background: rgb(0 0 0 / 46%);
+            color: #d2e4f9;
+        }
+
+        .image-modal-dialog {
+            border-color: rgba(164, 201, 244, 0.3);
+            background: rgba(11, 25, 54, 0.9);
+        }
+
+        .blog-card small,
+        .blog-detail-item small {
+            color: #a6bbd7;
+        }
+
+        .blog-open,
+        .blog-back {
+            border-color: rgba(161, 201, 247, 0.28);
+            background: rgba(13, 29, 63, 0.62);
+            color: #edf6ff;
+        }
+
+        .map {
+            border-color: rgba(76, 255, 158, 0.24);
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            border-color: rgba(76, 255, 158, 0.26);
+            background: rgba(8, 25, 18, 0.58);
+            color: #e6fff2;
+        }
+
+        .contact-form input::placeholder,
+        .contact-form textarea::placeholder {
+            color: #98c9ae;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-color: rgba(102, 255, 179, 0.44);
+            box-shadow: 0 0 0 3px rgba(72, 255, 154, 0.12);
+        }
+
+        .submit {
+            background: linear-gradient(100deg, oklch(0.62 0.16 148), oklch(0.5 0.13 152));
+            color: #042012;
+            box-shadow: 0 6px 16px rgba(8, 48, 29, 0.32);
+        }
+
+        .site-credit {
+            border-top-color: rgba(166, 203, 248, 0.2);
+            color: #afc3df;
+        }
+
+        .site-credit strong {
+            color: #edf5ff;
+        }
+
+        .site-credit-version {
+            border-color: #38e890;
+            background: transparent;
+            color: #38e890;
+        }
+
         @media (max-width: 1160px) {
             .layout {
                 grid-template-columns: 1fr;
@@ -1084,14 +1555,29 @@
             .portfolio-card p,
             .blog-card p,
             .service-desc {
-                font-size: 18px;
+                font-size: 17px;
             }
 
             .service-title,
             .timeline-item h4,
             .portfolio-card h4,
             .blog-card h4 {
-                font-size: 21px;
+                font-size: 20px;
+            }
+
+            .orb {
+                opacity: 0.42;
+                filter: blur(92px);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .orb {
+                animation: none;
+            }
+
+            .matrix-rain {
+                display: none;
             }
         }
 
@@ -1227,8 +1713,17 @@
     ], static fn (array $item): bool => trim((string) $item['display']) !== ''));
 @endphp
 
+<div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+    <span class="orb orb-4"></span>
+    <span class="orb orb-5"></span>
+</div>
+<canvas class="matrix-rain" id="matrixRain" aria-hidden="true"></canvas>
+
 <div class="layout">
-    <aside class="sidebar">
+    <aside class="sidebar glass-panel">
         <div class="avatar-wrap">
             <img src="{{ $avatarImage }}" alt="{{ $profile['name'] }}">
             <span class="status-dot status-{{ $currentStatus }}"></span>
@@ -1249,7 +1744,7 @@
 
         <div class="contact-list">
             @foreach($contactItems as $item)
-                <div class="contact-item">
+                <div class="contact-item glass-panel">
                     <div class="contact-icon">
                         {!! $iconAsset::img($item['icon'], $item['label'] ?? '', 30) !!}
                     </div>
@@ -1267,7 +1762,7 @@
 
     </aside>
 
-    <main class="content-shell" id="app">
+    <main class="content-shell glass-panel" id="app">
         <nav class="tabs" id="tabs">
             <a href="#about" class="active">درباره من</a>
             <a href="#resume">رزومه</a>
@@ -1287,7 +1782,7 @@
             <h2 style="font-size: clamp(26px, 2.2vw, 32px); margin-top: 22px;">بیشتر روی چه چیزهایی تمرکز دارم</h2>
             <div class="service-grid">
                 @foreach($serviceCards as $item)
-                    <article class="service-card">
+                    <article class="service-card glass-panel">
                         <h3 class="service-title">{{ $item['title'] }}</h3>
                         <p class="service-desc">{{ $item['description'] }}</p>
                     </article>
@@ -1300,7 +1795,6 @@
                     @if(($skillsByCategory[$categoryKey] ?? collect())->isNotEmpty())
                         <div class="skill-category-row">
                             <div class="skill-category-head">
-                                {!! $iconAsset::img('mdi:hexagram', '', 18) !!}
                                 <h3 class="skill-category-label">{{ $categoryLabel }}</h3>
                             </div>
                             <div class="skill-items">
@@ -1364,7 +1858,16 @@
                         $projectCategorySlug = $item['category']['slug'] ?? 'uncategorized';
                         $projectLink = $normalizeProjectUrl($item['projectUrl'] ?? null);
                     @endphp
-                    <article class="portfolio-card" data-category="{{ $projectCategorySlug }}">
+                    <article
+                        class="portfolio-card glass-panel {{ $projectLink ? 'is-link' : '' }}"
+                        data-category="{{ $projectCategorySlug }}"
+                        @if($projectLink)
+                            data-href="{{ $projectLink }}"
+                            role="link"
+                            tabindex="0"
+                            aria-label="مشاهده پروژه {{ $item['title'] }}"
+                        @endif
+                    >
                         <div class="portfolio-thumb {{ !empty($item['imageUrl']) ? 'has-image' : '' }}">
                             @if(!empty($item['imageUrl']))
                                 <img src="{{ $item['imageUrl'] }}" alt="{{ $item['title'] }}">
@@ -1380,11 +1883,7 @@
                                 {{ $item['title'] }}
                             @endif
                         </div>
-                        @if($projectLink)
-                            <h4><a href="{{ $projectLink }}" target="_blank" rel="noopener noreferrer">{{ $item['title'] }}</a></h4>
-                        @else
-                            <h4>{{ $item['title'] }}</h4>
-                        @endif
+                        <h4>{{ $item['title'] }}</h4>
                         <p>{{ $item['text'] }}</p>
                         @if(!empty($item['tags'] ?? []))
                             <div class="portfolio-tags">
@@ -1392,9 +1891,6 @@
                                     <span class="portfolio-tag">{{ $tag }}</span>
                                 @endforeach
                             </div>
-                        @endif
-                        @if($projectLink)
-                            <a href="{{ $projectLink }}" target="_blank" rel="noopener noreferrer">مشاهده پروژه</a>
                         @endif
                     </article>
                 @endforeach
@@ -1410,7 +1906,7 @@
             @else
                 <div class="blog-grid" id="blogList">
                     @foreach($blogPosts as $index => $item)
-                        <article class="blog-card" data-blog-open="{{ $index }}">
+                        <article class="blog-card glass-panel" data-blog-open="{{ $index }}">
                             @if(!empty($item['imageUrl']))
                                 <div class="blog-card-image">
                                     <img src="{{ $item['imageUrl'] }}" alt="{{ $item['title'] }}">
@@ -1444,7 +1940,7 @@
                                     </button>
                                 </div>
                             @endif
-                            <div class="blog-detail-content">
+                            <div class="blog-detail-content glass-panel">
                                 {!! $item['content'] !!}
                             </div>
                         </article>
@@ -1521,6 +2017,86 @@
 <script src="/vendor/gsap/ScrollTrigger.min.js"></script>
 <script>
     gsap.registerPlugin(ScrollTrigger);
+
+    const initMatrixRain = () => {
+        const canvas = document.getElementById('matrixRain');
+        if (!(canvas instanceof HTMLCanvasElement)) return;
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const context = canvas.getContext('2d');
+        if (!context) return;
+
+        const letters = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズヅブプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン<>[]{}()$#@*&+=-_0123456789';
+        const fontSize = 16;
+        let columns = 0;
+        let drops = [];
+
+        const setup = () => {
+            const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            canvas.width = Math.floor(width * dpr);
+            canvas.height = Math.floor(height * dpr);
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            context.setTransform(dpr, 0, 0, dpr, 0, 0);
+            columns = Math.ceil(width / fontSize);
+            drops = Array.from({ length: columns }, () => Math.floor(Math.random() * -60));
+        };
+
+        const draw = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            context.fillStyle = 'rgba(3, 9, 20, 0.12)';
+            context.fillRect(0, 0, width, height);
+
+            context.font = `${fontSize}px monospace`;
+            context.fillStyle = 'rgba(48, 255, 140, 0.5)';
+
+            for (let i = 0; i < drops.length; i += 1) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+                context.fillText(text, x, y);
+
+                if (y > height && Math.random() > 0.978) {
+                    drops[i] = 0;
+                }
+                drops[i] += 0.8;
+            }
+        };
+
+        let frameId = 0;
+        let isRunning = false;
+        let lastTick = 0;
+        const frameInterval = 70;
+        const animate = (timestamp = 0) => {
+            if (!isRunning) return;
+            if (timestamp - lastTick >= frameInterval) {
+                draw();
+                lastTick = timestamp;
+            }
+            frameId = window.requestAnimationFrame(animate);
+        };
+
+        setup();
+        isRunning = true;
+        animate();
+
+        window.addEventListener('resize', setup);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                isRunning = false;
+                window.cancelAnimationFrame(frameId);
+                return;
+            }
+            if (isRunning) return;
+            isRunning = true;
+            animate();
+        });
+    };
+
+    initMatrixRain();
 
     const lenis = new Lenis({
         duration: 0.62,
@@ -1638,6 +2214,30 @@
         });
         activatePortfolioFilter('all');
     }
+
+    const openPortfolioCard = (card) => {
+        const href = card?.dataset?.href;
+        if (!href) return;
+        window.open(href, '_blank', 'noopener,noreferrer');
+    };
+
+    portfolioCards.forEach((card) => {
+        if (!card.dataset.href) return;
+
+        card.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target instanceof HTMLElement && (target.closest('button') || target.closest('a'))) {
+                return;
+            }
+            openPortfolioCard(card);
+        });
+
+        card.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            openPortfolioCard(card);
+        });
+    });
 
     const blogList = document.getElementById('blogList');
     const blogDetail = document.getElementById('blogDetail');
@@ -1811,9 +2411,9 @@
     gsap.utils.toArray('.service-card, .skill-item, .portfolio-card, .blog-card, .contact-item').forEach((card) => {
         card.addEventListener('mouseenter', () => {
             gsap.to(card, {
-                y: -4,
-                borderColor: '#3c4250',
-                boxShadow: '0 12px 20px rgba(0,0,0,0.24)',
+                y: -2,
+                borderColor: 'rgba(160, 255, 210, 0.24)',
+                boxShadow: '0 10px 18px rgba(4, 15, 36, 0.28), inset 0 1px 0 rgba(224, 240, 255, 0.1)',
                 duration: 0.22,
                 ease: 'power2.out',
             });
@@ -1822,8 +2422,8 @@
         card.addEventListener('mouseleave', () => {
             gsap.to(card, {
                 y: 0,
-                borderColor: '#2a2f3b',
-                boxShadow: '0 0 0 rgba(0,0,0,0)',
+                borderColor: 'rgba(130, 255, 198, 0.14)',
+                boxShadow: 'inset 0 1px 0 rgba(217, 234, 255, 0.1)',
                 duration: 0.22,
                 ease: 'power2.out',
             });

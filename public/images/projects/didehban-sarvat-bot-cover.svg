@@ -1,0 +1,101 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="192" y1="98" x2="1424" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#182436"/>
+      <stop offset="1" stop-color="#0B1018"/>
+    </linearGradient>
+    <radialGradient id="glowBlue" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(336 188) rotate(41.6) scale(426.287 294.523)">
+      <stop stop-color="#34B9F5" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#34B9F5" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowGold" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1188 170) rotate(121.67) scale(403.295 284.437)">
+      <stop stop-color="#F4C64F" stop-opacity=".26"/>
+      <stop offset="1" stop-color="#F4C64F" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="card" x1="314" y1="214" x2="1296" y2="716" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1C2432"/>
+      <stop offset="1" stop-color="#131A25"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="955" y1="190" x2="1209" y2="484" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#36C3FF"/>
+      <stop offset="1" stop-color="#1573FF"/>
+    </linearGradient>
+    <filter id="shadow" x="243" y="122" width="1137" height="655" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="22"/>
+      <feGaussianBlur stdDeviation="28"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.42 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+    </filter>
+    <filter id="soft" x="0" y="0" width="1600" height="900" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_0_1"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="336" cy="188" r="290" fill="url(#glowBlue)"/>
+  <circle cx="1188" cy="170" r="250" fill="url(#glowGold)"/>
+
+  <g opacity=".16" filter="url(#soft)">
+    <path d="M111 729C271 599 461 548 580 593C692 635 737 750 912 770C1082 790 1244 706 1492 494" stroke="#48D0FF" stroke-width="38" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="299" y="178" width="1001" height="543" rx="34" fill="url(#card)" stroke="#283345"/>
+
+    <rect x="337" y="216" width="498" height="467" rx="26" fill="#101722" stroke="#243041"/>
+    <rect x="866" y="216" width="396" height="467" rx="26" fill="#121A26" stroke="#263345"/>
+
+    <circle cx="416" cy="287" r="42" fill="#223247"/>
+    <path d="M398 288.2L437.8 272.2C445.5 269.1 449.2 273.4 446.7 280L434.4 312.8C432.1 318.7 427.4 320 422.2 316.7L412.5 310.4L406.8 315.8C405.7 316.9 404.7 317.8 402.6 317.8L404.8 303.4L431.1 279.7C432.3 278.7 430.8 278.1 429.2 279L396.4 299.6L382.2 295.2C375.9 293.2 375.7 289 383.6 285.8L398 288.2Z" fill="#36C3FF"/>
+
+    <text x="478" y="281" fill="#F5F8FC" font-size="42" font-weight="700" font-family="Arial, sans-serif">ربات دیده‌بان ثروت</text>
+    <text x="478" y="327" fill="#8FA0B4" font-size="22" font-family="Arial, sans-serif">اشتراک، عضویت، تیکت و پنل مدیریت در یک سیستم یکپارچه</text>
+
+    <rect x="379" y="375" width="414" height="122" rx="22" fill="#162130" stroke="#233246"/>
+    <rect x="379" y="520" width="198" height="122" rx="22" fill="#162130" stroke="#233246"/>
+    <rect x="595" y="520" width="198" height="122" rx="22" fill="#162130" stroke="#233246"/>
+
+    <text x="415" y="423" fill="#F7FAFD" font-size="24" font-weight="700" font-family="Arial, sans-serif">مدیریت اشتراک کاربران</text>
+    <text x="415" y="459" fill="#A4B1C1" font-size="19" font-family="Arial, sans-serif">خرید پلن‌های متنوع، دسترسی خودکار به کانال و گروه</text>
+
+    <circle cx="439" cy="559" r="24" fill="#243449"/>
+    <rect x="472" y="541" width="68" height="11" rx="5.5" fill="#F4C64F"/>
+    <rect x="472" y="560" width="87" height="11" rx="5.5" fill="#607086"/>
+    <rect x="472" y="579" width="49" height="11" rx="5.5" fill="#607086"/>
+    <text x="414" y="619" fill="#EAF0F6" font-size="21" font-weight="700" font-family="Arial, sans-serif">تیکت و پشتیبانی</text>
+
+    <circle cx="655" cy="559" r="24" fill="#243449"/>
+    <rect x="688" y="541" width="68" height="11" rx="5.5" fill="#36C3FF"/>
+    <rect x="688" y="560" width="87" height="11" rx="5.5" fill="#607086"/>
+    <rect x="688" y="579" width="49" height="11" rx="5.5" fill="#607086"/>
+    <text x="624" y="619" fill="#EAF0F6" font-size="21" font-weight="700" font-family="Arial, sans-serif">پرداخت و ادمین پنل</text>
+
+    <rect x="904" y="254" width="320" height="140" rx="24" fill="url(#accent)"/>
+    <text x="944" y="308" fill="#FFFFFF" font-size="28" font-weight="700" font-family="Arial, sans-serif">Telegram Bot Dashboard</text>
+    <text x="944" y="350" fill="#DFF6FF" font-size="20" font-family="Arial, sans-serif">Users • Plans • Tickets • Payments</text>
+
+    <rect x="904" y="425" width="320" height="90" rx="22" fill="#172231" stroke="#243142"/>
+    <rect x="904" y="535" width="320" height="110" rx="22" fill="#172231" stroke="#243142"/>
+
+    <rect x="940" y="453" width="104" height="12" rx="6" fill="#F4C64F"/>
+    <rect x="940" y="475" width="186" height="10" rx="5" fill="#647386"/>
+    <circle cx="1175" cy="468" r="18" fill="#1E3145"/>
+
+    <rect x="940" y="567" width="121" height="12" rx="6" fill="#36C3FF"/>
+    <rect x="940" y="589" width="202" height="10" rx="5" fill="#647386"/>
+    <rect x="940" y="609" width="158" height="10" rx="5" fill="#647386"/>
+    <rect x="1147" y="561" width="41" height="41" rx="12" fill="#203144"/>
+
+    <rect x="1208" y="89" width="238" height="64" rx="20" fill="#151D29" stroke="#263142"/>
+    <text x="1252" y="130" fill="#F4C64F" font-size="30" font-weight="700" font-family="Arial, sans-serif">BOT</text>
+
+    <rect x="179" y="121" width="183" height="54" rx="18" fill="#121A26" opacity=".78"/>
+    <text x="210" y="156" fill="#34B9F5" font-size="26" font-weight="700" font-family="Arial, sans-serif">TELEGRAM</text>
+  </g>
+</svg>
