@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->favicon(asset('favicon.svg'))
             ->font(
                 family: 'Vazirmatn',
                 url: asset('fonts/vazirmatn/vazirmatn.css'),

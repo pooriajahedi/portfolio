@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>پورتفولیو | {{ $portfolioData['profile']['name'] ?? 'برنامه نویس' }}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="shortcut icon" href="/favicon.svg">
+    <title>{{ $portfolioData['profile']['name'] ?? 'پوریا جاهدی' }} | برنامه‌نویس بک‌اند و فول‌استک</title>
     @php
         $appearance = $portfolioData['appearance'] ?? [];
         $themeStyle = in_array(($appearance['themeStyle'] ?? 'gold'), ['gold', 'green'], true)
