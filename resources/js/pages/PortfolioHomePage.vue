@@ -533,8 +533,13 @@ onMounted(async () => {
         const site = await fetchSiteState();
         siteState.value = site ?? {};
         applyThemeStyle(site?.appearance?.themeStyle);
-        if (site?.profile?.name) {
-            document.title = `${site.profile.name} | برنامه‌نویس بک‌اند و فول‌استک`;
+        const profileName = String(site?.profile?.name ?? '').trim();
+        const profileRole = String(site?.profile?.role ?? '').trim();
+
+        if (profileName && profileRole) {
+            document.title = `${profileName} | ${profileRole}`;
+        } else if (profileName) {
+            document.title = profileName;
         }
         siteError.value = '';
     } catch {

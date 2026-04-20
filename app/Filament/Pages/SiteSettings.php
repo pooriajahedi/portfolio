@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
 use BackedEnum;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -56,6 +57,19 @@ class SiteSettings extends Page implements HasForms
                             ->required()
                             ->helperText('تنها همین گزینه روی ظاهر سایت اعمال می‌شود.'),
                     ])
+                    ->columns(2)
+                    ->columnSpanFull(),
+                Section::make('پیش‌نمایش لینک در شبکه‌های اجتماعی')
+                    ->schema([
+                        FileUpload::make(SiteSetting::KEY_SOCIAL_PREVIEW_IMAGE)
+                            ->label('تصویر پیش‌نمایش (OG Image)')
+                            ->image()
+                            ->disk('public')
+                            ->directory('site/social-preview')
+                            ->visibility('public')
+                            ->helperText('پیشنهاد: 1200x630 پیکسل برای نمایش بهتر در تلگرام، واتساپ، لینکدین و ...')
+                            ->columnSpanFull(),
+                    ])
                     ->columnSpanFull(),
             ])
             ->statePath('data');
@@ -70,6 +84,7 @@ class SiteSettings extends Page implements HasForms
             SiteSetting::KEY_THEME_STYLE => in_array(($state[SiteSetting::KEY_THEME_STYLE] ?? 'gold'), ['gold', 'green'], true)
                 ? $state[SiteSetting::KEY_THEME_STYLE]
                 : 'gold',
+            SiteSetting::KEY_SOCIAL_PREVIEW_IMAGE => (string) ($state[SiteSetting::KEY_SOCIAL_PREVIEW_IMAGE] ?? ''),
         ]);
 
         Notification::make()

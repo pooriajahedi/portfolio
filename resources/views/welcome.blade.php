@@ -5,7 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="shortcut icon" href="/favicon.svg">
-    <title>پوریا جاهدی | برنامه‌نویس بک‌اند و فول‌استک</title>
+    @php($metaTitle = trim((string) ($metaTitle ?? 'پوریا جاهدی | برنامه‌نویس بک‌اند و فول‌استک')))
+    @php($metaDescription = trim((string) ($metaDescription ?? 'پورتفولیوی شخصی برای معرفی مهارت‌ها، رزومه، نمونه‌کارها و مقالات تخصصی.')))
+    @php($metaImage = trim((string) ($metaImage ?? url('/images/hero/pooria-hero.jpeg'))))
+    @php($metaUrl = trim((string) ($metaUrl ?? url('/'))))
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <meta property="og:locale" content="fa_IR">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="پوریا جاهدی">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $metaUrl }}">
+    <meta property="og:image" content="{{ $metaImage }}">
+    <meta property="og:image:secure_url" content="{{ $metaImage }}">
+    <meta property="og:image:alt" content="{{ $metaTitle }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    <meta name="twitter:image" content="{{ $metaImage }}">
     @php($themeStyle = in_array(($themeStyle ?? 'gold'), ['gold', 'green'], true) ? (string) $themeStyle : 'gold')
 
 </head>

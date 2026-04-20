@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SiteSetting extends Model
 {
     public const KEY_THEME_STYLE = 'site_theme_style';
+    public const KEY_SOCIAL_PREVIEW_IMAGE = 'site_social_preview_image';
 
     protected $fillable = [
         'key',
@@ -17,6 +18,7 @@ class SiteSetting extends Model
     {
         return [
             self::KEY_THEME_STYLE => 'gold',
+            self::KEY_SOCIAL_PREVIEW_IMAGE => '',
         ];
     }
 
