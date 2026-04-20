@@ -4,7 +4,7 @@ namespace App\Support;
 
 use Illuminate\Support\Str;
 
-class ProjectSlug
+class BlogSlug
 {
     public static function resolve(?string $manualSlug, string $title, int|string|null $id = null): string
     {
@@ -25,6 +25,6 @@ class ProjectSlug
             return $id ? "{$slug}-{$id}" : $slug;
         }
 
-        return $id ? "project-{$id}" : 'project';
+        return $id ? "blog-{$id}" : 'blog';
     }
 }

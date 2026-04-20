@@ -79,6 +79,7 @@ class CreatePortfolioSection extends CreateRecord
         foreach ($payload as $index => $item) {
             Project::query()->create([
                 'title' => trim((string) ($item['title'] ?? '')),
+                'slug' => filled($item['slug'] ?? null) ? \Illuminate\Support\Str::slug((string) $item['slug']) : null,
                 'description' => trim((string) ($item['description'] ?? '')),
                 'project_url' => filled($item['project_url'] ?? null) ? trim((string) $item['project_url']) : null,
                 'tags' => collect($item['tags'] ?? [])->filter()->values()->all(),

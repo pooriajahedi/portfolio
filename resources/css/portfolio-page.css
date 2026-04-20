@@ -426,6 +426,10 @@
             scroll-margin-top: 74px;
         }
 
+        .section.blog-section-single {
+            padding-top: 0;
+        }
+
         .site-credit {
             margin-top: 30px;
             border-top: 1px solid #2f3441;
@@ -716,36 +720,16 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.28s ease;
         }
 
-        .portfolio-thumb.has-image:hover img {
-            transform: scale(1.04);
+        .portfolio-thumb.has-image {
+            padding: 0;
+            background: transparent;
+            display: block;
         }
 
-        .portfolio-zoom-trigger {
-            position: absolute;
-            inset: 0;
-            border: 0;
-            background: rgb(4 9 18 / 36%);
-            color: var(--theme-highlight);
-            display: grid;
-            place-items: center;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            z-index: 2;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .portfolio-zoom-trigger .inline-icon {
-            width: 34px;
-            height: 34px;
-            filter: drop-shadow(0 0 12px rgba(var(--theme-highlight-rgb), 0.55));
-        }
-
-        .portfolio-thumb.has-image:hover .portfolio-zoom-trigger {
-            opacity: 1;
+        .portfolio-thumb.has-image img {
+            display: block;
         }
 
         .portfolio-card h4 {
@@ -784,15 +768,6 @@
             height: 100%;
             padding: 16px;
             border-radius: 22px;
-        }
-
-        .portfolio-card.is-link {
-            cursor: pointer;
-        }
-
-        .portfolio-card.is-link:focus-visible {
-            outline: 2px solid rgb(var(--theme-border-rgb) / 55%);
-            outline-offset: 3px;
         }
 
         .portfolio-tags {
@@ -964,6 +939,31 @@
             max-height: 620px;
             object-fit: cover;
             display: block;
+        }
+
+        .portfolio-single-image .portfolio-zoom-trigger {
+            position: absolute;
+            inset: 0;
+            border: 0;
+            background: rgb(4 9 18 / 36%);
+            color: var(--theme-highlight);
+            display: grid;
+            place-items: center;
+            opacity: 0;
+            transition: opacity .2s ease;
+            z-index: 2;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .portfolio-single-image .portfolio-zoom-trigger .inline-icon {
+            width: 34px;
+            height: 34px;
+            filter: drop-shadow(0 0 12px rgba(var(--theme-highlight-rgb), 0.55));
+        }
+
+        .portfolio-single-image:hover .portfolio-zoom-trigger {
+            opacity: 1;
         }
 
         .portfolio-single-content {
@@ -1148,6 +1148,45 @@
             margin: 10px 0;
             color: #cfd5df;
             font-size: 17px;
+        }
+
+        .blog-detail-content pre {
+            direction: ltr;
+            text-align: left;
+            margin: 14px 0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: rgba(8, 14, 24, 0.86);
+            overflow-x: auto;
+        }
+
+        .blog-detail-content pre code {
+            direction: ltr;
+            text-align: left;
+            display: block;
+            font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.9;
+            background: transparent;
+            color: #d6ecff;
+        }
+
+        .blog-detail-content pre code.hljs {
+            background: transparent;
+            padding: 0;
+        }
+
+        .blog-detail-content :not(pre) > code {
+            direction: ltr;
+            text-align: left;
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 8px;
+            background: rgba(82, 184, 255, 0.1);
+            border: 1px solid rgba(82, 184, 255, 0.25);
+            color: #9cd8ff;
+            font-size: 0.92em;
         }
 
         .blog-detail-content ul,
@@ -1830,7 +1869,6 @@
 
         @media (pointer: fine) {
             .portfolio-zoom-trigger,
-            .portfolio-thumb.has-image,
             .blog-zoom-trigger,
             .blog-detail-image {
                 cursor: zoom-in !important;

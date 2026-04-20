@@ -57,12 +57,25 @@ export function usePublicContentApi(apiUrls = {}) {
         return `/api/portfolio/${encodedSlug}`;
     };
 
+    const resolveBlogShowUrl = (slug) => {
+        const normalized = String(slug ?? '').trim();
+        const encodedSlug = encodeURIComponent(normalized);
+        const template = String(apiUrls.blogPostShow ?? '').trim();
+
+        if (template.includes('__slug__')) {
+            return template.replace('__slug__', encodedSlug);
+        }
+
+        return `/api/blog-posts/${encodedSlug}`;
+    };
+
     return {
         fetchSiteState: async () => unwrapResource(await fetchJson(apiUrls.site)),
         fetchResumeFeed: async () => fetchJson(apiUrls.resume),
         fetchPortfolioFeed: async () => unwrapResource(await fetchJson(apiUrls.portfolio)),
         fetchPortfolioProject: async (slug) => unwrapResource(await fetchJson(resolvePortfolioShowUrl(slug))),
         fetchBlogFeed: async () => fetchJson(apiUrls.blogPosts),
+        fetchBlogPost: async (slug) => unwrapResource(await fetchJson(resolveBlogShowUrl(slug))),
         submitContactRequest: async (payload, csrfToken) => postJson(apiUrls.contactStore, payload, csrfToken),
     };
 }

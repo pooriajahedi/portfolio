@@ -22,6 +22,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class ProjectResource extends Resource
 {
@@ -48,7 +49,22 @@ class ProjectResource extends Resource
                         TextInput::make('title')
                             ->label('نام پروژه')
                             ->required()
-                            ->maxLength(255),
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, callable $set, callable $get): void {
+                                if (filled($get('slug'))) {
+                                    return;
+                                }
+
+                                $set('slug', Str::slug((string) $state));
+                            })
+                            ->maxLength(255)
+                            ->columnSpan(1),
+                        TextInput::make('slug')
+                            ->label('اسلاگ (اختیاری)')
+                            ->maxLength(255)
+                            ->helperText('اگر خالی باشد، از عنوان به‌صورت خودکار ساخته می‌شود.')
+                            ->dehydrateStateUsing(fn ($state): ?string => filled($state) ? Str::slug((string) $state) : null)
+                            ->columnSpan(1),
                         TextInput::make('project_url')
                             ->label('لینک پروژه')
                             ->url()
@@ -101,6 +117,9 @@ class ProjectResource extends Resource
                 TextColumn::make('title')
                     ->label('نام پروژه')
                     ->searchable(),
+                TextColumn::make('slug')
+                    ->label('اسلاگ')
+                    ->limit(28),
                 TextColumn::make('project_url')
                     ->label('لینک')
                     ->url(fn ($record) => $record->project_url, true)

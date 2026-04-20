@@ -1,0 +1,13 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/* Keep code snippets in the rich editor LTR even when panel direction is RTL. */
+.fi-fo-rich-editor .fi-fo-rich-editor-content pre,
+.fi-fo-rich-editor .fi-fo-rich-editor-content pre code,
+.fi-fo-rich-editor .fi-fo-rich-editor-content code {
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: isolate;
+}

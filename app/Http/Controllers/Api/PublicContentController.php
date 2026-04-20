@@ -20,6 +20,7 @@ use App\Models\ProjectCategory;
 use App\Models\ResumeItem;
 use App\Models\SiteSetting;
 use App\Models\Skill;
+use App\Support\BlogSlug;
 use App\Support\ProjectSlug;
 use App\Support\PublicApiCache;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -80,6 +81,7 @@ class PublicContentController extends Controller
                 ->get([
                     'id',
                     'title',
+                    'slug',
                     'description',
                     'tags',
                     'project_url',
@@ -108,7 +110,9 @@ class PublicContentController extends Controller
                 ->orderBy('sort_order')
                 ->orderBy('id')
                 ->get([
+                    'id',
                     'title',
+                    'slug',
                     'excerpt',
                     'content',
                     'image_path',
@@ -118,6 +122,35 @@ class PublicContentController extends Controller
         });
 
         return BlogPostResource::collection(collect($posts));
+    }
+
+    public function blogPost(string $slug): BlogPostResource
+    {
+        $post = PublicApiCache::remember(PublicApiCache::blogPostKey($slug), function () use ($slug): BlogPost {
+            $posts = BlogPost::query()
+                ->active()
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get([
+                    'id',
+                    'title',
+                    'slug',
+                    'excerpt',
+                    'content',
+                    'image_path',
+                    'created_at',
+                ]);
+
+            $matched = $posts->first(
+                fn (BlogPost $item): bool => BlogSlug::resolve($item->slug, (string) $item->title, $item->id) === $slug
+            );
+
+            abort_unless($matched, 404);
+
+            return $matched;
+        });
+
+        return new BlogPostResource($post);
     }
 
     public function portfolioProject(string $slug): ProjectDetailResource
@@ -131,6 +164,7 @@ class PublicContentController extends Controller
                 ->get([
                     'id',
                     'title',
+                    'slug',
                     'description',
                     'tags',
                     'project_url',
@@ -142,7 +176,7 @@ class PublicContentController extends Controller
                 ]);
 
             $project = $projects->first(
-                fn (Project $item): bool => ProjectSlug::make((string) $item->title, $item->id) === $slug
+                fn (Project $item): bool => ProjectSlug::resolve($item->slug, (string) $item->title, $item->id) === $slug
             );
 
             abort_unless($project, 404);

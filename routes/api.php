@@ -9,6 +9,7 @@ Route::get('/resume-items', [PublicContentController::class, 'resume'])->name('a
 Route::get('/portfolio', [PublicContentController::class, 'portfolio'])->name('api.public.portfolio');
 Route::get('/portfolio/{slug}', [PublicContentController::class, 'portfolioProject'])->name('api.public.portfolio.show');
 Route::get('/blog-posts', [PublicContentController::class, 'blogPosts'])->name('api.public.blog-posts');
+Route::get('/blog-posts/{slug}', [PublicContentController::class, 'blogPost'])->name('api.public.blog-posts.show');
 Route::post('/contact-requests', [ContactRequestApiController::class, 'store'])
     ->middleware('throttle:4,1')
     ->name('api.public.contact-requests.store');

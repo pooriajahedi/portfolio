@@ -19,6 +19,7 @@
         portfolio: @json(route('api.public.portfolio')),
         portfolioShow: @json(route('api.public.portfolio.show', ['slug' => '__slug__'])),
         blogPosts: @json(route('api.public.blog-posts')),
+        blogPostShow: @json(route('api.public.blog-posts.show', ['slug' => '__slug__'])),
         contactStore: @json(route('api.public.contact-requests.store')),
     };
     window.__PORTFOLIO_CSRF_TOKEN__ = @json(csrf_token());

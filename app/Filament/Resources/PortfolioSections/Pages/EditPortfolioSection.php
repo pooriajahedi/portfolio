@@ -53,6 +53,7 @@ class EditPortfolioSection extends EditRecord
             ->get([
                 'id',
                 'title',
+                'slug',
                 'description',
                 'tags',
                 'project_url',
@@ -65,6 +66,7 @@ class EditPortfolioSection extends EditRecord
             ->map(fn (Project $project): array => [
                 'id' => (string) $project->id,
                 'title' => $project->title,
+                'slug' => $project->slug,
                 'description' => $project->description,
                 'tags' => $project->tags ?? [],
                 'project_url' => $project->project_url,
@@ -144,6 +146,7 @@ class EditPortfolioSection extends EditRecord
         foreach ($payload as $index => $item) {
             $data = [
                 'title' => trim((string) ($item['title'] ?? '')),
+                'slug' => filled($item['slug'] ?? null) ? \Illuminate\Support\Str::slug((string) $item['slug']) : null,
                 'description' => trim((string) ($item['description'] ?? '')),
                 'project_url' => filled($item['project_url'] ?? null) ? trim((string) $item['project_url']) : null,
                 'tags' => collect($item['tags'] ?? [])->filter()->values()->all(),

@@ -24,7 +24,7 @@ const props = defineProps({
     },
 });
 
-const { fetchSiteState, fetchResumeFeed, fetchPortfolioFeed, fetchPortfolioProject, fetchBlogFeed, submitContactRequest } = usePublicContentApi(props.apiUrls);
+const { fetchSiteState, fetchResumeFeed, fetchPortfolioFeed, fetchPortfolioProject, fetchBlogFeed, fetchBlogPost, submitContactRequest } = usePublicContentApi(props.apiUrls);
 
 const siteState = ref({});
 const resumeItems = ref([]);
@@ -34,22 +34,25 @@ const projects = ref([]);
 const selectedProjectSlug = ref('');
 const selectedProject = ref(null);
 const blogPosts = ref([]);
+const selectedBlogSlug = ref('');
+const selectedBlogPost = ref(null);
 
 const loadingSite = ref(true);
 const loadingResume = ref(true);
 const loadingPortfolio = ref(true);
 const loadingBlog = ref(true);
 const loadingProjectDetail = ref(false);
+const loadingBlogDetail = ref(false);
 
 const siteError = ref('');
 const resumeError = ref('');
 const portfolioError = ref('');
 const blogError = ref('');
 const projectDetailError = ref('');
+const blogDetailError = ref('');
 
 const activeCategory = ref('all');
 const activeTab = ref('about');
-const activeBlogIndex = ref(null);
 const modalOpen = ref(false);
 const modalImage = ref('');
 const modalAlt = ref('');
@@ -99,6 +102,7 @@ const filteredProjects = computed(() => {
 });
 
 const isPortfolioSingle = computed(() => selectedProjectSlug.value !== '');
+const isBlogSingle = computed(() => selectedBlogSlug.value !== '');
 
 const compactUrl = (value) => {
     const normalized = String(value ?? '').trim();
@@ -175,11 +179,11 @@ const contactItems = computed(() => {
 
 const selectTab = (tab) => {
     activeTab.value = tab;
-    if (tab !== 'blog') {
-        activeBlogIndex.value = null;
-    }
     if (tab !== 'portfolio') {
         clearPortfolioSingleRoute(false);
+    }
+    if (tab !== 'blog') {
+        clearBlogSingleRoute(false);
     }
 
     requestAnimationFrame(() => animateTabEntrance(tab));
@@ -210,10 +214,25 @@ const extractPortfolioSlugFromPath = () => {
     return match?.[1] ? decodeURIComponent(match[1]) : '';
 };
 
+const extractBlogSlugFromPath = () => {
+    const match = window.location.pathname.match(/^\/blog\/([^/]+)$/i);
+    return match?.[1] ? decodeURIComponent(match[1]) : '';
+};
+
 const clearPortfolioSingleRoute = (pushState = true) => {
     selectedProjectSlug.value = '';
     selectedProject.value = null;
     projectDetailError.value = '';
+
+    if (pushState && window.location.pathname !== '/') {
+        window.history.pushState({}, '', '/');
+    }
+};
+
+const clearBlogSingleRoute = (pushState = true) => {
+    selectedBlogSlug.value = '';
+    selectedBlogPost.value = null;
+    blogDetailError.value = '';
 
     if (pushState && window.location.pathname !== '/') {
         window.history.pushState({}, '', '/');
@@ -248,6 +267,7 @@ const openProjectDetail = (slug) => {
     if (normalizedSlug === '') return;
 
     activeTab.value = 'portfolio';
+    clearBlogSingleRoute(false);
     if (window.location.pathname !== `/portfolio/${normalizedSlug}`) {
         window.history.pushState({}, '', `/portfolio/${encodeURIComponent(normalizedSlug)}`);
     }
@@ -264,16 +284,66 @@ const openProjectUrlFromSingle = (url) => {
     window.open(normalized, '_blank', 'noopener,noreferrer');
 };
 
-const handlePopState = () => {
-    const slug = extractPortfolioSlugFromPath();
+const loadBlogPost = async (slug) => {
+    const normalizedSlug = String(slug ?? '').trim();
+    if (normalizedSlug === '') return;
 
-    if (slug) {
+    loadingBlogDetail.value = true;
+    blogDetailError.value = '';
+
+    try {
+        const payload = await fetchBlogPost(normalizedSlug);
+        selectedBlogSlug.value = normalizedSlug;
+        selectedBlogPost.value = payload ?? null;
+    } catch {
+        selectedBlogPost.value = null;
+        blogDetailError.value = 'مقاله موردنظر پیدا نشد یا خطایی در دریافت اطلاعات رخ داد.';
+    } finally {
+        loadingBlogDetail.value = false;
+        nextTick(() => {
+            initHoverLight();
+            requestAnimationFrame(() => animateTabEntrance('blogDetail'));
+        });
+    }
+};
+
+const openBlogDetail = (slug) => {
+    const normalizedSlug = String(slug ?? '').trim();
+    if (normalizedSlug === '') return;
+
+    activeTab.value = 'blog';
+    clearPortfolioSingleRoute(false);
+    if (window.location.pathname !== `/blog/${normalizedSlug}`) {
+        window.history.pushState({}, '', `/blog/${encodeURIComponent(normalizedSlug)}`);
+    }
+
+    loadBlogPost(normalizedSlug);
+};
+
+const handleBlogBack = () => {
+    clearBlogSingleRoute(true);
+};
+
+const handlePopState = () => {
+    const portfolioSlug = extractPortfolioSlugFromPath();
+    const blogSlug = extractBlogSlugFromPath();
+
+    if (portfolioSlug) {
         activeTab.value = 'portfolio';
-        loadPortfolioProject(slug);
+        clearBlogSingleRoute(false);
+        loadPortfolioProject(portfolioSlug);
+        return;
+    }
+
+    if (blogSlug) {
+        activeTab.value = 'blog';
+        clearPortfolioSingleRoute(false);
+        loadBlogPost(blogSlug);
         return;
     }
 
     clearPortfolioSingleRoute(false);
+    clearBlogSingleRoute(false);
 };
 
 const submitContact = async (payload) => {
@@ -297,7 +367,6 @@ const applyThemeStyle = (themeStyle) => {
 const handleEsc = (event) => {
     if (event.key === 'Escape') {
         if (modalOpen.value) closeImageModal();
-        if (activeBlogIndex.value !== null) activeBlogIndex.value = null;
     }
 };
 
@@ -506,6 +575,12 @@ onMounted(async () => {
         const blogFeed = await fetchBlogFeed();
         blogPosts.value = Array.isArray(blogFeed?.data) ? blogFeed.data : [];
         blogError.value = '';
+
+        const blogRouteSlug = extractBlogSlugFromPath();
+        if (blogRouteSlug) {
+            activeTab.value = 'blog';
+            await loadBlogPost(blogRouteSlug);
+        }
     } catch {
         blogError.value = 'خطا در دریافت داده‌های وبلاگ.';
     } finally {
@@ -599,11 +674,14 @@ onBeforeUnmount(() => {
                     <BlogSection
                         v-show="activeTab === 'blog'"
                         :posts="blogPosts"
-                        :active-blog-index="activeBlogIndex"
+                        :active-blog-slug="selectedBlogSlug"
+                        :selected-post="selectedBlogPost"
                         :loading="loadingBlog"
+                        :loading-detail="loadingBlogDetail"
                         :load-error="blogError"
-                        @open-blog="activeBlogIndex = $event"
-                        @close-blog="activeBlogIndex = null"
+                        :load-detail-error="blogDetailError"
+                        @open-blog="openBlogDetail"
+                        @close-blog="handleBlogBack"
                         @open-image="openImageModal" />
 
                     <ContactSection

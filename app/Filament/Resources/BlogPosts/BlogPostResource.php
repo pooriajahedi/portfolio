@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\BlogPosts;
 
-use App\Filament\Resources\BlogPosts\Pages\ManageBlogPosts;
+use App\Filament\Resources\BlogPosts\Pages\CreateBlogPost;
+use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
+use App\Filament\Resources\BlogPosts\Pages\ListBlogPosts;
 use App\Models\BlogPost;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -23,6 +25,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class BlogPostResource extends Resource
 {
@@ -49,14 +52,22 @@ class BlogPostResource extends Resource
                         TextInput::make('title')
                             ->label('عنوان مقاله')
                             ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, callable $set, callable $get): void {
+                                if (filled($get('slug'))) {
+                                    return;
+                                }
+
+                                $set('slug', Str::slug((string) $state));
+                            })
                             ->maxLength(255),
+                        TextInput::make('slug')
+                            ->label('اسلاگ (اختیاری)')
+                            ->maxLength(255)
+                            ->helperText('اگر خالی باشد، از عنوان به‌صورت خودکار ساخته می‌شود.')
+                            ->dehydrateStateUsing(fn ($state): ?string => filled($state) ? Str::slug((string) $state) : null),
                         Hidden::make('sort_order')
                             ->default(fn (): int => ((int) BlogPost::query()->max('sort_order')) + 1),
-                        Textarea::make('excerpt')
-                            ->label('خلاصه کوتاه')
-                            ->rows(3)
-                            ->helperText('اگر خالی بماند، خلاصه از متن مقاله ساخته می‌شود.')
-                            ->columnSpanFull(),
                         FileUpload::make('image_path')
                             ->label('تصویر مقاله')
                             ->image()
@@ -67,12 +78,25 @@ class BlogPostResource extends Resource
                             ->panelLayout('compact')
                             ->openable()
                             ->downloadable()
-                            ->columnSpanFull(),
+                            ->columnSpan(1),
                         RichEditor::make('content')
                             ->label('محتوای مقاله')
                             ->required()
+                            ->helperText('برای نمایش کد برنامه‌نویسی، از دکمه «بلوک کد» در نوار ابزار استفاده کنید.')
+                            ->toolbarButtons([
+                                ['bold', 'italic', 'underline', 'strike', 'link', 'code'],
+                                ['h2', 'h3', 'paragraph'],
+                                ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
+                                ['table', 'attachFiles'],
+                                ['undo', 'redo'],
+                            ])
                             ->fileAttachmentsDisk('public')
                             ->fileAttachmentsDirectory('blog/content')
+                            ->columnSpanFull(),
+                        Textarea::make('excerpt')
+                            ->label('خلاصه کوتاه')
+                            ->rows(3)
+                            ->helperText('اگر خالی بماند، خلاصه از متن مقاله ساخته می‌شود.')
                             ->columnSpanFull(),
                         Toggle::make('is_active')
                             ->label('فعال')
@@ -87,6 +111,7 @@ class BlogPostResource extends Resource
     {
         return $table
             ->recordTitleAttribute('title')
+            ->recordUrl(fn (BlogPost $record): string => static::getUrl('edit', ['record' => $record]))
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->columns([
@@ -96,6 +121,9 @@ class BlogPostResource extends Resource
                 TextColumn::make('title')
                     ->label('عنوان')
                     ->searchable(),
+                TextColumn::make('slug')
+                    ->label('اسلاگ')
+                    ->limit(28),
                 TextColumn::make('published_at')
                     ->label('تاریخ انتشار')
                     ->state(fn (BlogPost $record): string => self::formatCreatedAtJalali($record->created_at)),
@@ -117,7 +145,9 @@ class BlogPostResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ManageBlogPosts::route('/'),
+            'index' => ListBlogPosts::route('/'),
+            'create' => CreateBlogPost::route('/create'),
+            'edit' => EditBlogPost::route('/{record}/edit'),
         ];
     }
 

@@ -43,6 +43,11 @@ class PublicApiCache
         return self::PORTFOLIO_KEY . '.show.' . $slug;
     }
 
+    public static function blogPostKey(string $slug): string
+    {
+        return self::BLOG_KEY . '.show.' . $slug;
+    }
+
     private static function buildKey(string $key): string
     {
         return $key . '.v' . self::version();

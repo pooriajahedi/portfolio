@@ -4,9 +4,9 @@ namespace App\Filament\Resources\BlogPosts\Pages;
 
 use App\Filament\Resources\BlogPosts\BlogPostResource;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ManageRecords;
+use Filament\Resources\Pages\ListRecords;
 
-class ManageBlogPosts extends ManageRecords
+class ListBlogPosts extends ListRecords
 {
     protected static string $resource = BlogPostResource::class;
 
@@ -17,3 +17,4 @@ class ManageBlogPosts extends ManageRecords
         ];
     }
 }
+

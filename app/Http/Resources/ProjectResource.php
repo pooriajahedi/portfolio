@@ -17,7 +17,7 @@ class ProjectResource extends JsonResource
 
         return [
             'id' => (int) $this->id,
-            'slug' => ProjectSlug::make((string) $this->title, $this->id),
+            'slug' => ProjectSlug::resolve($this->slug, (string) $this->title, $this->id),
             'title' => (string) $this->title,
             'text' => $description,
             'tags' => $this->tags ?? [],

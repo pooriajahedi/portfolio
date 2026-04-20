@@ -114,13 +114,28 @@ class PortfolioSectionResource extends Resource
                                     ->collapsible()
                                     ->cloneable()
                                     ->addActionLabel('افزودن نمونه کار')
+                                    ->columns(2)
                                     ->schema([
                                         Hidden::make('id'),
                                         Hidden::make('sort_order'),
                                         TextInput::make('title')
                                             ->label('عنوان پروژه')
                                             ->required()
-                                            ->maxLength(255),
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($state, callable $set, callable $get): void {
+                                                if (filled($get('slug'))) {
+                                                    return;
+                                                }
+
+                                                $set('slug', Str::slug((string) $state));
+                                            })
+                                            ->maxLength(255)
+                                            ->columnSpan(1),
+                                        TextInput::make('slug')
+                                            ->label('اسلاگ پروژه (اختیاری)')
+                                            ->maxLength(255)
+                                            ->helperText('اگر خالی باشد، از عنوان به‌صورت خودکار ساخته می‌شود.')
+                                            ->columnSpan(1),
                                         Select::make('project_category_id')
                                             ->label('دسته‌بندی')
                                             ->options(fn (): array => \App\Models\ProjectCategory::query()
@@ -186,6 +201,7 @@ class PortfolioSectionResource extends Resource
                                                 return [
                                                     'id' => $item['id'] ?? null,
                                                     'title' => trim((string) ($item['title'] ?? '')),
+                                                    'slug' => filled($item['slug'] ?? null) ? Str::slug((string) $item['slug']) : null,
                                                     'description' => trim((string) ($item['description'] ?? '')),
                                                     'tags' => collect($item['tags'] ?? [])->filter()->values()->all(),
                                                     'project_url' => filled($item['project_url'] ?? null) ? trim((string) $item['project_url']) : null,

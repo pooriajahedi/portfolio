@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import 'highlight.js/styles/atom-one-dark.css';
 import PortfolioHomePage from './pages/PortfolioHomePage.vue';
 
 const container = document.getElementById('portfolioApp');

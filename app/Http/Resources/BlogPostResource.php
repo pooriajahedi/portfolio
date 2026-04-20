@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\BlogSlug;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -13,6 +14,8 @@ class BlogPostResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => (int) $this->id,
+            'slug' => BlogSlug::resolve($this->slug, (string) $this->title, $this->id),
             'title' => (string) $this->title,
             'excerpt' => $this->resolveExcerpt(),
             'content' => (string) $this->content,

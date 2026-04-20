@@ -1,6 +1,4 @@
 <script setup>
-import IconGlyph from '../../IconGlyph.vue';
-
 const props = defineProps({
     title: {
         type: String,
@@ -28,7 +26,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['change-category', 'open-image', 'open-detail']);
+const emit = defineEmits(['change-category', 'open-detail']);
 
 const getUniformSummary = (value, maxLength = 150) => {
     const normalized = String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -74,22 +72,10 @@ const getUniformSummary = (value, maxLength = 150) => {
                 v-for="item in projects"
                 :key="item.slug || item.id || item.title"
                 class="portfolio-card glass-panel"
-                :class="{ 'is-link': !!item.slug }"
-                :data-category="item.category?.slug ?? 'uncategorized'"
-                role="link"
-                tabindex="0"
-                :aria-label="`مشاهده پروژه ${item.title}`"
-                @click="item.slug && emit('open-detail', item.slug)">
+                :data-category="item.category?.slug ?? 'uncategorized'">
                 <div class="portfolio-thumb" :class="{ 'has-image': !!item.imageUrl }">
                     <template v-if="item.imageUrl">
                         <img :src="item.imageUrl" :alt="item.title">
-                        <button
-                            type="button"
-                            class="portfolio-zoom-trigger"
-                            :aria-label="`بزرگ‌نمایی تصویر ${item.title}`"
-                            @click.stop="emit('open-image', { src: item.imageUrl, alt: item.title })">
-                            <IconGlyph icon="mdi:magnify-plus" :size="34" />
-                        </button>
                     </template>
                     <template v-else>
                         {{ item.title }}

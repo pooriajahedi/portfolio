@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue';
+import hljs from 'highlight.js';
 import IconGlyph from '../../IconGlyph.vue';
 
 const props = defineProps({
@@ -6,15 +8,27 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    activeBlogIndex: {
-        type: Number,
+    activeBlogSlug: {
+        type: String,
+        default: '',
+    },
+    selectedPost: {
+        type: Object,
         default: null,
     },
     loading: {
         type: Boolean,
         default: false,
     },
+    loadingDetail: {
+        type: Boolean,
+        default: false,
+    },
     loadError: {
+        type: String,
+        default: '',
+    },
+    loadDetailError: {
         type: String,
         default: '',
     },
@@ -28,11 +42,52 @@ const getUniformExcerpt = (value, maxLength = 150) => {
 
     return `${normalized.slice(0, maxLength).trim()}...`;
 };
+
+const highlightedPostContent = computed(() => {
+    const rawContent = String(props.selectedPost?.content ?? '').trim();
+
+    if (!rawContent) {
+        return '';
+    }
+
+    if (typeof document === 'undefined') {
+        return rawContent;
+    }
+
+    const template = document.createElement('template');
+    template.innerHTML = rawContent;
+
+    template.content.querySelectorAll('pre code').forEach((block) => {
+        const source = block.textContent ?? '';
+
+        if (!source.trim()) {
+            return;
+        }
+
+        const languageClass = Array.from(block.classList).find((item) => item.startsWith('language-'));
+        const language = languageClass?.replace('language-', '').trim();
+
+        const highlighted = language && hljs.getLanguage(language)
+            ? hljs.highlight(source, { language, ignoreIllegals: true })
+            : hljs.highlightAuto(source, ['php', 'javascript', 'typescript', 'bash', 'sql', 'json', 'html', 'css']);
+
+        const hasColoredTokens = highlighted.value.includes('hljs-');
+
+        const finalHighlighted = hasColoredTokens
+            ? highlighted
+            : hljs.highlight(source, { language: 'php', ignoreIllegals: true });
+
+        block.innerHTML = finalHighlighted.value;
+        block.classList.add('hljs');
+    });
+
+    return template.innerHTML;
+});
 </script>
 
 <template>
-    <section class="section" id="blog">
-        <template v-if="activeBlogIndex === null">
+    <section class="section" :class="{ 'blog-section-single': activeBlogSlug !== '' }" id="blog">
+        <template v-if="activeBlogSlug === ''">
             <h2>وبلاگ</h2>
             <div class="underline"></div>
         </template>
@@ -48,12 +103,11 @@ const getUniformExcerpt = (value, maxLength = 150) => {
         <p v-else-if="!posts.length" class="blog-empty">هنوز مقاله‌ای منتشر نشده است.</p>
 
         <template v-else>
-            <div v-if="activeBlogIndex === null" class="blog-grid" id="blogList">
+            <div v-if="activeBlogSlug === ''" class="blog-grid" id="blogList">
                 <article
                     v-for="(item, index) in posts"
-                    :key="`${item.title}-${index}`"
-                    class="blog-card portfolio-card glass-panel"
-                    @click="emit('open-blog', index)">
+                    :key="item.slug || `${item.title}-${index}`"
+                    class="blog-card portfolio-card glass-panel">
                     <div class="portfolio-thumb blog-card-image" :class="{ 'has-image': !!item.imageUrl }">
                         <template v-if="item.imageUrl">
                             <img :src="item.imageUrl" :alt="item.title">
@@ -67,7 +121,7 @@ const getUniformExcerpt = (value, maxLength = 150) => {
                         <h4>{{ item.title }}</h4>
                         <p>{{ getUniformExcerpt(item.excerpt) }}</p>
                         <div class="portfolio-card-foot">
-                            <button class="portfolio-more-btn blog-open" type="button" @click.stop="emit('open-blog', index)">مطالعه مقاله</button>
+                            <button class="portfolio-more-btn blog-open" type="button" @click.stop="item.slug && emit('open-blog', item.slug)">مطالعه مقاله</button>
                         </div>
                     </div>
                 </article>
@@ -80,23 +134,31 @@ const getUniformExcerpt = (value, maxLength = 150) => {
                         بازگشت به لیست مقالات
                     </button>
                     <small class="portfolio-meta blog-single-date-inline">
-                        <span>{{ posts[activeBlogIndex]?.date ?? '' }}</span>
+                        <span>{{ selectedPost?.date ?? '' }}</span>
                     </small>
                 </div>
 
-                <article class="blog-detail-item">
-                    <h3 class="portfolio-single-title">{{ posts[activeBlogIndex]?.title }}</h3>
-                    <div v-if="posts[activeBlogIndex]?.imageUrl" class="portfolio-single-image">
-                        <img :src="posts[activeBlogIndex]?.imageUrl" :alt="posts[activeBlogIndex]?.title">
+                <div v-if="loadingDetail" class="panel">
+                    <p class="text-block">در حال دریافت اطلاعات مقاله...</p>
+                </div>
+
+                <div v-else-if="loadDetailError" class="panel">
+                    <p class="text-block">{{ loadDetailError }}</p>
+                </div>
+
+                <article v-else-if="selectedPost" class="blog-detail-item">
+                    <h3 class="portfolio-single-title">{{ selectedPost?.title }}</h3>
+                    <div v-if="selectedPost?.imageUrl" class="portfolio-single-image">
+                        <img :src="selectedPost?.imageUrl" :alt="selectedPost?.title">
                         <button
                             type="button"
                             class="portfolio-zoom-trigger"
-                            :aria-label="`بزرگ‌نمایی تصویر ${posts[activeBlogIndex]?.title}`"
-                            @click.stop="emit('open-image', { src: posts[activeBlogIndex]?.imageUrl, alt: posts[activeBlogIndex]?.title })">
+                            :aria-label="`بزرگ‌نمایی تصویر ${selectedPost?.title}`"
+                            @click.stop="emit('open-image', { src: selectedPost?.imageUrl, alt: selectedPost?.title })">
                             <IconGlyph icon="mdi:magnify-plus" :size="34" />
                         </button>
                     </div>
-                    <div class="blog-detail-content portfolio-single-content panel glass-panel" v-html="posts[activeBlogIndex]?.content"></div>
+                    <div class="blog-detail-content portfolio-single-content panel glass-panel" v-html="highlightedPostContent"></div>
                 </article>
             </div>
         </template>
