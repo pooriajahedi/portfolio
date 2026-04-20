@@ -17,6 +17,7 @@
         site: @json(route('api.public.site')),
         resume: @json(route('api.public.resume')),
         portfolio: @json(route('api.public.portfolio')),
+        portfolioShow: @json(route('api.public.portfolio.show', ['slug' => '__slug__'])),
         blogPosts: @json(route('api.public.blog-posts')),
         contactStore: @json(route('api.public.contact-requests.store')),
     };

@@ -154,6 +154,21 @@ class PortfolioSectionResource extends Resource
                                             ->openable()
                                             ->helperText('فرمت‌های مجاز: jpg, png, webp - حداکثر ۴ مگابایت')
                                             ->columnSpanFull(),
+                                        FileUpload::make('gallery_paths')
+                                            ->label('گالری تصاویر پروژه')
+                                            ->image()
+                                            ->multiple()
+                                            ->reorderable()
+                                            ->appendFiles()
+                                            ->disk('public')
+                                            ->directory('projects/gallery')
+                                            ->visibility('public')
+                                            ->imagePreviewHeight('140')
+                                            ->panelLayout('grid')
+                                            ->downloadable()
+                                            ->openable()
+                                            ->helperText('می‌توانید چند تصویر برای صفحه سینگل انتخاب کنید.')
+                                            ->columnSpanFull(),
                                         Textarea::make('description')
                                             ->label('توضیح پروژه')
                                             ->rows(4)
@@ -175,6 +190,7 @@ class PortfolioSectionResource extends Resource
                                                     'tags' => collect($item['tags'] ?? [])->filter()->values()->all(),
                                                     'project_url' => filled($item['project_url'] ?? null) ? trim((string) $item['project_url']) : null,
                                                     'image_path' => filled($item['image_path'] ?? null) ? (string) $item['image_path'] : null,
+                                                    'gallery_paths' => collect($item['gallery_paths'] ?? [])->filter()->values()->all(),
                                                     'project_category_id' => filled($item['project_category_id'] ?? null) ? (int) $item['project_category_id'] : null,
                                                     'sort_order' => (int) ($item['sort_order'] ?? 0),
                                                     'is_active' => (bool) ($item['is_active'] ?? true),

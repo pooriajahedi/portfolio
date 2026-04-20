@@ -21,12 +21,21 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['open-blog', 'close-blog', 'open-image']);
+
+const getUniformExcerpt = (value, maxLength = 150) => {
+    const normalized = String(value ?? '').replace(/\s+/g, ' ').trim();
+    if (normalized.length <= maxLength) return normalized;
+
+    return `${normalized.slice(0, maxLength).trim()}...`;
+};
 </script>
 
 <template>
     <section class="section" id="blog">
-        <h2>وبلاگ</h2>
-        <div class="underline"></div>
+        <template v-if="activeBlogIndex === null">
+            <h2>وبلاگ</h2>
+            <div class="underline"></div>
+        </template>
 
         <div v-if="loading" class="panel">
             <p class="text-block">در حال دریافت مقالات...</p>
@@ -43,35 +52,51 @@ const emit = defineEmits(['open-blog', 'close-blog', 'open-image']);
                 <article
                     v-for="(item, index) in posts"
                     :key="`${item.title}-${index}`"
-                    class="blog-card glass-panel"
+                    class="blog-card portfolio-card glass-panel"
                     @click="emit('open-blog', index)">
-                    <div v-if="item.imageUrl" class="blog-card-image">
-                        <img :src="item.imageUrl" :alt="item.title">
+                    <div class="portfolio-thumb blog-card-image" :class="{ 'has-image': !!item.imageUrl }">
+                        <template v-if="item.imageUrl">
+                            <img :src="item.imageUrl" :alt="item.title">
+                        </template>
+                        <template v-else>
+                            {{ item.title }}
+                        </template>
                     </div>
-                    <small>{{ item.date ?? '' }}</small>
-                    <h4>{{ item.title }}</h4>
-                    <p>{{ item.excerpt }}</p>
-                    <button class="blog-open" type="button" @click.stop="emit('open-blog', index)">مشاهده مقاله</button>
+                    <div class="portfolio-card-body">
+                        <small class="blog-date">{{ item.date ?? '' }}</small>
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ getUniformExcerpt(item.excerpt) }}</p>
+                        <div class="portfolio-card-foot">
+                            <button class="portfolio-more-btn blog-open" type="button" @click.stop="emit('open-blog', index)">مطالعه مقاله</button>
+                        </div>
+                    </div>
                 </article>
             </div>
 
-            <div v-else class="blog-detail is-open" id="blogDetail">
-                <button class="blog-back" type="button" @click="emit('close-blog')">بازگشت به لیست مقالات</button>
+            <div v-else class="blog-detail is-open portfolio-single" id="blogDetail">
+                <div class="portfolio-single-head">
+                    <button class="portfolio-single-back" type="button" @click="emit('close-blog')">
+                        <span class="portfolio-single-back-icon" aria-hidden="true">→</span>
+                        بازگشت به لیست مقالات
+                    </button>
+                    <small class="portfolio-meta blog-single-date-inline">
+                        <span>{{ posts[activeBlogIndex]?.date ?? '' }}</span>
+                    </small>
+                </div>
 
-                <article class="blog-detail-item" style="display:block;">
-                    <small style="display:block;color:#9ca5b2;margin-bottom:8px;">{{ posts[activeBlogIndex]?.date ?? '' }}</small>
-                    <h3 style="font-size:clamp(28px,2.4vw,36px);line-height:1.3;margin-bottom:12px;">{{ posts[activeBlogIndex]?.title }}</h3>
-                    <div v-if="posts[activeBlogIndex]?.imageUrl" class="blog-detail-image">
+                <article class="blog-detail-item">
+                    <h3 class="portfolio-single-title">{{ posts[activeBlogIndex]?.title }}</h3>
+                    <div v-if="posts[activeBlogIndex]?.imageUrl" class="portfolio-single-image">
                         <img :src="posts[activeBlogIndex]?.imageUrl" :alt="posts[activeBlogIndex]?.title">
                         <button
                             type="button"
-                            class="blog-zoom-trigger"
+                            class="portfolio-zoom-trigger"
                             :aria-label="`بزرگ‌نمایی تصویر ${posts[activeBlogIndex]?.title}`"
                             @click.stop="emit('open-image', { src: posts[activeBlogIndex]?.imageUrl, alt: posts[activeBlogIndex]?.title })">
-                            <IconGlyph icon="mdi:magnify-plus" :size="34" class-name="blog-zoom-icon" />
+                            <IconGlyph icon="mdi:magnify-plus" :size="34" />
                         </button>
                     </div>
-                    <div class="blog-detail-content glass-panel" v-html="posts[activeBlogIndex]?.content"></div>
+                    <div class="blog-detail-content portfolio-single-content panel glass-panel" v-html="posts[activeBlogIndex]?.content"></div>
                 </article>
             </div>
         </template>

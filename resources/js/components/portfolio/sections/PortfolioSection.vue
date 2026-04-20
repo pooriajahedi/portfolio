@@ -28,7 +28,15 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['change-category', 'open-project', 'open-image']);
+const emit = defineEmits(['change-category', 'open-image', 'open-detail']);
+
+const getUniformSummary = (value, maxLength = 150) => {
+    const normalized = String(value ?? '').replace(/\s+/g, ' ').trim();
+    if (normalized.length <= maxLength) return normalized;
+
+    return `${normalized.slice(0, maxLength).trim()}...`;
+};
+
 </script>
 
 <template>
@@ -64,14 +72,14 @@ const emit = defineEmits(['change-category', 'open-project', 'open-image']);
         <div v-else class="portfolio-grid">
             <article
                 v-for="item in projects"
-                :key="item.title"
+                :key="item.slug || item.id || item.title"
                 class="portfolio-card glass-panel"
-                :class="{ 'is-link': !!item.projectUrl }"
+                :class="{ 'is-link': !!item.slug }"
                 :data-category="item.category?.slug ?? 'uncategorized'"
                 role="link"
                 tabindex="0"
                 :aria-label="`مشاهده پروژه ${item.title}`"
-                @click="emit('open-project', item.projectUrl)">
+                @click="item.slug && emit('open-detail', item.slug)">
                 <div class="portfolio-thumb" :class="{ 'has-image': !!item.imageUrl }">
                     <template v-if="item.imageUrl">
                         <img :src="item.imageUrl" :alt="item.title">
@@ -87,10 +95,25 @@ const emit = defineEmits(['change-category', 'open-project', 'open-image']);
                         {{ item.title }}
                     </template>
                 </div>
-                <h4>{{ item.title }}</h4>
-                <p>{{ item.text }}</p>
-                <div v-if="(item.tags ?? []).length" class="portfolio-tags">
-                    <span v-for="tag in item.tags" :key="`${item.title}-${tag}`" class="portfolio-tag">{{ tag }}</span>
+                <div class="portfolio-card-body">
+                    <h4>{{ item.title }}</h4>
+                    <p>{{ getUniformSummary(item.text) }}</p>
+
+                    <div v-if="(item.tags ?? []).length" class="portfolio-tags">
+                        <span v-for="tag in item.tags" :key="`${item.title}-${tag}`" class="portfolio-tag">{{ tag }}</span>
+                    </div>
+
+                    <div class="portfolio-card-foot">
+                        <button
+                            type="button"
+                            class="portfolio-more-btn"
+                            @click.stop="item.slug && emit('open-detail', item.slug)">
+                            جزئیات پروژه
+                        </button>
+                        <small v-if="item.readingMinutes" class="portfolio-meta">
+                            <span>{{ item.readingMinutes }} دقیقه</span>
+                        </small>
+                    </div>
                 </div>
             </article>
         </div>

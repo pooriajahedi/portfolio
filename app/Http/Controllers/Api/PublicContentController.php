@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BlogPostResource;
 use App\Http\Resources\PortfolioFeedResource;
+use App\Http\Resources\ProjectDetailResource;
 use App\Http\Resources\ProjectCategoryResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\ResumeItemResource;
@@ -19,6 +20,7 @@ use App\Models\ProjectCategory;
 use App\Models\ResumeItem;
 use App\Models\SiteSetting;
 use App\Models\Skill;
+use App\Support\ProjectSlug;
 use App\Support\PublicApiCache;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -76,12 +78,16 @@ class PublicContentController extends Controller
                 ->orderBy('sort_order')
                 ->orderBy('id')
                 ->get([
+                    'id',
                     'title',
                     'description',
                     'tags',
                     'project_url',
                     'image_path',
+                    'gallery_paths',
                     'project_category_id',
+                    'created_at',
+                    'updated_at',
                 ]);
 
             return [
@@ -112,6 +118,41 @@ class PublicContentController extends Controller
         });
 
         return BlogPostResource::collection(collect($posts));
+    }
+
+    public function portfolioProject(string $slug): ProjectDetailResource
+    {
+        $payload = PublicApiCache::remember(PublicApiCache::portfolioProjectKey($slug), function () use ($slug): array {
+            $projects = Project::query()
+                ->active()
+                ->with('category:id,title,slug')
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get([
+                    'id',
+                    'title',
+                    'description',
+                    'tags',
+                    'project_url',
+                    'image_path',
+                    'gallery_paths',
+                    'project_category_id',
+                    'created_at',
+                    'updated_at',
+                ]);
+
+            $project = $projects->first(
+                fn (Project $item): bool => ProjectSlug::make((string) $item->title, $item->id) === $slug
+            );
+
+            abort_unless($project, 404);
+
+            return [
+                'project' => $project,
+            ];
+        });
+
+        return new ProjectDetailResource($payload);
     }
 
     /**

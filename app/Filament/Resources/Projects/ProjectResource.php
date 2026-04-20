@@ -10,6 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -56,6 +57,23 @@ class ProjectResource extends Resource
                             ->default(fn () => ((int) Project::query()->max('sort_order')) + 1),
                         TagsInput::make('tags')
                             ->label('تگ ها'),
+                        FileUpload::make('image_path')
+                            ->label('تصویر کاور')
+                            ->image()
+                            ->disk('public')
+                            ->directory('projects')
+                            ->visibility('public')
+                            ->columnSpanFull(),
+                        FileUpload::make('gallery_paths')
+                            ->label('گالری تصاویر')
+                            ->image()
+                            ->multiple()
+                            ->reorderable()
+                            ->appendFiles()
+                            ->disk('public')
+                            ->directory('projects/gallery')
+                            ->visibility('public')
+                            ->columnSpanFull(),
                         Textarea::make('description')
                             ->label('توضیح پروژه')
                             ->rows(4)

@@ -14,6 +14,7 @@ class Project extends Model
         'tags',
         'project_url',
         'image_path',
+        'gallery_paths',
         'project_category_id',
         'sort_order',
         'is_active',
@@ -23,6 +24,7 @@ class Project extends Model
     {
         return [
             'tags' => 'array',
+            'gallery_paths' => 'array',
             'project_category_id' => 'integer',
             'sort_order' => 'integer',
             'is_active' => 'boolean',

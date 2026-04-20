@@ -45,10 +45,23 @@ export function usePublicContentApi(apiUrls = {}) {
         return payload;
     };
 
+    const resolvePortfolioShowUrl = (slug) => {
+        const normalized = String(slug ?? '').trim();
+        const encodedSlug = encodeURIComponent(normalized);
+        const template = String(apiUrls.portfolioShow ?? '').trim();
+
+        if (template.includes('__slug__')) {
+            return template.replace('__slug__', encodedSlug);
+        }
+
+        return `/api/portfolio/${encodedSlug}`;
+    };
+
     return {
         fetchSiteState: async () => unwrapResource(await fetchJson(apiUrls.site)),
         fetchResumeFeed: async () => fetchJson(apiUrls.resume),
         fetchPortfolioFeed: async () => unwrapResource(await fetchJson(apiUrls.portfolio)),
+        fetchPortfolioProject: async (slug) => unwrapResource(await fetchJson(resolvePortfolioShowUrl(slug))),
         fetchBlogFeed: async () => fetchJson(apiUrls.blogPosts),
         submitContactRequest: async (payload, csrfToken) => postJson(apiUrls.contactStore, payload, csrfToken),
     };

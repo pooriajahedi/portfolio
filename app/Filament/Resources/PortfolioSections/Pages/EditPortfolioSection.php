@@ -57,6 +57,7 @@ class EditPortfolioSection extends EditRecord
                 'tags',
                 'project_url',
                 'image_path',
+                'gallery_paths',
                 'project_category_id',
                 'sort_order',
                 'is_active',
@@ -68,6 +69,7 @@ class EditPortfolioSection extends EditRecord
                 'tags' => $project->tags ?? [],
                 'project_url' => $project->project_url,
                 'image_path' => $project->image_path,
+                'gallery_paths' => $project->gallery_paths ?? [],
                 'project_category_id' => $project->project_category_id,
                 'sort_order' => $project->sort_order,
                 'is_active' => $project->is_active,
@@ -146,6 +148,7 @@ class EditPortfolioSection extends EditRecord
                 'project_url' => filled($item['project_url'] ?? null) ? trim((string) $item['project_url']) : null,
                 'tags' => collect($item['tags'] ?? [])->filter()->values()->all(),
                 'image_path' => filled($item['image_path'] ?? null) ? (string) $item['image_path'] : null,
+                'gallery_paths' => collect($item['gallery_paths'] ?? [])->filter()->values()->all(),
                 'project_category_id' => in_array((int) ($item['project_category_id'] ?? 0), $validCategoryIds, true)
                     ? (int) $item['project_category_id']
                     : null,

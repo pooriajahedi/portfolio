@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/site', [PublicContentController::class, 'site'])->name('api.public.site');
 Route::get('/resume-items', [PublicContentController::class, 'resume'])->name('api.public.resume');
 Route::get('/portfolio', [PublicContentController::class, 'portfolio'])->name('api.public.portfolio');
+Route::get('/portfolio/{slug}', [PublicContentController::class, 'portfolioProject'])->name('api.public.portfolio.show');
 Route::get('/blog-posts', [PublicContentController::class, 'blogPosts'])->name('api.public.blog-posts');
 Route::post('/contact-requests', [ContactRequestApiController::class, 'store'])
     ->middleware('throttle:4,1')

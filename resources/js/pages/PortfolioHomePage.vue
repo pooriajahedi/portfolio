@@ -8,6 +8,7 @@ import TabsNav from '../components/portfolio/TabsNav.vue';
 import AboutSection from '../components/portfolio/sections/AboutSection.vue';
 import ResumeSection from '../components/portfolio/sections/ResumeSection.vue';
 import PortfolioSection from '../components/portfolio/sections/PortfolioSection.vue';
+import PortfolioSingleSection from '../components/portfolio/sections/PortfolioSingleSection.vue';
 import BlogSection from '../components/portfolio/sections/BlogSection.vue';
 import ContactSection from '../components/portfolio/sections/ContactSection.vue';
 import { usePublicContentApi } from '../composables/usePublicContentApi';
@@ -23,24 +24,28 @@ const props = defineProps({
     },
 });
 
-const { fetchSiteState, fetchResumeFeed, fetchPortfolioFeed, fetchBlogFeed, submitContactRequest } = usePublicContentApi(props.apiUrls);
+const { fetchSiteState, fetchResumeFeed, fetchPortfolioFeed, fetchPortfolioProject, fetchBlogFeed, submitContactRequest } = usePublicContentApi(props.apiUrls);
 
 const siteState = ref({});
 const resumeItems = ref([]);
 const portfolioTitle = ref('نمونه کارها');
 const projectCategories = ref([]);
 const projects = ref([]);
+const selectedProjectSlug = ref('');
+const selectedProject = ref(null);
 const blogPosts = ref([]);
 
 const loadingSite = ref(true);
 const loadingResume = ref(true);
 const loadingPortfolio = ref(true);
 const loadingBlog = ref(true);
+const loadingProjectDetail = ref(false);
 
 const siteError = ref('');
 const resumeError = ref('');
 const portfolioError = ref('');
 const blogError = ref('');
+const projectDetailError = ref('');
 
 const activeCategory = ref('all');
 const activeTab = ref('about');
@@ -48,6 +53,8 @@ const activeBlogIndex = ref(null);
 const modalOpen = ref(false);
 const modalImage = ref('');
 const modalAlt = ref('');
+const modalImages = ref([]);
+const modalIndex = ref(0);
 
 const profile = computed(() => siteState.value.profile ?? {});
 const about = computed(() => siteState.value.about ?? {});
@@ -90,6 +97,8 @@ const filteredProjects = computed(() => {
     if (activeCategory.value === 'all') return projects.value;
     return projects.value.filter((item) => (item?.category?.slug ?? 'uncategorized') === activeCategory.value);
 });
+
+const isPortfolioSingle = computed(() => selectedProjectSlug.value !== '');
 
 const compactUrl = (value) => {
     const normalized = String(value ?? '').trim();
@@ -169,15 +178,20 @@ const selectTab = (tab) => {
     if (tab !== 'blog') {
         activeBlogIndex.value = null;
     }
+    if (tab !== 'portfolio') {
+        clearPortfolioSingleRoute(false);
+    }
 
     requestAnimationFrame(() => animateTabEntrance(tab));
     nextTick(() => initHoverLight());
 };
 
-const openImageModal = ({ src, alt = '' }) => {
+const openImageModal = ({ src, alt = '', images = [], startIndex = 0 }) => {
     if (!src) return;
     modalImage.value = src;
     modalAlt.value = alt;
+    modalImages.value = Array.isArray(images) ? images : [];
+    modalIndex.value = Number.isFinite(Number(startIndex)) ? Math.max(0, Number(startIndex)) : 0;
     modalOpen.value = true;
     document.body.style.overflow = 'hidden';
 };
@@ -186,13 +200,80 @@ const closeImageModal = () => {
     modalOpen.value = false;
     modalImage.value = '';
     modalAlt.value = '';
+    modalImages.value = [];
+    modalIndex.value = 0;
     document.body.style.overflow = '';
 };
 
-const openProject = (url) => {
+const extractPortfolioSlugFromPath = () => {
+    const match = window.location.pathname.match(/^\/portfolio\/([^/]+)$/i);
+    return match?.[1] ? decodeURIComponent(match[1]) : '';
+};
+
+const clearPortfolioSingleRoute = (pushState = true) => {
+    selectedProjectSlug.value = '';
+    selectedProject.value = null;
+    projectDetailError.value = '';
+
+    if (pushState && window.location.pathname !== '/') {
+        window.history.pushState({}, '', '/');
+    }
+};
+
+const loadPortfolioProject = async (slug) => {
+    const normalizedSlug = String(slug ?? '').trim();
+    if (normalizedSlug === '') return;
+
+    loadingProjectDetail.value = true;
+    projectDetailError.value = '';
+
+    try {
+        const payload = await fetchPortfolioProject(normalizedSlug);
+        selectedProjectSlug.value = normalizedSlug;
+        selectedProject.value = payload?.project ?? null;
+    } catch {
+        selectedProject.value = null;
+        projectDetailError.value = 'پروژه موردنظر پیدا نشد یا خطایی در دریافت اطلاعات رخ داد.';
+    } finally {
+        loadingProjectDetail.value = false;
+        nextTick(() => {
+            initHoverLight();
+            requestAnimationFrame(() => animateTabEntrance('portfolio-single'));
+        });
+    }
+};
+
+const openProjectDetail = (slug) => {
+    const normalizedSlug = String(slug ?? '').trim();
+    if (normalizedSlug === '') return;
+
+    activeTab.value = 'portfolio';
+    if (window.location.pathname !== `/portfolio/${normalizedSlug}`) {
+        window.history.pushState({}, '', `/portfolio/${encodeURIComponent(normalizedSlug)}`);
+    }
+    loadPortfolioProject(normalizedSlug);
+};
+
+const handlePortfolioBack = () => {
+    clearPortfolioSingleRoute(true);
+};
+
+const openProjectUrlFromSingle = (url) => {
     const normalized = normalizeExternalUrl(url);
     if (!normalized) return;
     window.open(normalized, '_blank', 'noopener,noreferrer');
+};
+
+const handlePopState = () => {
+    const slug = extractPortfolioSlugFromPath();
+
+    if (slug) {
+        activeTab.value = 'portfolio';
+        loadPortfolioProject(slug);
+        return;
+    }
+
+    clearPortfolioSingleRoute(false);
 };
 
 const submitContact = async (payload) => {
@@ -232,7 +313,7 @@ const animateTabEntrance = (tab) => {
     const section = document.getElementById(tab);
     if (!section) return;
 
-    const targets = section.querySelectorAll('h2, .underline, .text-block, .service-card, .skill-item, .timeline-item, .portfolio-card, .blog-card, .blog-detail-item, .contact-form, .resume-download-btn, .site-credit');
+    const targets = section.querySelectorAll('h2, .underline, .text-block, .service-card, .skill-item, .timeline-item, .portfolio-card, .portfolio-single-title, .portfolio-single-image, .portfolio-single-content, .portfolio-related-card, .blog-card, .blog-detail-item, .contact-form, .resume-download-btn, .site-credit');
 
     targets.forEach((element, index) => {
         element.animate(
@@ -376,6 +457,7 @@ const initHoverLight = () => {
 onMounted(async () => {
     document.addEventListener('keydown', handleEsc);
     document.addEventListener('contextmenu', preventContextMenu);
+    window.addEventListener('popstate', handlePopState);
     initMatrixRain();
 
     try {
@@ -408,6 +490,12 @@ onMounted(async () => {
         projectCategories.value = portfolioFeed?.categories ?? [];
         projects.value = portfolioFeed?.projects ?? [];
         portfolioError.value = '';
+
+        const routeSlug = extractPortfolioSlugFromPath();
+        if (routeSlug) {
+            activeTab.value = 'portfolio';
+            await loadPortfolioProject(routeSlug);
+        }
     } catch {
         portfolioError.value = 'خطا در دریافت داده‌های نمونه‌کارها.';
     } finally {
@@ -432,6 +520,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleEsc);
     document.removeEventListener('contextmenu', preventContextMenu);
+    window.removeEventListener('popstate', handlePopState);
 
     if (matrixCleanup) matrixCleanup();
     if (hoverLightCleanup) hoverLightCleanup();
@@ -487,7 +576,7 @@ onBeforeUnmount(() => {
                     </div>
 
                     <PortfolioSection
-                        v-show="activeTab === 'portfolio'"
+                        v-show="activeTab === 'portfolio' && !isPortfolioSingle"
                         :title="portfolioTitle"
                         :categories="projectCategories"
                         :projects="filteredProjects"
@@ -495,7 +584,16 @@ onBeforeUnmount(() => {
                         :loading="loadingPortfolio"
                         :load-error="portfolioError"
                         @change-category="activeCategory = $event"
-                        @open-project="openProject"
+                        @open-detail="openProjectDetail"
+                        @open-image="openImageModal" />
+
+                    <PortfolioSingleSection
+                        v-show="activeTab === 'portfolio' && isPortfolioSingle"
+                        :project="selectedProject"
+                        :loading="loadingProjectDetail"
+                        :load-error="projectDetailError"
+                        @back="handlePortfolioBack"
+                        @open-project-url="openProjectUrlFromSingle"
                         @open-image="openImageModal" />
 
                     <BlogSection
@@ -525,6 +623,12 @@ onBeforeUnmount(() => {
             </main>
         </div>
 
-        <ImageModal :open="modalOpen" :src="modalImage" :alt="modalAlt" @close="closeImageModal" />
+        <ImageModal
+            :open="modalOpen"
+            :src="modalImage"
+            :alt="modalAlt"
+            :images="modalImages"
+            :start-index="modalIndex"
+            @close="closeImageModal" />
     </div>
 </template>
