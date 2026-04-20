@@ -187,7 +187,17 @@ const selectTab = (tab) => {
     }
 
     requestAnimationFrame(() => animateTabEntrance(tab));
-    nextTick(() => initHoverLight());
+    nextTick(() => {
+        initHoverLight();
+
+        const section = document.getElementById(tab);
+        if (section) {
+            section.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            });
+        }
+    });
 };
 
 const openImageModal = ({ src, alt = '', images = [], startIndex = 0 }) => {

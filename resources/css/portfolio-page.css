@@ -383,6 +383,12 @@
             overflow: hidden;
         }
 
+        .tabs-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 24;
+        }
+
         .tabs {
             position: sticky;
             top: 0;
@@ -419,6 +425,107 @@
             height: 2px;
             border-radius: 99px;
             background: var(--accent);
+        }
+
+        .tabs-mobile-toggle,
+        .tabs-mobile-backdrop,
+        .tabs-mobile-drawer {
+            display: none;
+        }
+
+        .tabs-mobile-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid rgba(164, 201, 244, 0.35);
+            background: rgba(18, 29, 58, 0.62);
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .tabs-mobile-toggle span {
+            width: 18px;
+            height: 2px;
+            border-radius: 4px;
+            background: #deebff;
+        }
+
+        .tabs-mobile-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 10, 16, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 50;
+        }
+
+        .tabs-mobile-backdrop.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tabs-mobile-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: min(320px, 82vw);
+            height: 100vh;
+            padding: 18px 16px;
+            background: linear-gradient(180deg, #171d2b 0%, #121a28 100%);
+            border-left: 1px solid rgba(164, 201, 244, 0.26);
+            box-shadow: -10px 0 36px rgba(0, 0, 0, 0.35);
+            transform: translateX(110%);
+            transition: transform 0.24s ease;
+            z-index: 60;
+        }
+
+        .tabs-mobile-drawer.is-open {
+            transform: translateX(0);
+        }
+
+        .tabs-mobile-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            color: #eef4ff;
+        }
+
+        .tabs-mobile-head button {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 1px solid rgba(164, 201, 244, 0.32);
+            background: rgba(11, 18, 32, 0.48);
+            color: #dbe8fb;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .tabs-mobile-links {
+            display: grid;
+            gap: 8px;
+        }
+
+        .tabs-mobile-links a {
+            display: block;
+            border: 1px solid rgba(164, 201, 244, 0.18);
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: #d8e6fc;
+            background: rgba(16, 27, 50, 0.45);
+            font-size: 14px;
+        }
+
+        .tabs-mobile-links a.active {
+            color: var(--theme-filter-bg-active-text);
+            background: linear-gradient(90deg, var(--theme-filter-active-start), var(--theme-filter-active-end));
+            border-color: transparent;
+            font-weight: 700;
         }
 
         .section {
@@ -1827,10 +1934,27 @@
                 white-space: normal;
             }
 
-            .tabs {
-                overflow-x: auto;
-                white-space: nowrap;
+            .tabs-wrap {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin: 0 -26px;
+                padding: 10px 26px;
+                background: var(--glass);
+                border: 1px solid var(--glass-border);
+                border-radius: calc(var(--radius) - 0.3rem);
+                backdrop-filter: blur(var(--blur-glass));
+                -webkit-backdrop-filter: blur(var(--blur-glass));
+                box-shadow: var(--shadow-glass);
             }
+
+            .tabs {
+                display: none;
+            }
+
+            .tabs-mobile-toggle { display: flex; }
+            .tabs-mobile-backdrop { display: block; }
+            .tabs-mobile-drawer { display: block; }
 
             .section h2 {
                 font-size: 30px;
