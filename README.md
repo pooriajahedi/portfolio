@@ -1,59 +1,156 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Portfolio (Laravel 12 + Filament 4 + Vue 3)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+پروژه شخصی معرفی مهارت‌ها، نمونه‌کارها و مقالات با پنل مدیریت حرفه‌ای.
 
-## About Laravel
+## معرفی
+این پروژه یک وب‌سایت پورتفولیو با رابط کاربری مدرن و پنل مدیریت کامل است که با **Laravel 12**، **Filament 4** و **Vue 3** توسعه داده شده است.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+در این سیستم می‌توان تمام محتوای سایت را از پنل مدیریت کنترل کرد (نمایه شخصی، درباره من، مهارت‌ها، نمونه‌کارها، مقالات، راه‌های ارتباطی، تنظیمات سایت و رزومه PDF).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## امکانات اصلی
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### بخش وب‌سایت
+- نمایش پروفایل شخصی و وضعیت فعلی
+- نمایش درباره من، مهارت‌ها و سوابق حرفه‌ای
+- نمایش نمونه‌کارها (لیست + جزئیات)
+- نمایش مقالات (لیست + جزئیات)
+- فرم تماس با من
+- طراحی RTL و فارسی
+- دریافت داده‌ها از API (به‌جای رندر مستقیم داده در Blade)
 
-## Learning Laravel
+### بخش پنل مدیریت (Filament)
+- مدیریت نمایه شخصی
+- مدیریت بخش درباره من و دسته‌بندی مهارت‌ها
+- مدیریت مهارت‌ها
+- مدیریت پروژه‌ها و دسته‌بندی پروژه‌ها
+- مدیریت مقالات
+- مدیریت درخواست‌های تماس
+- تنظیمات سایت (تم رنگی + تصویر پیش‌نمایش شبکه‌های اجتماعی)
+- مدیریت رزومه:
+  - تولید رزومه PDF نسخه‌بندی‌شده
+  - بارگذاری دستی فایل رزومه
+  - انتخاب فایل فعال
+  - حذف تکی و گروهی با کنترل ایمن برای فایل فعال
+  - پیش‌نمایش PDF داخل مودال در پنل
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## سیستم رزومه PDF
+- تولید PDF با **Browsershot (Headless Chrome)**
+- قالب رزومه سفارشی و فارسی
+- پشتیبانی از فونت سفارشی
+- نمایش آیکن‌های شبکه اجتماعی در خروجی
+- لینک‌های قابل کلیک داخل PDF:
+  - شبکه‌های اجتماعی
+  - لینک پروژه‌ها (در صورت ثبت)
+- نسخه‌بندی فایل‌ها (مثل `cv-v001.pdf`, `cv-v002.pdf`, ...)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## تکنولوژی‌ها
 
-## Laravel Sponsors
+![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![Filament](https://img.shields.io/badge/Filament-4-F59E0B?style=for-the-badge)
+![Vue.js](https://img.shields.io/badge/Vue.js-3-42B883?style=for-the-badge&logo=vuedotjs&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Puppeteer](https://img.shields.io/badge/Puppeteer-Browsershot-40B5A4?style=for-the-badge&logo=puppeteer&logoColor=white)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## پیش‌نیازها
+قبل از اجرا مطمئن شوید نصب هستند:
+- PHP 8.2+
+- Composer
+- Node.js 18+ و npm
+- MySQL
+- Google Chrome (برای تولید PDF با Browsershot)
 
-### Premium Partners
+## نصب و اجرا
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1) دریافت پروژه
+```bash
+git clone https://github.com/pooriajahedi/portfolio.git
+cd portfolio
+```
 
-## Contributing
+### 2) نصب وابستگی‌ها
+```bash
+composer install
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3) تنظیم فایل محیط
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+فایل `.env` را با اطلاعات دیتابیس خودتان تنظیم کنید:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4) اجرای مایگریشن‌ها
+```bash
+php artisan migrate
+```
 
-## Security Vulnerabilities
+### 5) لینک storage
+```bash
+php artisan storage:link
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 6) بیلد یا اجرای فرانت
+حالت توسعه:
+```bash
+npm run dev
+```
+
+حالت production:
+```bash
+npm run build
+```
+
+### 7) اجرای پروژه
+```bash
+php artisan serve
+```
+یا در محیط Valet از دامنه local خودتان (مثلا `https://portfolio.test`).
+
+## مسیرهای مهم
+- وب‌سایت: `/`
+- پنل مدیریت: `/admin`
+- پیش‌نمایش قالب رزومه (ادمین): `/admin/cv-preview`
+
+## API عمومی
+چند مسیر اصلی API:
+- `/api/hero`
+- `/api/about`
+- `/api/resume-items`
+- `/api/portfolio`
+- `/api/blog`
+- `/api/contact`
+
+(براساس وضعیت پروژه ممکن است نام/خروجی بعضی endpointها تغییر کند.)
+
+## نکات Deployment
+- برای تولید PDF روی سرور، Chrome/Chromium باید در دسترس باشد.
+- مجوز نوشتن برای `storage/` و `bootstrap/cache/` الزامی است.
+- بعد از دیپلوی:
+```bash
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+## توسعه‌دهنده
+**Pooria Jahedi**
+
+- GitHub: [github.com/pooriajahedi](https://github.com/pooriajahedi)
+- LinkedIn: [linkedin.com/in/pooria-jahedi](https://linkedin.com/in/pooria-jahedi)
 
 ## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced under the MIT license.
