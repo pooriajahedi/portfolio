@@ -8,6 +8,8 @@ class SiteSetting extends Model
 {
     public const KEY_THEME_STYLE = 'site_theme_style';
     public const KEY_SOCIAL_PREVIEW_IMAGE = 'site_social_preview_image';
+    public const KEY_CV_SIDE_IMAGE = 'site_cv_side_image';
+    public const KEY_CV_SIDE_IMAGE_POSITION = 'site_cv_side_image_position';
 
     protected $fillable = [
         'key',
@@ -19,6 +21,8 @@ class SiteSetting extends Model
         return [
             self::KEY_THEME_STYLE => 'gold',
             self::KEY_SOCIAL_PREVIEW_IMAGE => '',
+            self::KEY_CV_SIDE_IMAGE => '',
+            self::KEY_CV_SIDE_IMAGE_POSITION => 'left',
         ];
     }
 

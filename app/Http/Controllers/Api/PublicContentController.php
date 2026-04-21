@@ -245,6 +245,7 @@ class PublicContentController extends Controller
                 'role' => $hero?->role ?: 'برنامه نویس ارشد بک اند و فول استک',
                 'avatarImage' => $hero?->avatar_image ?: '/images/hero/pooria-hero.jpeg',
                 'resumeFile' => $hero?->resume_file,
+                'resumeFileVersion' => $hero?->updated_at?->timestamp,
                 'currentStatus' => [
                     'key' => $hero?->current_status ?: HeroSection::STATUS_LOOKING_FOR_JOB,
                     'label' => HeroSection::statusLabel($hero?->current_status ?: HeroSection::STATUS_LOOKING_FOR_JOB),

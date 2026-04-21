@@ -80,11 +80,19 @@ const avatarImage = computed(() => {
 
 const resumeFileUrl = computed(() => {
     const raw = String(profile.value?.resumeFile ?? '').trim();
+    const version = String(profile.value?.resumeFileVersion ?? '').trim();
 
     if (raw === '') return '';
-    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) return raw;
 
-    return `/storage/${raw.replace(/^\/+/, '')}`;
+    const baseUrl = raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')
+        ? raw
+        : `/storage/${raw.replace(/^\/+/, '')}`;
+
+    if (version === '') return baseUrl;
+
+    const separator = baseUrl.includes('?') ? '&' : '?';
+
+    return `${baseUrl}${separator}v=${encodeURIComponent(version)}`;
 });
 
 const groupedSkills = computed(() => {

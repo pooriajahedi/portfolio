@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CvPreviewController;
 use App\Http\Controllers\PortfolioController;
 use Illuminate\Support\Facades\Route;
 
@@ -8,3 +9,7 @@ Route::get('/portfolio/{slug}', [PortfolioController::class, 'index'])
     ->where('slug', '[A-Za-z0-9\-]+');
 Route::get('/blog/{slug}', [PortfolioController::class, 'index'])
     ->where('slug', '[A-Za-z0-9\-]+');
+
+Route::get('/admin/cv-preview', CvPreviewController::class)
+    ->middleware('auth')
+    ->name('admin.cv-preview');
