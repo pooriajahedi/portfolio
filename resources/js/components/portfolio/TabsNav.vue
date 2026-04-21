@@ -1,14 +1,19 @@
 <script setup>
 import { ref } from 'vue';
+import IconGlyph from '../IconGlyph.vue';
 
 const props = defineProps({
     activeTab: {
         type: String,
         required: true,
     },
+    themeMode: {
+        type: String,
+        default: 'dark',
+    },
 });
 
-const emit = defineEmits(['change']);
+const emit = defineEmits(['change', 'toggle-theme']);
 const mobileMenuOpen = ref(false);
 
 const tabs = [
@@ -22,6 +27,10 @@ const tabs = [
 const changeTab = (tabKey) => {
     emit('change', tabKey);
     mobileMenuOpen.value = false;
+};
+
+const toggleTheme = () => {
+    emit('toggle-theme');
 };
 </script>
 
@@ -39,6 +48,20 @@ const changeTab = (tabKey) => {
         </nav>
 
         <button
+            class="theme-toggle"
+            type="button"
+            :aria-label="themeMode === 'light' ? 'فعال‌سازی تم تیره' : 'فعال‌سازی تم روشن'"
+            @click="toggleTheme">
+            <span class="theme-toggle-track" :class="{ 'is-light': themeMode === 'light' }">
+                <span class="theme-toggle-thumb">
+                    <span class="theme-toggle-icon" aria-hidden="true">
+                        <IconGlyph :icon="themeMode === 'light' ? 'mdi:white-balance-sunny' : 'mdi:moon-waning-crescent'" :size="14" />
+                    </span>
+                </span>
+            </span>
+        </button>
+
+        <button
             class="tabs-mobile-toggle"
             type="button"
             aria-label="باز کردن منو"
@@ -49,26 +72,28 @@ const changeTab = (tabKey) => {
             <span></span>
         </button>
 
-        <div
-            class="tabs-mobile-backdrop"
-            :class="{ 'is-open': mobileMenuOpen }"
-            @click="mobileMenuOpen = false"></div>
+        <teleport to="body">
+            <div
+                class="tabs-mobile-backdrop"
+                :class="{ 'is-open': mobileMenuOpen }"
+                @click="mobileMenuOpen = false"></div>
 
-        <aside class="tabs-mobile-drawer" :class="{ 'is-open': mobileMenuOpen }" aria-label="منوی ناوبری">
-            <div class="tabs-mobile-head">
-                <strong>منو</strong>
-                <button type="button" aria-label="بستن منو" @click="mobileMenuOpen = false">✕</button>
-            </div>
-            <nav class="tabs-mobile-links">
-                <a
-                    v-for="tab in tabs"
-                    :key="`mobile-${tab.key}`"
-                    :href="`#${tab.key}`"
-                    :class="{ active: activeTab === tab.key }"
-                    @click.prevent="changeTab(tab.key)">
-                    {{ tab.label }}
-                </a>
-            </nav>
-        </aside>
+            <aside class="tabs-mobile-drawer" :class="{ 'is-open': mobileMenuOpen }" aria-label="منوی ناوبری">
+                <div class="tabs-mobile-head">
+                    <strong>منو</strong>
+                    <button type="button" aria-label="بستن منو" @click="mobileMenuOpen = false">✕</button>
+                </div>
+                <nav class="tabs-mobile-links">
+                    <a
+                        v-for="tab in tabs"
+                        :key="`mobile-${tab.key}`"
+                        :href="`#${tab.key}`"
+                        :class="{ active: activeTab === tab.key }"
+                        @click.prevent="changeTab(tab.key)">
+                        {{ tab.label }}
+                    </a>
+                </nav>
+            </aside>
+        </teleport>
     </div>
 </template>

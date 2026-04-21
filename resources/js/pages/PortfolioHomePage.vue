@@ -53,6 +53,7 @@ const blogDetailError = ref('');
 
 const activeCategory = ref('all');
 const activeTab = ref('about');
+const themeMode = ref('dark');
 const modalOpen = ref(false);
 const modalImage = ref('');
 const modalAlt = ref('');
@@ -382,6 +383,30 @@ const applyThemeStyle = (themeStyle) => {
     document.body.setAttribute('data-theme-style', safeTheme);
 };
 
+const applyThemeMode = (mode) => {
+    const safeMode = mode === 'light' ? 'light' : 'dark';
+    themeMode.value = safeMode;
+    document.body.setAttribute('data-theme-mode', safeMode);
+};
+
+const initThemeMode = () => {
+    const stored = String(window.localStorage.getItem('portfolio-theme-mode') ?? '').trim();
+
+    if (stored === 'light' || stored === 'dark') {
+        applyThemeMode(stored);
+        return;
+    }
+
+    const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? true;
+    applyThemeMode(prefersDark ? 'dark' : 'light');
+};
+
+const toggleThemeMode = () => {
+    const nextMode = themeMode.value === 'dark' ? 'light' : 'dark';
+    applyThemeMode(nextMode);
+    window.localStorage.setItem('portfolio-theme-mode', nextMode);
+};
+
 const handleEsc = (event) => {
     if (event.key === 'Escape') {
         if (modalOpen.value) closeImageModal();
@@ -451,7 +476,8 @@ const initMatrixRain = () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
 
-        context.fillStyle = 'rgba(3, 9, 20, 0.12)';
+        const matrixFade = getComputedStyle(document.body).getPropertyValue('--matrix-fade-rgb').trim() || '3, 9, 20';
+        context.fillStyle = `rgba(${matrixFade}, 0.12)`;
         context.fillRect(0, 0, width, height);
 
         context.font = `${fontSize}px monospace`;
@@ -542,6 +568,7 @@ const initHoverLight = () => {
 };
 
 onMounted(async () => {
+    initThemeMode();
     document.addEventListener('keydown', handleEsc);
     document.addEventListener('contextmenu', preventContextMenu);
     window.addEventListener('popstate', handlePopState);
@@ -650,7 +677,7 @@ onBeforeUnmount(() => {
                 :contact-items="contactItems" />
 
             <main class="content-shell glass-panel" id="app">
-                <TabsNav :active-tab="activeTab" @change="selectTab" />
+                <TabsNav :active-tab="activeTab" :theme-mode="themeMode" @change="selectTab" @toggle-theme="toggleThemeMode" />
 
                 <div v-if="siteError" class="panel section">
                     <p class="text-block">{{ siteError }}</p>
