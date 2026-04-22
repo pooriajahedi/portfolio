@@ -2147,6 +2147,8 @@
             --cursor-glow: rgba(40, 168, 102, 0.18);
         }
 
+        html[data-portfolio-cursor="on"],
+        html[data-portfolio-cursor="on"] *,
         body[data-portfolio-cursor="on"],
         body[data-portfolio-cursor="on"] * {
             cursor: none !important;

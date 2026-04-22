@@ -14,6 +14,16 @@ const currentY = ref(0);
 
 let rafId = 0;
 
+const enableNativeCursorLock = () => {
+    document.documentElement.setAttribute('data-portfolio-cursor', 'on');
+    document.body.setAttribute('data-portfolio-cursor', 'on');
+};
+
+const disableNativeCursorLock = () => {
+    document.documentElement.removeAttribute('data-portfolio-cursor');
+    document.body.removeAttribute('data-portfolio-cursor');
+};
+
 const style = computed(() => ({
     transform: `translate3d(${currentX.value}px, ${currentY.value}px, 0)`,
 }));
@@ -78,6 +88,7 @@ const resolveVariant = (target) => {
 };
 
 const onPointerMove = (event) => {
+    enableNativeCursorLock();
     targetX.value = event.clientX;
     targetY.value = event.clientY;
     isVisible.value = true;
@@ -117,6 +128,20 @@ const onWindowMouseOut = (event) => {
     }
 };
 
+const onWindowFocus = () => {
+    enableNativeCursorLock();
+};
+
+const onWindowMouseEnter = (event) => {
+    enableNativeCursorLock();
+
+    if (event instanceof MouseEvent) {
+        targetX.value = event.clientX;
+        targetY.value = event.clientY;
+        isVisible.value = true;
+    }
+};
+
 const onSelectionChange = () => {
     const selection = window.getSelection();
     selectionActive.value = !!selection && String(selection.toString()).trim() !== '';
@@ -126,13 +151,15 @@ onMounted(() => {
     if (!hasFinePointer()) return;
 
     isEnabled.value = true;
-    document.body.setAttribute('data-portfolio-cursor', 'on');
+    enableNativeCursorLock();
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     window.addEventListener('pointerdown', onPointerDown, { passive: true });
     window.addEventListener('pointerup', onPointerUp, { passive: true });
     window.addEventListener('pointerleave', onPointerLeaveWindow, { passive: true });
     window.addEventListener('blur', onWindowBlur);
+    window.addEventListener('focus', onWindowFocus);
+    window.addEventListener('mouseenter', onWindowMouseEnter);
     window.addEventListener('mouseout', onWindowMouseOut);
     document.addEventListener('selectionchange', onSelectionChange);
     document.addEventListener('visibilitychange', onVisibilityChange);
@@ -151,13 +178,15 @@ onBeforeUnmount(() => {
     window.removeEventListener('pointerup', onPointerUp);
     window.removeEventListener('pointerleave', onPointerLeaveWindow);
     window.removeEventListener('blur', onWindowBlur);
+    window.removeEventListener('focus', onWindowFocus);
+    window.removeEventListener('mouseenter', onWindowMouseEnter);
     window.removeEventListener('mouseout', onWindowMouseOut);
     document.removeEventListener('selectionchange', onSelectionChange);
     document.removeEventListener('visibilitychange', onVisibilityChange);
     if (rafId) {
         window.cancelAnimationFrame(rafId);
     }
-    document.body.removeAttribute('data-portfolio-cursor');
+    disableNativeCursorLock();
 });
 </script>
 
