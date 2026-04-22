@@ -206,7 +206,7 @@ const selectTab = (tab) => {
             if (lenisInstance) {
                 lenisInstance.scrollTo(section, {
                     offset: -10,
-                    duration: 1.2,
+                    duration: 0.85,
                 });
             } else {
                 section.scrollIntoView({
@@ -635,11 +635,11 @@ const initSmoothScroll = () => {
     if (prefersReducedMotion) return;
 
     lenisInstance = new Lenis({
-        duration: 1.25,
+        duration: 0.95,
         smoothWheel: true,
-        wheelMultiplier: 0.9,
-        touchMultiplier: 1,
-        easing: (t) => 1 - Math.pow(1 - t, 3),
+        wheelMultiplier: 1.12,
+        touchMultiplier: 1.08,
+        easing: (t) => 1 - Math.pow(1 - t, 2.35),
     });
 
     const onFrame = (time) => {
