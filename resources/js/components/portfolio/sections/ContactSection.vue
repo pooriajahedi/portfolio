@@ -89,7 +89,7 @@ const onSubmit = async () => {
                     autocomplete="off"
                     aria-hidden="true"
                     style="position:absolute;left:-9999px;opacity:0;height:0;width:0;pointer-events:none;">
-                <button class="submit" type="submit" :disabled="submitting">
+                <button class="submit resume-download-btn" type="submit" :disabled="submitting">
                     {{ submitting ? 'در حال ارسال...' : 'ارسال پیام' }}
                 </button>
             </form>
