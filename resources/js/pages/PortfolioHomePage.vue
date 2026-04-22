@@ -725,7 +725,6 @@ onMounted(async () => {
         loadingBlog.value = false;
     }
 
-    tabAnimationFrame = window.requestAnimationFrame(() => animateTabEntrance(activeTab.value));
     await nextTick();
     initHoverLight();
 });
