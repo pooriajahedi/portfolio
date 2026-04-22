@@ -62,8 +62,21 @@ const formatPersianDate = (value) => {
             </button>
         </div>
 
-        <div v-if="loading" class="panel">
-            <p class="text-block">در حال دریافت اطلاعات پروژه...</p>
+        <div v-if="loading" class="portfolio-single-skeleton">
+            <div class="portfolio-single-top">
+                <div class="portfolio-tags">
+                    <span class="portfolio-tag skeleton-line skeleton-w-24"></span>
+                    <span class="portfolio-tag skeleton-line skeleton-w-20"></span>
+                    <span class="portfolio-tag skeleton-line skeleton-w-16"></span>
+                </div>
+            </div>
+            <h2 class="portfolio-single-title skeleton-line skeleton-w-70"></h2>
+            <div class="portfolio-single-image skeleton-block"></div>
+            <div class="portfolio-single-content panel">
+                <p class="text-block skeleton-line skeleton-w-100"></p>
+                <p class="text-block skeleton-line skeleton-w-94"></p>
+                <p class="text-block skeleton-line skeleton-w-78"></p>
+            </div>
         </div>
 
         <div v-else-if="loadError" class="panel">

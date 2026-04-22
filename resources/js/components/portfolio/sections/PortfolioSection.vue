@@ -59,8 +59,23 @@ const getUniformSummary = (value, maxLength = 150) => {
             </span>
         </div>
 
-        <div v-if="loading" class="panel">
-            <p class="text-block">در حال دریافت نمونه‌کارها...</p>
+        <div v-if="loading" class="portfolio-grid">
+            <article v-for="index in 6" :key="`portfolio-skeleton-${index}`" class="portfolio-card glass-panel">
+                <div class="portfolio-thumb skeleton-block"></div>
+                <div class="portfolio-card-body">
+                    <h4 class="skeleton-line skeleton-w-62"></h4>
+                    <p class="skeleton-line skeleton-w-100"></p>
+                    <p class="skeleton-line skeleton-w-82"></p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag skeleton-line skeleton-w-24"></span>
+                        <span class="portfolio-tag skeleton-line skeleton-w-20"></span>
+                        <span class="portfolio-tag skeleton-line skeleton-w-16"></span>
+                    </div>
+                    <div class="portfolio-card-foot">
+                        <span class="portfolio-more-btn skeleton-line skeleton-w-36"></span>
+                    </div>
+                </div>
+            </article>
         </div>
 
         <div v-else-if="loadError" class="panel">

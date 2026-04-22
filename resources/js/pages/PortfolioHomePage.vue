@@ -730,7 +730,8 @@ onBeforeUnmount(() => {
                 :avatar-image="avatarImage"
                 :current-status="currentStatus"
                 :resume-file-url="resumeFileUrl"
-                :contact-items="contactItems" />
+                :contact-items="contactItems"
+                :loading="loadingSite" />
 
             <main class="content-shell glass-panel" id="app">
                 <TabsNav :active-tab="activeTab" :theme-mode="themeMode" @change="selectTab" @toggle-theme="toggleThemeMode" />
@@ -745,12 +746,14 @@ onBeforeUnmount(() => {
                         :about="about"
                         :service-cards="serviceCards"
                         :skill-category-labels="skillCategoryLabels"
-                        :grouped-skills="groupedSkills" />
+                        :grouped-skills="groupedSkills"
+                        :loading="loadingSite" />
 
                     <ResumeSection
                         v-show="activeTab === 'resume'"
                         :timeline="resumeItems"
-                        :resume-file-url="resumeFileUrl" />
+                        :resume-file-url="resumeFileUrl"
+                        :loading="loadingResume" />
 
                     <div v-if="resumeError && activeTab === 'resume'" class="panel" style="margin-top:12px;">
                         <p class="text-block">{{ resumeError }}</p>

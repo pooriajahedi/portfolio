@@ -1498,6 +1498,138 @@
             border-radius: var(--radius);
         }
 
+        .skeleton-line,
+        .skeleton-block,
+        .skeleton-circle {
+            position: relative;
+            overflow: hidden;
+            background: var(--skeleton-base, rgba(255, 255, 255, 0.16));
+            border: 1px solid var(--skeleton-border, rgba(255, 255, 255, 0.22));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .skeleton-line::after,
+        .skeleton-block::after,
+        .skeleton-circle::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(
+                100deg,
+                transparent 0%,
+                var(--skeleton-highlight, rgba(255, 255, 255, 0.42)) 35%,
+                rgba(255, 255, 255, 0.08) 50%,
+                transparent 70%
+            );
+            animation: skeleton-shimmer 1.1s linear infinite;
+        }
+
+        @keyframes skeleton-shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .skeleton-line {
+            display: block;
+            min-height: 0.95em;
+            border-radius: 10px;
+        }
+
+        .skeleton-block {
+            width: 100%;
+            min-height: 140px;
+            border-radius: 14px;
+        }
+
+        .skeleton-circle {
+            border-radius: 999px;
+        }
+
+        .skeleton-title {
+            width: 180px;
+            height: 44px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-subtitle {
+            width: 240px;
+            height: 34px;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-w-100 { width: 100%; }
+        .skeleton-w-92 { width: 92%; }
+        .skeleton-w-90 { width: 90%; }
+        .skeleton-w-86 { width: 86%; }
+        .skeleton-w-84 { width: 84%; }
+        .skeleton-w-82 { width: 82%; }
+        .skeleton-w-78 { width: 78%; }
+        .skeleton-w-72 { width: 72%; }
+        .skeleton-w-70 { width: 70%; }
+        .skeleton-w-68 { width: 68%; }
+        .skeleton-w-65 { width: 65%; }
+        .skeleton-w-62 { width: 62%; }
+        .skeleton-w-60 { width: 60%; }
+        .skeleton-w-55 { width: 55%; }
+        .skeleton-w-40 { width: 40%; }
+        .skeleton-w-38 { width: 38%; }
+        .skeleton-w-36 { width: 36%; }
+        .skeleton-w-34 { width: 34%; }
+        .skeleton-w-30 { width: 30%; }
+        .skeleton-w-24 { width: 24%; }
+        .skeleton-w-20 { width: 20%; }
+        .skeleton-w-16 { width: 16%; }
+
+        .skeleton-h-52 { height: 52px; }
+        .skeleton-h-56 { height: 56px; }
+        .skeleton-h-140 { height: 140px; }
+        .skeleton-icon-28 { width: 28px; height: 28px; }
+        .skeleton-icon-30 { width: 30px; height: 30px; }
+
+        .mt-24 { margin-top: 24px; }
+        .mt-30 { margin-top: 30px; }
+
+        .about-skeleton-copy {
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
+        .about-skeleton-line {
+            height: 20px;
+            border-radius: 9px;
+        }
+
+        .about-skeleton-line.is-full {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .about-skeleton-segment-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .about-skeleton-segment {
+            height: 20px;
+            border-radius: 9px;
+        }
+
+        body[data-theme-mode="light"] {
+            --skeleton-base: rgba(22, 52, 105, 0.14);
+            --skeleton-border: rgba(29, 61, 119, 0.2);
+            --skeleton-highlight: rgba(255, 255, 255, 0.88);
+        }
+
+        body:not([data-theme-mode="light"]) {
+            --skeleton-base: rgba(255, 255, 255, 0.16);
+            --skeleton-border: rgba(255, 255, 255, 0.22);
+            --skeleton-highlight: rgba(255, 255, 255, 0.44);
+        }
+
         .bg-orbs {
             position: fixed;
             inset: 0;

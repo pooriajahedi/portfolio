@@ -92,8 +92,22 @@ const highlightedPostContent = computed(() => {
             <div class="underline"></div>
         </template>
 
-        <div v-if="loading" class="panel">
-            <p class="text-block">در حال دریافت مقالات...</p>
+        <div v-if="loading" class="blog-grid" id="blogList">
+            <article
+                v-for="index in 6"
+                :key="`blog-skeleton-${index}`"
+                class="blog-card portfolio-card glass-panel">
+                <div class="portfolio-thumb blog-card-image skeleton-block"></div>
+                <div class="portfolio-card-body">
+                    <small class="blog-date skeleton-line skeleton-w-30"></small>
+                    <h4 class="skeleton-line skeleton-w-68"></h4>
+                    <p class="skeleton-line skeleton-w-100"></p>
+                    <p class="skeleton-line skeleton-w-86"></p>
+                    <div class="portfolio-card-foot">
+                        <span class="portfolio-more-btn blog-open skeleton-line skeleton-w-36"></span>
+                    </div>
+                </div>
+            </article>
         </div>
 
         <div v-else-if="loadError" class="panel">
@@ -138,8 +152,14 @@ const highlightedPostContent = computed(() => {
                     </small>
                 </div>
 
-                <div v-if="loadingDetail" class="panel">
-                    <p class="text-block">در حال دریافت اطلاعات مقاله...</p>
+                <div v-if="loadingDetail" class="blog-detail-item">
+                    <h3 class="portfolio-single-title skeleton-line skeleton-w-72"></h3>
+                    <div class="portfolio-single-image skeleton-block"></div>
+                    <div class="blog-detail-content portfolio-single-content panel glass-panel">
+                        <p class="text-block skeleton-line skeleton-w-100"></p>
+                        <p class="text-block skeleton-line skeleton-w-95"></p>
+                        <p class="text-block skeleton-line skeleton-w-82"></p>
+                    </div>
                 </div>
 
                 <div v-else-if="loadDetailError" class="panel">
