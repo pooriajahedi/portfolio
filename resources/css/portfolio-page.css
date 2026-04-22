@@ -2129,6 +2129,97 @@
             --matrix-rain-rgb: 214, 168, 82;
         }
 
+        body[data-theme-style="gold"] {
+            --cursor-fill: #d9aa3b;
+            --cursor-stroke: #5f4112;
+            --cursor-glow: rgba(244, 198, 79, 0.34);
+        }
+
+        body[data-theme-style="green"] {
+            --cursor-fill: #35c97a;
+            --cursor-stroke: #134a31;
+            --cursor-glow: rgba(83, 236, 157, 0.3);
+        }
+
+        body[data-theme-mode="light"][data-theme-style="green"] {
+            --cursor-fill: #28a866;
+            --cursor-stroke: #0f5a39;
+            --cursor-glow: rgba(40, 168, 102, 0.18);
+        }
+
+        body[data-portfolio-cursor="on"],
+        body[data-portfolio-cursor="on"] * {
+            cursor: none !important;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate3d(-120px, -120px, 0);
+            transition: opacity .2s ease;
+            will-change: transform, opacity;
+        }
+
+        .custom-cursor.is-visible {
+            opacity: 1;
+        }
+
+        .custom-cursor-core {
+            width: 38px;
+            height: 38px;
+            transform: translate(-18px, -18px) rotate(-12deg) scale(1);
+            transform-origin: 50% 50%;
+            transition: transform .2s ease;
+            filter: drop-shadow(0 0 10px var(--cursor-glow));
+        }
+
+        .custom-cursor-arrow {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .custom-cursor-arrow path {
+            fill: var(--cursor-fill);
+            stroke: var(--cursor-stroke);
+            stroke-width: 2.2;
+            paint-order: stroke fill;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .custom-cursor.is-interactive .custom-cursor-core {
+            transform: translate(-18px, -18px) rotate(-16deg) scale(1.18);
+        }
+
+        .custom-cursor.is-media .custom-cursor-core {
+            transform: translate(-18px, -18px) rotate(-8deg) scale(1.28);
+        }
+
+        .custom-cursor.is-text .custom-cursor-core,
+        .custom-cursor.is-selection .custom-cursor-core {
+            transform: translate(-18px, -18px) rotate(-4deg) scale(.95);
+        }
+
+        .custom-cursor.is-down .custom-cursor-core {
+            transform: translate(-18px, -18px) rotate(-8deg) scale(.86);
+        }
+
+        .custom-cursor.is-hidden {
+            opacity: 0 !important;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .custom-cursor-core {
+                transition: none;
+                animation: none;
+            }
+        }
+
         body[data-theme-mode="light"] .matrix-rain {
             opacity: 0.28;
         }
@@ -2227,6 +2318,30 @@
 
         body[data-theme-mode="light"] .theme-toggle-track.is-light .theme-toggle-icon {
             color: #9a6500;
+        }
+
+        body[data-theme-mode="light"][data-theme-style="green"] .theme-toggle-track {
+            background: linear-gradient(90deg, #41bd78, #2ea962);
+            border-color: rgba(20, 104, 63, 0.2);
+            box-shadow: 0 6px 14px rgba(32, 126, 79, 0.22), inset 0 1px 0 rgba(219, 255, 236, 0.3);
+        }
+
+        body[data-theme-mode="light"][data-theme-style="green"] .theme-toggle-thumb {
+            background: linear-gradient(180deg, rgba(233, 251, 241, 0.98), rgba(192, 238, 213, 0.98));
+            border-color: rgba(17, 108, 63, 0.34);
+        }
+
+        body[data-theme-mode="light"][data-theme-style="green"] .theme-toggle-icon {
+            color: #0f6f40;
+        }
+
+        body[data-theme-mode="light"][data-theme-style="green"] .theme-toggle-track.is-light .theme-toggle-thumb {
+            background: linear-gradient(180deg, rgba(242, 255, 248, 0.98), rgba(210, 246, 227, 0.98));
+            border-color: rgba(16, 101, 58, 0.4);
+        }
+
+        body[data-theme-mode="light"][data-theme-style="green"] .theme-toggle-track.is-light .theme-toggle-icon {
+            color: #0f6f40;
         }
 
         body[data-theme-mode="light"] .sidebar,

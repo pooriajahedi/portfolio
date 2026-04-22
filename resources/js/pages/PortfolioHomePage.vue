@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { gsap } from 'gsap';
 import IconGlyph from '../components/IconGlyph.vue';
 import ImageModal from '../components/portfolio/ImageModal.vue';
+import CustomCursor from '../components/portfolio/CustomCursor.vue';
 import SidebarProfile from '../components/portfolio/SidebarProfile.vue';
 import TabsNav from '../components/portfolio/TabsNav.vue';
 import AboutSection from '../components/portfolio/sections/AboutSection.vue';
@@ -817,5 +818,7 @@ onBeforeUnmount(() => {
             :images="modalImages"
             :start-index="modalIndex"
             @close="closeImageModal" />
+
+        <CustomCursor />
     </div>
 </template>
