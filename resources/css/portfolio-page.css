@@ -1446,6 +1446,46 @@
             background: var(--background);
             color: var(--text-strong);
             overflow-x: hidden;
+            --matrix-rain-alpha: 0.56;
+            --matrix-fade-alpha: 0.12;
+            --site-bg-solid: #0a0b0f;
+            --site-bg-gradient-from: #0a0b0f;
+            --site-bg-gradient-to: #101827;
+            --site-bg-image: none;
+            --site-bg-image-opacity: 1;
+        }
+
+        body[data-matrix-enabled="0"] .matrix-rain {
+            display: none;
+        }
+
+        body[data-bg-mode="solid"] {
+            background: var(--site-bg-solid);
+        }
+
+        body[data-bg-mode="gradient"] {
+            background: linear-gradient(160deg, var(--site-bg-gradient-from), var(--site-bg-gradient-to));
+        }
+
+        body[data-bg-mode="image"] {
+            background-color: var(--site-bg-solid);
+        }
+
+        .site-bg-image-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            pointer-events: none;
+            opacity: var(--site-bg-image-opacity);
+            background-image: var(--site-bg-image);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+        body[data-matrix-enabled="0"][data-bg-mode="image"] .site-bg-image-layer {
+            display: block;
         }
 
 

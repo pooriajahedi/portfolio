@@ -209,6 +209,19 @@ class PublicContentController extends Controller
             true
         ) ? (string) $siteSettings[SiteSetting::KEY_THEME_STYLE] : 'gold';
 
+        $matrixEnabled = filter_var(
+            (string) ($siteSettings[SiteSetting::KEY_MATRIX_ENABLED] ?? '1'),
+            FILTER_VALIDATE_BOOL
+        );
+
+        $matrixOpacity = (int) ($siteSettings[SiteSetting::KEY_MATRIX_OPACITY] ?? 56);
+        $matrixOpacity = max(0, min(100, $matrixOpacity));
+
+        $backgroundMode = (string) ($siteSettings[SiteSetting::KEY_BACKGROUND_MODE] ?? 'gradient');
+        if (! in_array($backgroundMode, ['solid', 'gradient', 'image'], true)) {
+            $backgroundMode = 'gradient';
+        }
+
         $skills = Skill::query()
             ->active()
             ->whereNotNull('icon')
@@ -273,6 +286,18 @@ class PublicContentController extends Controller
             ],
             'appearance' => [
                 'themeStyle' => $themeStyle,
+                'matrix' => [
+                    'enabled' => (bool) $matrixEnabled,
+                    'opacity' => $matrixOpacity,
+                ],
+                'background' => [
+                    'mode' => $backgroundMode,
+                    'image' => (string) ($siteSettings[SiteSetting::KEY_BACKGROUND_IMAGE] ?? ''),
+                    'imageOpacity' => max(0, min(100, (int) ($siteSettings[SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY] ?? 100))),
+                    'solidColor' => (string) ($siteSettings[SiteSetting::KEY_BACKGROUND_SOLID_COLOR] ?? '#0a0b0f'),
+                    'gradientFrom' => (string) ($siteSettings[SiteSetting::KEY_BACKGROUND_GRADIENT_FROM] ?? '#0a0b0f'),
+                    'gradientTo' => (string) ($siteSettings[SiteSetting::KEY_BACKGROUND_GRADIENT_TO] ?? '#101827'),
+                ],
             ],
             'appVersion' => (string) config('app.version', '1.0.0'),
         ];

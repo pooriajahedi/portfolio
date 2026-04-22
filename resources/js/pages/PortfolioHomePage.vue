@@ -383,6 +383,55 @@ const applyThemeStyle = (themeStyle) => {
     document.body.setAttribute('data-theme-style', safeTheme);
 };
 
+const resolveStorageOrAbsoluteUrl = (value) => {
+    const raw = String(value ?? '').trim();
+    if (raw === '') return '';
+    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) return raw;
+    return `/storage/${raw.replace(/^\/+/, '')}`;
+};
+
+const applyAppearance = (appearance) => {
+    const matrixEnabled = Boolean(appearance?.matrix?.enabled ?? true);
+    const matrixOpacity = Number(appearance?.matrix?.opacity ?? 56);
+    const safeOpacity = Number.isFinite(matrixOpacity) ? Math.max(0, Math.min(100, matrixOpacity)) : 56;
+
+    // Keep existing defaults as "56" so current look doesn't change unless configured.
+    const rainAlpha = Math.max(0, Math.min(1, safeOpacity / 100));
+    // Scale fade alpha proportionally to the old default (0.12 when rainAlpha ~= 0.56).
+    const fadeAlpha = Math.max(0.02, Math.min(0.25, rainAlpha * (0.12 / 0.56)));
+
+    document.body.style.setProperty('--matrix-rain-alpha', String(rainAlpha));
+    document.body.style.setProperty('--matrix-fade-alpha', String(fadeAlpha));
+    document.body.setAttribute('data-matrix-enabled', matrixEnabled ? '1' : '0');
+
+    if (matrixEnabled) {
+        document.body.removeAttribute('data-bg-mode');
+        document.body.style.removeProperty('--site-bg-image');
+        return { matrixEnabled };
+    }
+
+    const bgModeRaw = String(appearance?.background?.mode ?? 'gradient').trim();
+    const bgMode = bgModeRaw === 'solid' || bgModeRaw === 'image' || bgModeRaw === 'gradient' ? bgModeRaw : 'gradient';
+    document.body.setAttribute('data-bg-mode', bgMode);
+
+    const solid = String(appearance?.background?.solidColor ?? '#0a0b0f').trim() || '#0a0b0f';
+    const from = String(appearance?.background?.gradientFrom ?? '#0a0b0f').trim() || '#0a0b0f';
+    const to = String(appearance?.background?.gradientTo ?? '#101827').trim() || '#101827';
+    document.body.style.setProperty('--site-bg-solid', solid);
+    document.body.style.setProperty('--site-bg-gradient-from', from);
+    document.body.style.setProperty('--site-bg-gradient-to', to);
+
+    const imageUrl = resolveStorageOrAbsoluteUrl(appearance?.background?.image ?? '');
+    document.body.style.setProperty('--site-bg-image', imageUrl ? `url("${imageUrl}")` : 'none');
+    const imageOpacityPercent = Number(appearance?.background?.imageOpacity ?? 100);
+    const imageOpacity = Number.isFinite(imageOpacityPercent)
+        ? Math.max(0, Math.min(1, imageOpacityPercent / 100))
+        : 1;
+    document.body.style.setProperty('--site-bg-image-opacity', String(imageOpacity));
+
+    return { matrixEnabled };
+};
+
 const applyThemeMode = (mode) => {
     const safeMode = mode === 'light' ? 'light' : 'dark';
     themeMode.value = safeMode;
@@ -477,12 +526,14 @@ const initMatrixRain = () => {
         const height = window.innerHeight;
 
         const matrixFade = getComputedStyle(document.body).getPropertyValue('--matrix-fade-rgb').trim() || '3, 9, 20';
-        context.fillStyle = `rgba(${matrixFade}, 0.12)`;
+        const matrixFadeAlpha = parseFloat(getComputedStyle(document.body).getPropertyValue('--matrix-fade-alpha').trim() || '0.12');
+        context.fillStyle = `rgba(${matrixFade}, ${Number.isFinite(matrixFadeAlpha) ? matrixFadeAlpha : 0.12})`;
         context.fillRect(0, 0, width, height);
 
         context.font = `${fontSize}px monospace`;
         const matrixColor = getComputedStyle(document.body).getPropertyValue('--matrix-rain-rgb').trim() || '231, 188, 102';
-        context.fillStyle = `rgba(${matrixColor}, 0.56)`;
+        const matrixRainAlpha = parseFloat(getComputedStyle(document.body).getPropertyValue('--matrix-rain-alpha').trim() || '0.56');
+        context.fillStyle = `rgba(${matrixColor}, ${Number.isFinite(matrixRainAlpha) ? matrixRainAlpha : 0.56})`;
 
         for (let i = 0; i < drops.length; i += 1) {
             const text = letters[Math.floor(Math.random() * letters.length)];
@@ -572,12 +623,16 @@ onMounted(async () => {
     document.addEventListener('keydown', handleEsc);
     document.addEventListener('contextmenu', preventContextMenu);
     window.addEventListener('popstate', handlePopState);
-    initMatrixRain();
+    // Matrix init is controlled by site settings after we fetch the appearance payload.
 
     try {
         const site = await fetchSiteState();
         siteState.value = site ?? {};
         applyThemeStyle(site?.appearance?.themeStyle);
+        const { matrixEnabled } = applyAppearance(site?.appearance ?? {});
+        if (matrixEnabled) {
+            initMatrixRain();
+        }
         const profileName = String(site?.profile?.name ?? '').trim();
         const profileRole = String(site?.profile?.role ?? '').trim();
 
@@ -659,6 +714,7 @@ onBeforeUnmount(() => {
 
 <template>
     <div>
+        <div class="site-bg-image-layer" aria-hidden="true"></div>
         <div class="bg-orbs" aria-hidden="true">
             <span class="orb orb-1"></span>
             <span class="orb orb-2"></span>
