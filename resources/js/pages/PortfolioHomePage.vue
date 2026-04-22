@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { gsap } from 'gsap';
+import Lenis from 'lenis';
 import IconGlyph from '../components/IconGlyph.vue';
 import ImageModal from '../components/portfolio/ImageModal.vue';
 import CustomCursor from '../components/portfolio/CustomCursor.vue';
@@ -202,10 +203,17 @@ const selectTab = (tab) => {
 
         const section = document.getElementById(tab);
         if (section) {
-            section.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
+            if (lenisInstance) {
+                lenisInstance.scrollTo(section, {
+                    offset: -10,
+                    duration: 1.2,
+                });
+            } else {
+                section.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                });
+            }
         }
     });
 };
@@ -466,6 +474,8 @@ const handleEsc = (event) => {
 let matrixCleanup = null;
 let tabAnimationFrame = 0;
 let hoverLightCleanup = null;
+let lenisInstance = null;
+let lenisFrameId = 0;
 
 const preventContextMenu = (event) => {
     event.preventDefault();
@@ -619,7 +629,29 @@ const initHoverLight = () => {
     };
 };
 
+const initSmoothScroll = () => {
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+    if (prefersReducedMotion) return;
+
+    lenisInstance = new Lenis({
+        duration: 1.25,
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+    });
+
+    const onFrame = (time) => {
+        lenisInstance?.raf(time);
+        lenisFrameId = window.requestAnimationFrame(onFrame);
+    };
+
+    lenisFrameId = window.requestAnimationFrame(onFrame);
+};
+
 onMounted(async () => {
+    initSmoothScroll();
     initThemeMode();
     document.addEventListener('keydown', handleEsc);
     document.addEventListener('contextmenu', preventContextMenu);
@@ -705,6 +737,13 @@ onBeforeUnmount(() => {
 
     if (matrixCleanup) matrixCleanup();
     if (hoverLightCleanup) hoverLightCleanup();
+    if (lenisFrameId) {
+        window.cancelAnimationFrame(lenisFrameId);
+    }
+    if (lenisInstance) {
+        lenisInstance.destroy();
+        lenisInstance = null;
+    }
     if (tabAnimationFrame) {
         window.cancelAnimationFrame(tabAnimationFrame);
     }
