@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
@@ -77,6 +78,12 @@ class SiteSettings extends Page implements HasForms
                                     ]),
                             ])
                             ->columnSpanFull(),
+                    ])
+                    ->footerActions([
+                        Action::make('save')
+                            ->label('ذخیره تنظیمات')
+                            ->icon('heroicon-o-check-circle')
+                            ->submit('save'),
                     ])
                     ->columnSpanFull(),
             ])
