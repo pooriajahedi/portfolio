@@ -141,7 +141,7 @@ const highlightedPostContent = computed(() => {
                 </article>
             </div>
 
-            <div v-else class="blog-detail is-open portfolio-single" id="blogDetail">
+            <div v-else class="blog-detail is-open portfolio-single" id="blogDetail" tabindex="-1">
                 <div class="portfolio-single-head">
                     <button class="portfolio-single-back" type="button" @click="emit('close-blog')">
                         <span class="portfolio-single-back-icon" aria-hidden="true">→</span>
@@ -153,12 +153,37 @@ const highlightedPostContent = computed(() => {
                 </div>
 
                 <div v-if="loadingDetail" class="blog-detail-item">
+                    <div class="portfolio-single-top">
+                        <div class="portfolio-tags">
+                            <span class="portfolio-tag skeleton-line skeleton-w-20"></span>
+                            <span class="portfolio-tag skeleton-line skeleton-w-16"></span>
+                        </div>
+                        <small class="portfolio-meta skeleton-line skeleton-w-30"></small>
+                    </div>
                     <h3 class="portfolio-single-title skeleton-line skeleton-w-72"></h3>
                     <div class="portfolio-single-image skeleton-block"></div>
                     <div class="blog-detail-content portfolio-single-content panel glass-panel">
-                        <p class="text-block skeleton-line skeleton-w-100"></p>
-                        <p class="text-block skeleton-line skeleton-w-95"></p>
-                        <p class="text-block skeleton-line skeleton-w-82"></p>
+                        <div class="single-skeleton-copy">
+                            <div class="skeleton-line single-skeleton-line is-full"></div>
+                            <div class="single-skeleton-row">
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                            </div>
+                            <div class="single-skeleton-row">
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                            </div>
+                            <div class="single-skeleton-row">
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                                <span class="skeleton-line single-skeleton-segment"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

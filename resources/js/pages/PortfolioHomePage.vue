@@ -45,6 +45,8 @@ const loadingPortfolio = ref(true);
 const loadingBlog = ref(true);
 const loadingProjectDetail = ref(false);
 const loadingBlogDetail = ref(false);
+const portfolioDetailRequestToken = ref(0);
+const blogDetailRequestToken = ref(0);
 
 const siteError = ref('');
 const resumeError = ref('');
@@ -248,8 +250,10 @@ const extractBlogSlugFromPath = () => {
 };
 
 const clearPortfolioSingleRoute = (pushState = true) => {
+    portfolioDetailRequestToken.value += 1;
     selectedProjectSlug.value = '';
     selectedProject.value = null;
+    loadingProjectDetail.value = false;
     projectDetailError.value = '';
 
     if (pushState && window.location.pathname !== '/') {
@@ -258,8 +262,10 @@ const clearPortfolioSingleRoute = (pushState = true) => {
 };
 
 const clearBlogSingleRoute = (pushState = true) => {
+    blogDetailRequestToken.value += 1;
     selectedBlogSlug.value = '';
     selectedBlogPost.value = null;
+    loadingBlogDetail.value = false;
     blogDetailError.value = '';
 
     if (pushState && window.location.pathname !== '/') {
@@ -267,21 +273,52 @@ const clearBlogSingleRoute = (pushState = true) => {
     }
 };
 
+const focusSingleContent = (targetId) => {
+    nextTick(() => {
+        const section = document.getElementById(targetId);
+        if (!section) return;
+
+        section.focus?.({ preventScroll: true });
+
+        if (lenisInstance) {
+            lenisInstance.scrollTo(section, {
+                offset: -10,
+                duration: 0.8,
+            });
+            return;
+        }
+
+        section.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        });
+    });
+};
+
 const loadPortfolioProject = async (slug) => {
     const normalizedSlug = String(slug ?? '').trim();
     if (normalizedSlug === '') return;
 
+    if (loadingProjectDetail.value && selectedProjectSlug.value === normalizedSlug) return;
+    if (!loadingProjectDetail.value && selectedProjectSlug.value === normalizedSlug && selectedProject.value) return;
+
+    const requestToken = portfolioDetailRequestToken.value + 1;
+    portfolioDetailRequestToken.value = requestToken;
+    selectedProjectSlug.value = normalizedSlug;
+    selectedProject.value = null;
     loadingProjectDetail.value = true;
     projectDetailError.value = '';
 
     try {
         const payload = await fetchPortfolioProject(normalizedSlug);
-        selectedProjectSlug.value = normalizedSlug;
+        if (portfolioDetailRequestToken.value !== requestToken) return;
         selectedProject.value = payload?.project ?? null;
     } catch {
+        if (portfolioDetailRequestToken.value !== requestToken) return;
         selectedProject.value = null;
         projectDetailError.value = 'پروژه موردنظر پیدا نشد یا خطایی در دریافت اطلاعات رخ داد.';
     } finally {
+        if (portfolioDetailRequestToken.value !== requestToken) return;
         loadingProjectDetail.value = false;
         nextTick(() => {
             initHoverLight();
@@ -293,12 +330,17 @@ const loadPortfolioProject = async (slug) => {
 const openProjectDetail = (slug) => {
     const normalizedSlug = String(slug ?? '').trim();
     if (normalizedSlug === '') return;
+    if (selectedProjectSlug.value === normalizedSlug && (loadingProjectDetail.value || selectedProject.value)) return;
 
     activeTab.value = 'portfolio';
     clearBlogSingleRoute(false);
+    selectedProjectSlug.value = normalizedSlug;
+    selectedProject.value = null;
+    projectDetailError.value = '';
     if (window.location.pathname !== `/portfolio/${normalizedSlug}`) {
         window.history.pushState({}, '', `/portfolio/${encodeURIComponent(normalizedSlug)}`);
     }
+    focusSingleContent('portfolio-single');
     loadPortfolioProject(normalizedSlug);
 };
 
@@ -316,17 +358,26 @@ const loadBlogPost = async (slug) => {
     const normalizedSlug = String(slug ?? '').trim();
     if (normalizedSlug === '') return;
 
+    if (loadingBlogDetail.value && selectedBlogSlug.value === normalizedSlug) return;
+    if (!loadingBlogDetail.value && selectedBlogSlug.value === normalizedSlug && selectedBlogPost.value) return;
+
+    const requestToken = blogDetailRequestToken.value + 1;
+    blogDetailRequestToken.value = requestToken;
+    selectedBlogSlug.value = normalizedSlug;
+    selectedBlogPost.value = null;
     loadingBlogDetail.value = true;
     blogDetailError.value = '';
 
     try {
         const payload = await fetchBlogPost(normalizedSlug);
-        selectedBlogSlug.value = normalizedSlug;
+        if (blogDetailRequestToken.value !== requestToken) return;
         selectedBlogPost.value = payload ?? null;
     } catch {
+        if (blogDetailRequestToken.value !== requestToken) return;
         selectedBlogPost.value = null;
         blogDetailError.value = 'مقاله موردنظر پیدا نشد یا خطایی در دریافت اطلاعات رخ داد.';
     } finally {
+        if (blogDetailRequestToken.value !== requestToken) return;
         loadingBlogDetail.value = false;
         nextTick(() => {
             initHoverLight();
@@ -338,13 +389,17 @@ const loadBlogPost = async (slug) => {
 const openBlogDetail = (slug) => {
     const normalizedSlug = String(slug ?? '').trim();
     if (normalizedSlug === '') return;
+    if (selectedBlogSlug.value === normalizedSlug && (loadingBlogDetail.value || selectedBlogPost.value)) return;
 
     activeTab.value = 'blog';
     clearPortfolioSingleRoute(false);
+    selectedBlogSlug.value = normalizedSlug;
+    selectedBlogPost.value = null;
+    blogDetailError.value = '';
     if (window.location.pathname !== `/blog/${normalizedSlug}`) {
         window.history.pushState({}, '', `/blog/${encodeURIComponent(normalizedSlug)}`);
     }
-
+    focusSingleContent('blogDetail');
     loadBlogPost(normalizedSlug);
 };
 

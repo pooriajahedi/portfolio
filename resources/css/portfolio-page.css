@@ -1055,7 +1055,7 @@
             inset: 0;
             border: 0;
             background: rgb(4 9 18 / 36%);
-            color: var(--theme-highlight);
+            color: #fff;
             display: grid;
             place-items: center;
             opacity: 0;
@@ -1063,6 +1063,25 @@
             z-index: 2;
             font-size: 13px;
             font-weight: 700;
+        }
+
+        .portfolio-single-image .portfolio-zoom-trigger .zoom-trigger-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 9px 16px;
+            border: 1px solid rgb(255 255 255 / 88%);
+            border-radius: 12px;
+            background: rgb(255 255 255 / 6%);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: 0.01em;
+            box-shadow: 0 8px 20px rgb(0 0 0 / 28%);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
         }
 
         .portfolio-single-image .portfolio-zoom-trigger .inline-icon {
@@ -1617,6 +1636,33 @@
 
         .about-skeleton-segment {
             height: 20px;
+            border-radius: 9px;
+        }
+
+        .single-skeleton-copy {
+            margin-top: 4px;
+            margin-bottom: 2px;
+        }
+
+        .single-skeleton-line {
+            height: 19px;
+            border-radius: 9px;
+        }
+
+        .single-skeleton-line.is-full {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .single-skeleton-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .single-skeleton-segment {
+            height: 19px;
             border-radius: 9px;
         }
 
@@ -2563,6 +2609,10 @@
             .skill-items,
             .contact-form {
                 grid-template-columns: 1fr;
+            }
+
+            .single-skeleton-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .portfolio-thumb {

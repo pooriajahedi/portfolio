@@ -46,19 +46,11 @@ const formatPersianDate = (value) => {
 </script>
 
 <template>
-    <section class="section portfolio-single" id="portfolio-single">
+    <section class="section portfolio-single" id="portfolio-single" tabindex="-1">
         <div class="portfolio-single-head">
             <button type="button" class="portfolio-single-back" @click="emit('back')">
                 <span class="portfolio-single-back-icon" aria-hidden="true">→</span>
                 بازگشت به نمونه کارها
-            </button>
-
-            <button
-                v-if="project?.projectUrl"
-                type="button"
-                class="portfolio-single-visit-btn"
-                @click="emit('open-project-url', project.projectUrl)">
-                مشاهده پروژه
             </button>
         </div>
 
@@ -69,13 +61,32 @@ const formatPersianDate = (value) => {
                     <span class="portfolio-tag skeleton-line skeleton-w-20"></span>
                     <span class="portfolio-tag skeleton-line skeleton-w-16"></span>
                 </div>
+                <span class="portfolio-meta skeleton-line skeleton-w-30"></span>
             </div>
             <h2 class="portfolio-single-title skeleton-line skeleton-w-70"></h2>
             <div class="portfolio-single-image skeleton-block"></div>
             <div class="portfolio-single-content panel">
-                <p class="text-block skeleton-line skeleton-w-100"></p>
-                <p class="text-block skeleton-line skeleton-w-94"></p>
-                <p class="text-block skeleton-line skeleton-w-78"></p>
+                <div class="single-skeleton-copy">
+                    <div class="skeleton-line single-skeleton-line is-full"></div>
+                    <div class="single-skeleton-row">
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                    </div>
+                    <div class="single-skeleton-row">
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                    </div>
+                    <div class="single-skeleton-row">
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                        <span class="skeleton-line single-skeleton-segment"></span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -104,7 +115,7 @@ const formatPersianDate = (value) => {
                         class="portfolio-zoom-trigger"
                         :aria-label="`بزرگ‌نمایی تصویر ${project.title}`"
                         @click.stop="emit('open-image', { src: activeImage, alt: project.title, images: galleryImages, startIndex: 0 })">
-                        بزرگ‌نمایی
+                        <span class="zoom-trigger-label">بزرگ‌نمایی</span>
                     </button>
                 </template>
             </div>
@@ -120,6 +131,14 @@ const formatPersianDate = (value) => {
             <div class="portfolio-single-content panel">
                 <p class="text-block">{{ project.text }}</p>
             </div>
+
+            <button
+                v-if="project?.projectUrl"
+                type="button"
+                class="portfolio-single-visit-btn"
+                @click="emit('open-project-url', project.projectUrl)">
+                مشاهده پروژه
+            </button>
 
         </template>
     </section>
