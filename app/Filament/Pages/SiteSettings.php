@@ -5,10 +5,8 @@ namespace App\Filament\Pages;
 use App\Models\SiteSetting;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Slider;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -46,9 +44,8 @@ class SiteSettings extends Page implements HasForms
 
         $this->form->fill([
             ...$settings,
-            SiteSetting::KEY_MATRIX_ENABLED => filter_var($settings[SiteSetting::KEY_MATRIX_ENABLED] ?? '1', FILTER_VALIDATE_BOOL),
-            SiteSetting::KEY_MATRIX_OPACITY => (int) ($settings[SiteSetting::KEY_MATRIX_OPACITY] ?? 56),
-            SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY => (int) ($settings[SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY] ?? 100),
+            SiteSetting::KEY_STARFIELD_ENABLED => filter_var($settings[SiteSetting::KEY_STARFIELD_ENABLED] ?? '1', FILTER_VALIDATE_BOOL),
+            SiteSetting::KEY_STARFIELD_OPACITY => (int) ($settings[SiteSetting::KEY_STARFIELD_OPACITY] ?? 80),
         ]);
     }
 
@@ -63,84 +60,24 @@ class SiteSettings extends Page implements HasForms
                             ->tabs([
                                 Tab::make('تنظیمات ظاهری')
                                     ->schema([
-                                        Select::make(SiteSetting::KEY_THEME_STYLE)
-                                            ->label('تم رنگی سایت')
-                                            ->options([
-                                                'gold' => 'طلایی',
-                                                'green' => 'سبز',
-                                            ])
-                                            ->default('gold')
-                                            ->native(false)
-                                            ->required()
-                                            ->helperText('تنها همین گزینه روی ظاهر سایت اعمال می‌شود.'),
-                                        Toggle::make(SiteSetting::KEY_MATRIX_ENABLED)
-                                            ->label('نمایه ماتریکس فعال باشد')
-                                            ->helperText('در صورت غیرفعال کردن، می‌توانید بک‌گراند جایگزین (عکس/رنگ/گرادیانت) انتخاب کنید.')
+                                        Toggle::make(SiteSetting::KEY_STARFIELD_ENABLED)
+                                            ->label('پس‌زمینه آسمان پرستاره فعال باشد')
+                                            ->helperText('در صورت غیرفعال کردن، فقط پس‌زمینه تیره ساده نمایش داده می‌شود.')
                                             ->default(true)
                                             ->live()
                                             ->inline(false)
                                             ->columnSpanFull(),
-                                        Slider::make(SiteSetting::KEY_MATRIX_OPACITY)
-                                            ->label('پررنگی نوشته‌های ماتریکس')
+                                        Slider::make(SiteSetting::KEY_STARFIELD_OPACITY)
+                                            ->label('پررنگی ستاره‌ها')
                                             ->minValue(5)
                                             ->maxValue(100)
                                             ->step(1)
                                             ->decimalPlaces(0)
                                             ->tooltips(true)
                                             ->required(false)
-                                            ->helperText('عدد بالاتر یعنی نوشته‌های ماتریکس پررنگ‌تر دیده می‌شوند.')
-                                            ->visible(fn (Get $get): bool => (bool) $get(SiteSetting::KEY_MATRIX_ENABLED))
+                                            ->helperText('عدد بالاتر یعنی ستاره‌ها پررنگ‌تر دیده می‌شوند.')
+                                            ->visible(fn (Get $get): bool => (bool) $get(SiteSetting::KEY_STARFIELD_ENABLED))
                                             ->columnSpanFull(),
-                                        Select::make(SiteSetting::KEY_BACKGROUND_MODE)
-                                            ->label('بک‌گراند جایگزین (وقتی ماتریکس خاموش است)')
-                                            ->options([
-                                                'solid' => 'رنگ یک‌دست',
-                                                'gradient' => 'گرادیانت',
-                                                'image' => 'عکس',
-                                            ])
-                                            ->default('gradient')
-                                            ->live()
-                                            ->native(false)
-                                            ->required(false)
-                                            ->visible(fn (Get $get): bool => ! (bool) $get(SiteSetting::KEY_MATRIX_ENABLED))
-                                            ->columnSpanFull(),
-                                        FileUpload::make(SiteSetting::KEY_BACKGROUND_IMAGE)
-                                            ->label('عکس بک‌گراند')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('site/background')
-                                            ->visibility('public')
-                                            ->helperText('برای بهترین نتیجه، تصویر با عرض حداقل 1920 پیشنهاد می‌شود.')
-                                            ->visible(fn (Get $get): bool => (! (bool) $get(SiteSetting::KEY_MATRIX_ENABLED)) && ((string) $get(SiteSetting::KEY_BACKGROUND_MODE) === 'image'))
-                                            ->columnSpanFull(),
-                                        Slider::make(SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY)
-                                            ->label('شفافیت عکس بک‌گراند')
-                                            ->minValue(0)
-                                            ->maxValue(100)
-                                            ->step(1)
-                                            ->decimalPlaces(0)
-                                            ->tooltips(true)
-                                            ->live()
-                                            ->required(false)
-                                            ->helperText('۰ یعنی کاملاً شفاف، ۱۰۰ یعنی کاملاً واضح.')
-                                            ->visible(fn (Get $get): bool => (! (bool) $get(SiteSetting::KEY_MATRIX_ENABLED)) && ((string) $get(SiteSetting::KEY_BACKGROUND_MODE) === 'image'))
-                                            ->columnSpanFull(),
-                                        ColorPicker::make(SiteSetting::KEY_BACKGROUND_SOLID_COLOR)
-                                            ->label('رنگ بک‌گراند')
-                                            ->hex()
-                                            ->default('#0a0b0f')
-                                            ->visible(fn (Get $get): bool => (! (bool) $get(SiteSetting::KEY_MATRIX_ENABLED)) && ((string) $get(SiteSetting::KEY_BACKGROUND_MODE) === 'solid'))
-                                            ->columnSpanFull(),
-                                        ColorPicker::make(SiteSetting::KEY_BACKGROUND_GRADIENT_FROM)
-                                            ->label('رنگ اول گرادیانت')
-                                            ->hex()
-                                            ->default('#0a0b0f')
-                                            ->visible(fn (Get $get): bool => (! (bool) $get(SiteSetting::KEY_MATRIX_ENABLED)) && ((string) $get(SiteSetting::KEY_BACKGROUND_MODE) === 'gradient')),
-                                        ColorPicker::make(SiteSetting::KEY_BACKGROUND_GRADIENT_TO)
-                                            ->label('رنگ دوم گرادیانت')
-                                            ->hex()
-                                            ->default('#101827')
-                                            ->visible(fn (Get $get): bool => (! (bool) $get(SiteSetting::KEY_MATRIX_ENABLED)) && ((string) $get(SiteSetting::KEY_BACKGROUND_MODE) === 'gradient')),
                                     ]),
                                 Tab::make('پیش‌نمایش شبکه‌های اجتماعی')
                                     ->schema([
@@ -172,30 +109,12 @@ class SiteSettings extends Page implements HasForms
         /** @var array<string, mixed> $state */
         $state = $this->form->getState();
 
-        $matrixEnabled = (bool) ($state[SiteSetting::KEY_MATRIX_ENABLED] ?? true);
-        $matrixOpacity = (int) ($state[SiteSetting::KEY_MATRIX_OPACITY] ?? 56);
-        $matrixOpacity = max(0, min(100, $matrixOpacity));
-
-        $bgMode = (string) ($state[SiteSetting::KEY_BACKGROUND_MODE] ?? 'gradient');
-        if (! in_array($bgMode, ['solid', 'gradient', 'image'], true)) {
-            $bgMode = 'gradient';
-        }
-        $bgImageOpacity = (int) ($state[SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY] ?? 100);
-        $bgImageOpacity = max(0, min(100, $bgImageOpacity));
+        $starfieldOpacity = max(0, min(100, (int) ($state[SiteSetting::KEY_STARFIELD_OPACITY] ?? 80)));
 
         SiteSetting::setMany([
-            SiteSetting::KEY_THEME_STYLE => in_array(($state[SiteSetting::KEY_THEME_STYLE] ?? 'gold'), ['gold', 'green'], true)
-                ? $state[SiteSetting::KEY_THEME_STYLE]
-                : 'gold',
             SiteSetting::KEY_SOCIAL_PREVIEW_IMAGE => (string) ($state[SiteSetting::KEY_SOCIAL_PREVIEW_IMAGE] ?? ''),
-            SiteSetting::KEY_MATRIX_ENABLED => $matrixEnabled ? '1' : '0',
-            SiteSetting::KEY_MATRIX_OPACITY => (string) $matrixOpacity,
-            SiteSetting::KEY_BACKGROUND_MODE => $bgMode,
-            SiteSetting::KEY_BACKGROUND_IMAGE => (string) ($state[SiteSetting::KEY_BACKGROUND_IMAGE] ?? ''),
-            SiteSetting::KEY_BACKGROUND_IMAGE_OPACITY => (string) $bgImageOpacity,
-            SiteSetting::KEY_BACKGROUND_SOLID_COLOR => (string) ($state[SiteSetting::KEY_BACKGROUND_SOLID_COLOR] ?? '#0a0b0f'),
-            SiteSetting::KEY_BACKGROUND_GRADIENT_FROM => (string) ($state[SiteSetting::KEY_BACKGROUND_GRADIENT_FROM] ?? '#0a0b0f'),
-            SiteSetting::KEY_BACKGROUND_GRADIENT_TO => (string) ($state[SiteSetting::KEY_BACKGROUND_GRADIENT_TO] ?? '#101827'),
+            SiteSetting::KEY_STARFIELD_ENABLED => ((bool) ($state[SiteSetting::KEY_STARFIELD_ENABLED] ?? true)) ? '1' : '0',
+            SiteSetting::KEY_STARFIELD_OPACITY => (string) $starfieldOpacity,
         ]);
 
         Notification::make()

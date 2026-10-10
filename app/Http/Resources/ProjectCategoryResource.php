@@ -13,7 +13,10 @@ class ProjectCategoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'title' => (string) $this->title,
+            'title' => [
+                'fa' => (string) $this->title,
+                'en' => $this->title_en ?: (string) $this->title,
+            ],
             'slug' => (string) $this->slug,
         ];
     }

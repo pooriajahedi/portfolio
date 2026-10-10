@@ -14,12 +14,19 @@ class ProjectResource extends JsonResource
     public function toArray(Request $request): array
     {
         $description = trim((string) $this->description);
+        $descriptionEn = trim((string) $this->description_en);
 
         return [
             'id' => (int) $this->id,
             'slug' => ProjectSlug::resolve($this->slug, (string) $this->title, $this->id),
-            'title' => (string) $this->title,
-            'text' => $description,
+            'title' => [
+                'fa' => (string) $this->title,
+                'en' => $this->title_en ?: (string) $this->title,
+            ],
+            'text' => [
+                'fa' => $description,
+                'en' => $descriptionEn !== '' ? $descriptionEn : $description,
+            ],
             'tags' => $this->tags ?? [],
             'projectUrl' => $this->project_url,
             'imageUrl' => $this->resolveImageUrl(),

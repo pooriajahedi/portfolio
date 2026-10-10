@@ -14,12 +14,9 @@ class SiteStateResource extends JsonResource
     {
         return [
             'profile' => $this['profile'] ?? [],
-            'about' => $this['about'] ?? [],
-            'services' => $this['services'] ?? [],
-            'skillCategoryLabels' => $this['skillCategoryLabels'] ?? [],
-            'skills' => $this['skills'] ?? [],
-            'contacts' => $this['contacts'] ?? [],
-            'appearance' => $this['appearance'] ?? ['themeStyle' => 'gold'],
+            'skillGroups' => $this['skillGroups'] ?? [],
+            'links' => $this['links'] ?? [],
+            'appearance' => $this['appearance'] ?? ['starfield' => ['enabled' => true, 'opacity' => 56]],
             'appVersion' => $this['appVersion'] ?? '1.0.0',
         ];
     }

@@ -13,7 +13,11 @@ class HeroSection extends Model
 
     protected $fillable = [
         'name',
+        'name_en',
         'role',
+        'role_en',
+        'tagline',
+        'tagline_en',
         'avatar_image',
         'resume_file',
         'current_status',
@@ -38,8 +42,23 @@ class HeroSection extends Model
         ];
     }
 
+    public static function statusOptionsEn(): array
+    {
+        return [
+            self::STATUS_CURRENTLY_WORKING => 'Currently working with a team',
+            self::STATUS_UNEMPLOYED => 'Planning my next role',
+            self::STATUS_LOOKING_FOR_JOB => 'Available for new opportunities',
+            self::STATUS_RESTING => 'On a learning break',
+        ];
+    }
+
     public static function statusLabel(?string $status): string
     {
         return self::statusOptions()[$status ?? self::STATUS_LOOKING_FOR_JOB] ?? self::statusOptions()[self::STATUS_LOOKING_FOR_JOB];
+    }
+
+    public static function statusLabelEn(?string $status): string
+    {
+        return self::statusOptionsEn()[$status ?? self::STATUS_LOOKING_FOR_JOB] ?? self::statusOptionsEn()[self::STATUS_LOOKING_FOR_JOB];
     }
 }

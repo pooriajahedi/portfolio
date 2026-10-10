@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\AboutSection;
 use App\Models\AboutServiceCard;
-use App\Models\BlogPost;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
 use App\Models\PortfolioSection;
@@ -22,7 +21,11 @@ class PortfolioContentSeeder extends Seeder
             ['id' => 1],
             [
                 'name' => 'پوریا جاهدی',
+                'name_en' => 'Pooria Jahedi',
                 'role' => 'برنامه نویس ارشد بک اند و فول استک',
+                'role_en' => 'Senior Backend & Full-Stack Developer',
+                'tagline' => 'بک‌اند و فول‌استک می‌نویسم؛ تمرکزم روی کد تمیز، API استاندارد و سیستم‌هایی است که زیر بار هم سرپا می‌مانند.',
+                'tagline_en' => 'I build fast, dependable web products — clean backends, standard APIs and systems that hold up under load.',
                 'avatar_image' => '/images/hero/pooria-hero.jpeg',
                 'current_status' => HeroSection::STATUS_LOOKING_FOR_JOB,
             ],
@@ -235,34 +238,5 @@ class PortfolioContentSeeder extends Seeder
             );
         }
 
-        $blogPosts = [
-            [
-                'title' => 'Using Custom Tailwind Classes in the Filament Panel (Laravel 12 + Filament 3)',
-                'excerpt' => 'راهنمای حل ناسازگاری Tailwind v4 در Laravel 12 با Filament 3 (Tailwind v3) و پیاده‌سازی تم سفارشی بدون شکستن استایل پیش‌فرض پنل.',
-                'content' => '<p>این مقاله تجربه عملی من برای استفاده از کلاس‌های سفارشی Tailwind در پنل Filament روی Laravel 12 است. چالش اصلی، ناسازگاری نسخه‌ها بود: Laravel 12 به‌صورت پیش‌فرض Tailwind v4 دارد اما Filament 3 روی Tailwind v3 کار می‌کند.</p><p>در این مطلب مسیر کامل را توضیح داده‌ام: ساخت theme اختصاصی، ثبت آن در Panel Provider، اضافه‌کردن فایل theme در ورودی‌های Vite، و تنظیم preset/preflight برای جلوگیری از override شدن استایل‌های پیش‌فرض Filament.</p><p><a href=\"https://medium.com/@pooria.jahedi/using-custom-tailwind-classes-in-the-filament-panel-laravel-12-filament-3-4c49473a2048?source=user_profile_page---------0-------------b7419a727440----------------------\" target=\"_blank\" rel=\"noopener noreferrer\">مشاهده مقاله کامل در Medium</a></p>',
-            ],
-            [
-                'title' => 'چطور یک ماژول Legacy را بدون توقف سرویس بازنویسی کردم',
-                'excerpt' => 'تجربه عملی بازنویسی تدریجی ماژول‌های قدیمی با کمترین ریسک برای کاربران نهایی.',
-                'content' => '<p>در این مقاله تجربه بازنویسی تدریجی یک ماژول Legacy را بررسی می‌کنم. تمرکز اصلی روی کاهش ریسک انتشار، جلوگیری از Downtime و حفظ سازگاری با داده‌های قبلی بود.</p><p>اول از همه جریان‌های پرترافیک را با لاگ دقیق شناسایی کردیم، سپس مسیرهای جدید را به صورت Feature Flag وارد کردیم تا بتوانیم تدریجی سوئیچ کنیم.</p>',
-            ],
-            [
-                'title' => 'بهینه‌سازی کوئری‌های سنگین در دیتابیس‌های بزرگ',
-                'excerpt' => 'چک‌لیست عملی برای تحلیل، بازنویسی و ایندکس‌گذاری کوئری‌های پرتکرار در سیستم‌های واقعی.',
-                'content' => '<p>وقتی تعداد جدول‌ها بالا می‌رود، بهینه‌سازی کورکورانه جواب نمی‌دهد. در این مسیر ابتدا از لاگ کوئری برای پیدا کردن مسیرهای پرتکرار استفاده کردم.</p><p>بعد از بازنویسی Queryهای پرهزینه، ایندکس‌ها بر اساس الگوی مصرف واقعی تعریف شدند و بار سیستم به شکل محسوسی کاهش پیدا کرد.</p>',
-            ],
-        ];
-
-        foreach ($blogPosts as $index => $post) {
-            BlogPost::query()->updateOrCreate(
-                ['title' => $post['title']],
-                [
-                    'excerpt' => $post['excerpt'],
-                    'content' => $post['content'],
-                    'sort_order' => $index + 1,
-                    'is_active' => true,
-                ],
-            );
-        }
     }
 }

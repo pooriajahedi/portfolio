@@ -47,7 +47,7 @@ class ProjectResource extends Resource
                 Section::make('آیتم پروژه')
                     ->schema([
                         TextInput::make('title')
-                            ->label('نام پروژه')
+                            ->label('نام پروژه (فارسی)')
                             ->required()
                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, callable $set, callable $get): void {
@@ -57,6 +57,10 @@ class ProjectResource extends Resource
 
                                 $set('slug', Str::slug((string) $state));
                             })
+                            ->maxLength(255)
+                            ->columnSpan(1),
+                        TextInput::make('title_en')
+                            ->label('نام پروژه (انگلیسی)')
                             ->maxLength(255)
                             ->columnSpan(1),
                         TextInput::make('slug')
@@ -91,9 +95,14 @@ class ProjectResource extends Resource
                             ->visibility('public')
                             ->columnSpanFull(),
                         Textarea::make('description')
-                            ->label('توضیح پروژه')
+                            ->label('توضیح پروژه (فارسی)')
                             ->rows(4)
                             ->required()
+                            ->columnSpanFull(),
+                        Textarea::make('description_en')
+                            ->label('توضیح پروژه (انگلیسی)')
+                            ->rows(4)
+                            ->helperText('اگر خالی بماند، در حالت انگلیسی همان متن فارسی نمایش داده می‌شود.')
                             ->columnSpanFull(),
                         Toggle::make('is_active')
                             ->label('فعال')

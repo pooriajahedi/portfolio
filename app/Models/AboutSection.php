@@ -10,10 +10,10 @@ use Illuminate\Support\Str;
 class AboutSection extends Model
 {
     public const DEFAULT_SKILL_CATEGORIES = [
-        ['key' => 'frontend', 'label' => 'FRONTEND', 'is_active' => true],
-        ['key' => 'backend', 'label' => 'BACKEND', 'is_active' => true],
-        ['key' => 'database', 'label' => 'DATABASE', 'is_active' => true],
-        ['key' => 'tools', 'label' => 'TOOLS', 'is_active' => true],
+        ['key' => 'frontend', 'label' => 'FRONTEND', 'label_en' => 'Frontend', 'is_active' => true],
+        ['key' => 'backend', 'label' => 'BACKEND', 'label_en' => 'Backend', 'is_active' => true],
+        ['key' => 'database', 'label' => 'DATABASE', 'label_en' => 'Database', 'is_active' => true],
+        ['key' => 'tools', 'label' => 'TOOLS', 'label_en' => 'Tools', 'is_active' => true],
     ];
 
     protected $fillable = [
@@ -54,6 +54,7 @@ class AboutSection extends Model
 
                 $key = trim((string) ($item['key'] ?? ''));
                 $label = trim((string) ($item['label'] ?? ''));
+                $labelEn = trim((string) ($item['label_en'] ?? ''));
 
                 if ($label === '') {
                     return null;
@@ -66,6 +67,7 @@ class AboutSection extends Model
                 return [
                     'key' => $key,
                     'label' => $label,
+                    'label_en' => $labelEn !== '' ? $labelEn : $label,
                     'is_active' => (bool) ($item['is_active'] ?? true),
                 ];
             })
@@ -81,6 +83,24 @@ class AboutSection extends Model
         return collect(self::normalizedSkillCategories($categories))
             ->filter(fn (array $item): bool => $item['is_active'])
             ->mapWithKeys(fn (array $item): array => [$item['key'] => $item['label']])
+            ->all();
+    }
+
+    /**
+     * Active categories in display order, each carrying both language labels.
+     *
+     * @return array<int, array{key: string, label: string, label_en: string}>
+     */
+    public static function skillCategoryList(?array $categories = null): array
+    {
+        return collect(self::normalizedSkillCategories($categories))
+            ->filter(fn (array $item): bool => $item['is_active'])
+            ->map(fn (array $item): array => [
+                'key' => $item['key'],
+                'label' => $item['label'],
+                'label_en' => $item['label_en'],
+            ])
+            ->values()
             ->all();
     }
 }

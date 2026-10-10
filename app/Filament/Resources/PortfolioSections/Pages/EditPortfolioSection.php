@@ -37,10 +37,11 @@ class EditPortfolioSection extends EditRecord
         $data['categories_manager'] = ProjectCategory::query()
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get(['id', 'title', 'slug', 'sort_order', 'is_active'])
+            ->get(['id', 'title', 'title_en', 'slug', 'sort_order', 'is_active'])
             ->map(fn (ProjectCategory $category): array => [
                 'id' => (string) $category->id,
                 'title' => $category->title,
+                'title_en' => $category->title_en,
                 'slug' => $category->slug,
                 'sort_order' => $category->sort_order,
                 'is_active' => $category->is_active,
@@ -53,8 +54,10 @@ class EditPortfolioSection extends EditRecord
             ->get([
                 'id',
                 'title',
+                'title_en',
                 'slug',
                 'description',
+                'description_en',
                 'tags',
                 'project_url',
                 'image_path',
@@ -66,8 +69,10 @@ class EditPortfolioSection extends EditRecord
             ->map(fn (Project $project): array => [
                 'id' => (string) $project->id,
                 'title' => $project->title,
+                'title_en' => $project->title_en,
                 'slug' => $project->slug,
                 'description' => $project->description,
+                'description_en' => $project->description_en,
                 'tags' => $project->tags ?? [],
                 'project_url' => $project->project_url,
                 'image_path' => $project->image_path,
@@ -108,6 +113,7 @@ class EditPortfolioSection extends EditRecord
         foreach ($payload as $index => $item) {
             $data = [
                 'title' => trim((string) ($item['title'] ?? '')),
+                'title_en' => filled($item['title_en'] ?? null) ? trim((string) $item['title_en']) : null,
                 'slug' => trim((string) ($item['slug'] ?? '')),
                 'sort_order' => $index + 1,
                 'is_active' => (bool) ($item['is_active'] ?? true),
@@ -146,8 +152,10 @@ class EditPortfolioSection extends EditRecord
         foreach ($payload as $index => $item) {
             $data = [
                 'title' => trim((string) ($item['title'] ?? '')),
+                'title_en' => filled($item['title_en'] ?? null) ? trim((string) $item['title_en']) : null,
                 'slug' => filled($item['slug'] ?? null) ? \Illuminate\Support\Str::slug((string) $item['slug']) : null,
                 'description' => trim((string) ($item['description'] ?? '')),
+                'description_en' => filled($item['description_en'] ?? null) ? trim((string) $item['description_en']) : null,
                 'project_url' => filled($item['project_url'] ?? null) ? trim((string) $item['project_url']) : null,
                 'tags' => collect($item['tags'] ?? [])->filter()->values()->all(),
                 'image_path' => filled($item['image_path'] ?? null) ? (string) $item['image_path'] : null,

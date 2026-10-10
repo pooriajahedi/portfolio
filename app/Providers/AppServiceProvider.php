@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Models\AboutSection;
 use App\Models\AboutServiceCard;
-use App\Models\BlogPost;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
 use App\Models\PortfolioSection;
@@ -42,7 +41,6 @@ class AppServiceProvider extends ServiceProvider
         ProjectCategory::observe($observer);
         Project::observe($observer);
         PortfolioSection::observe($observer);
-        BlogPost::observe($observer);
         SiteSetting::observe($observer);
     }
 }

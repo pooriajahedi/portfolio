@@ -13,6 +13,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -49,11 +50,28 @@ class HeroSectionResource extends Resource
                             ->required()
                             ->native(false),
                         TextInput::make('name')
-                            ->label('نام')
+                            ->label('نام (فارسی)')
+                            ->maxLength(255),
+                        TextInput::make('name_en')
+                            ->label('نام (انگلیسی)')
                             ->maxLength(255),
                         TextInput::make('role')
-                            ->label('عنوان شغلی')
+                            ->label('عنوان شغلی (فارسی)')
                             ->maxLength(255),
+                        TextInput::make('role_en')
+                            ->label('عنوان شغلی (انگلیسی)')
+                            ->maxLength(255),
+                        Textarea::make('tagline')
+                            ->label('یک‌خطی معرفی (فارسی)')
+                            ->rows(2)
+                            ->maxLength(220)
+                            ->helperText('در بخش hero زیر عنوان شغلی نمایش داده می‌شود. کوتاه و یک‌جمله‌ای بنویسید.')
+                            ->columnSpanFull(),
+                        Textarea::make('tagline_en')
+                            ->label('یک‌خطی معرفی (انگلیسی)')
+                            ->rows(2)
+                            ->maxLength(220)
+                            ->columnSpanFull(),
                         FileUpload::make('avatar_image')
                             ->label('عکس پروفایل')
                             ->image()
