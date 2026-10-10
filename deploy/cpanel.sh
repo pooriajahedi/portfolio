@@ -21,8 +21,14 @@ CODE_DIRS=(app config lang resources routes database/migrations database/seeders
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-mkdir -p "$(dirname "$LOG_FILE")"
-exec > >(tee -a "$LOG_FILE") 2>&1
+# Run again with the output piped through tee. Process substitution would be
+# shorter, but cPanel's deploy shell has no /dev/fd.
+if [ -z "${DEPLOY_LOGGED:-}" ]; then
+    mkdir -p "$(dirname "$LOG_FILE")"
+    set +e
+    DEPLOY_LOGGED=1 bash "${BASH_SOURCE[0]}" "$@" 2>&1 | tee -a "$LOG_FILE"
+    exit "${PIPESTATUS[0]}"
+fi
 
 log() { printf '\n==> %s\n' "$*"; }
 fail() { printf '\nDEPLOY FAILED: %s\n' "$*" >&2; exit 1; }
@@ -32,7 +38,10 @@ find_php() {
     for candidate in "${PHP_BIN:-}" \
         /opt/cpanel/ea-php84/root/usr/bin/php \
         /opt/cpanel/ea-php83/root/usr/bin/php \
-        /opt/cpanel/ea-php82/root/usr/bin/php; do
+        /opt/cpanel/ea-php82/root/usr/bin/php \
+        /opt/alt/php84/usr/bin/php \
+        /opt/alt/php83/usr/bin/php \
+        /opt/alt/php82/usr/bin/php; do
         if [ -n "$candidate" ] && [ -x "$candidate" ]; then
             echo "$candidate"
             return
@@ -48,8 +57,33 @@ PHP="$(find_php)"
 [ -n "$PHP" ] || fail "No PHP binary found. Set PHP_BIN to an EA-PHP 8.2+ binary."
 "$PHP" -r 'exit(version_compare(PHP_VERSION, "8.2.0", ">=") ? 0 : 1);' || fail "$PHP is older than PHP 8.2."
 
-COMPOSER="${COMPOSER_BIN:-/opt/cpanel/composer/bin/composer}"
-[ -x "$COMPOSER" ] || COMPOSER="$(command -v composer || true)"
+find_composer() {
+    local candidate
+    for candidate in "${COMPOSER_BIN:-}" \
+        /opt/cpanel/composer/bin/composer \
+        /usr/local/bin/composer \
+        /usr/bin/composer \
+        "${HOME:-}/bin/composer" \
+        "${HOME:-}/.composer/composer.phar"; do
+        if [ -n "$candidate" ] && [ -f "$candidate" ]; then
+            echo "$candidate"
+            return
+        fi
+    done
+
+    command -v composer || true
+}
+
+# A phar or PHP script must run on the PHP we picked, not whatever `php` is in PATH.
+run_composer() {
+    if head -n 1 "$COMPOSER" | grep -qi php || [[ "$COMPOSER" == *.phar ]]; then
+        "$PHP" "$COMPOSER" "$@"
+    else
+        "$COMPOSER" "$@"
+    fi
+}
+
+COMPOSER="$(find_composer)"
 [ -n "$COMPOSER" ] || fail "Composer not found. Set COMPOSER_BIN."
 
 command -v rsync >/dev/null || fail "rsync is not available on this server."
@@ -110,7 +144,7 @@ export COMPOSER_ALLOW_SUPERUSER=1
 export COMPOSER_MEMORY_LIMIT=-1
 
 log "Installing PHP dependencies"
-"$PHP" "$COMPOSER" install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+run_composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
 
 log "Migrating and rebuilding caches"
 [ -f .env ] || fail "$CORE_DIR/.env is missing. Create it once on the server."
