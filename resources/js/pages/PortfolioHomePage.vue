@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
 import AboutSection from '../components/portfolio/AboutSection.vue';
 import CodeStreamBackground from '../components/portfolio/CodeStreamBackground.vue';
 import ContactSection from '../components/portfolio/ContactSection.vue';
@@ -91,6 +91,22 @@ const yearsOfExperience = computed(() => {
     const years = new Date().getFullYear() - Math.min(...starts);
 
     return years > 0 ? years : null;
+});
+
+// The tab title and description follow the language: "name | role", or the
+// project's own title on its page.
+const pageTitle = computed(() => {
+    const site = [t(profile.value.name), t(profile.value.role)].filter(Boolean).join(' | ');
+    const project = selectedProject.value ? t(selectedProject.value.title) : '';
+
+    return project ? [project, t(profile.value.name)].filter(Boolean).join(' | ') : site;
+});
+
+watchEffect(() => {
+    if (pageTitle.value) document.title = pageTitle.value;
+
+    const tagline = t(profile.value.tagline);
+    if (tagline) document.querySelector('meta[name="description"]')?.setAttribute('content', tagline);
 });
 
 const nav = computed(() =>

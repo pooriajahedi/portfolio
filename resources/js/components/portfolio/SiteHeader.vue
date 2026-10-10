@@ -4,6 +4,7 @@ import LangSwitch from './LangSwitch.vue';
 import ThemeToggle from './ThemeToggle.vue';
 import UiIcon from './UiIcon.vue';
 import { useLang } from '../../composables/useLang';
+import { splitHostname } from '../../support/domain';
 
 const props = defineProps({
     handle: {
@@ -23,6 +24,9 @@ const props = defineProps({
 const { t } = useLang();
 
 const menuOpen = ref(false);
+
+// The wordmark follows the domain the site is served from.
+const domain = splitHostname(window.location.hostname);
 
 // "pooria.jahedi" -> "PJ"
 const initials = computed(() =>
@@ -54,14 +58,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown));
 <template>
     <header class="relative z-30 mx-auto w-full max-w-[1240px] px-5 pt-5 sm:px-10">
         <div class="flex items-center justify-between gap-3 rounded-full border border-border bg-card px-3.5 py-2.5">
-            <a href="#top" class="flex items-center gap-3" :aria-label="handle">
+            <a href="#top" class="flex items-center gap-3" :aria-label="domain.name + domain.tld">
                 <span
                     class="grid size-10 shrink-0 place-items-center rounded-[0.875rem] bg-primary font-mono text-[0.9375rem] font-semibold text-primary-foreground"
                 >
                     {{ initials }}
                 </span>
                 <span dir="ltr" class="hidden font-mono text-[0.9375rem] font-medium sm:inline">
-                    {{ handle }}<span class="text-primary">.dev</span>
+                    {{ domain.name }}<span class="text-primary">{{ domain.tld }}</span>
                 </span>
             </a>
 
