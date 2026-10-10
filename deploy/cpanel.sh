@@ -63,6 +63,7 @@ find_composer() {
         /opt/cpanel/composer/bin/composer \
         /usr/local/bin/composer \
         /usr/bin/composer \
+        "$(dirname "$CORE_DIR")/composer.phar" \
         "${HOME:-}/bin/composer" \
         "${HOME:-}/.composer/composer.phar"; do
         if [ -n "$candidate" ] && [ -f "$candidate" ]; then
@@ -85,6 +86,8 @@ run_composer() {
 
 COMPOSER="$(find_composer)"
 [ -n "$COMPOSER" ] || fail "Composer not found. Set COMPOSER_BIN."
+echo "PHP:      $PHP ($("$PHP" -r 'echo PHP_VERSION;'))"
+echo "Composer: $COMPOSER"
 
 command -v rsync >/dev/null || fail "rsync is not available on this server."
 [ -f "$REPO_DIR/public/build/manifest.json" ] \
