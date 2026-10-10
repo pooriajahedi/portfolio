@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import IconGlyph from '../IconGlyph.vue';
+import UiIcon from './UiIcon.vue';
 import { useLang } from '../../composables/useLang';
 
 const props = defineProps({
@@ -8,38 +8,48 @@ const props = defineProps({
         type: String,
         default: 'pooria.jahedi',
     },
-    socials: {
-        type: Array,
-        default: () => [],
-    },
 });
 
-const { t } = useLang();
+const { lang, t } = useLang();
 
-const year = computed(() => new Date().getFullYear());
+// Persian visitors see the Jalali year (۱۴۰۵), English visitors the Gregorian one.
+const year = computed(() =>
+    lang.value === 'fa'
+        ? new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric' }).format(new Date())
+        : String(new Date().getFullYear()),
+);
+const initials = computed(() =>
+    props.handle
+        .split(/[.\-_\s]+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0].toUpperCase())
+        .join(''),
+);
 </script>
 
 <template>
     <footer class="border-t border-border">
-        <div class="mx-auto flex max-w-4xl flex-col gap-4 px-5 py-9 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm text-muted-foreground">
-                <span dir="ltr" class="font-mono">© {{ year }} {{ handle }}</span>
-                — {{ t({ fa: 'تمامی حقوق محفوظ است', en: 'All rights reserved' }) }}
-            </p>
-
-            <nav id="contact-links" class="flex flex-wrap items-center gap-2">
-                <a
-                    v-for="social in props.socials"
-                    :key="social.label"
-                    :href="social.href"
-                    :target="social.href.startsWith('http') ? '_blank' : undefined"
-                    rel="noreferrer noopener"
-                    class="flex items-center gap-2 rounded-md border border-border px-3.5 py-2 text-base text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        <div class="mx-auto flex w-full max-w-[1240px] flex-wrap items-center justify-between gap-4 px-5 py-7 sm:px-10">
+            <div class="flex flex-wrap items-center gap-3">
+                <span
+                    class="grid size-8 place-items-center rounded-[0.625rem] bg-primary font-mono text-xs font-semibold text-primary-foreground"
                 >
-                    <IconGlyph :icon="social.icon" :size="17" />
-                    {{ social.label }}
-                </a>
-            </nav>
+                    {{ initials }}
+                </span>
+                <p class="text-[0.9375rem] text-muted-foreground">
+                    <span dir="ltr" class="font-mono">© {{ year }}</span>
+                    {{ t({ fa: 'پوریا جاهدی. تمامی حقوق محفوظ است.', en: 'Pooria Jahedi. All rights reserved.' }) }}
+                </p>
+            </div>
+
+            <a
+                href="#top"
+                class="inline-flex min-h-11 items-center gap-2.5 rounded-full border border-border-strong px-5 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
+            >
+                {{ t({ fa: 'بازگشت به بالا', en: 'Back to top' }) }}
+                <UiIcon name="arrowUp" :size="16" :stroke-width="2" />
+            </a>
         </div>
     </footer>
 </template>

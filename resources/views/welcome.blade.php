@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" data-theme="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="shortcut icon" href="/favicon.svg">
+    <meta name="color-scheme" content="dark light">
+    {{-- The tab icon has a file per theme; the script below and useTheme.js pick the right one. --}}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" data-themed-href="/favicon-{theme}.svg">
+    <script>
+        // Apply the saved (or system) theme and language before first paint.
+        (function () {
+            try {
+                var root = document.documentElement;
+                var lang = localStorage.getItem('portfolio-lang') === 'en' ? 'en' : 'fa';
+                var theme = localStorage.getItem('portfolio-theme');
+
+                if (theme !== 'dark' && theme !== 'light') {
+                    theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                }
+
+                root.lang = lang;
+                root.dir = lang === 'fa' ? 'rtl' : 'ltr';
+                root.dataset.theme = theme;
+
+                var icon = document.querySelector('link[rel="icon"][data-themed-href]');
+                if (icon) icon.href = icon.dataset.themedHref.replace('{theme}', theme);
+            } catch (e) {}
+        })();
+    </script>
     @php($metaTitle = trim((string) ($metaTitle ?? 'پوریا جاهدی | برنامه‌نویس بک‌اند و فول‌استک')))
     @php($metaDescription = trim((string) ($metaDescription ?? 'پورتفولیوی شخصی برای معرفی مهارت‌ها، نمونه‌کارها و رزومه.')))
     @php($metaImage = trim((string) ($metaImage ?? url('/images/hero/pooria-hero.jpeg'))))

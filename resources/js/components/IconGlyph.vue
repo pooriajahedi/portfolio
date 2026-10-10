@@ -29,14 +29,19 @@ const iconUrl = computed(() => {
 
 const isMaskIcon = computed(() => String(props.icon ?? '').startsWith('mdi:'));
 
-const maskStyle = computed(() => {
-    const size = typeof props.size === 'number' ? `${props.size}px` : String(props.size);
+const cssSize = computed(() => (typeof props.size === 'number' ? `${props.size}px` : String(props.size)));
 
-    return {
-        '--icon-url': `url(${iconUrl.value})`,
-        '--icon-size': size,
-    };
-});
+const maskStyle = computed(() => ({
+    '--icon-url': `url(${iconUrl.value})`,
+    '--icon-size': cssSize.value,
+}));
+
+// Logos come in all aspect ratios; the box is fixed and the artwork is contained inside it.
+const imageStyle = computed(() => ({
+    width: cssSize.value,
+    height: cssSize.value,
+    objectFit: 'contain',
+}));
 </script>
 
 <template>
@@ -58,6 +63,7 @@ const maskStyle = computed(() => {
         :alt="alt"
         :width="size"
         :height="size"
+        :style="imageStyle"
     >
 </template>
 

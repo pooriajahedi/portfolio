@@ -1,65 +1,101 @@
 <script setup>
-import UiIcon from './UiIcon.vue';
+import { computed, ref } from 'vue';
+import ProjectCard from './ProjectCard.vue';
+import SectionHeader from './SectionHeader.vue';
 import { useLang } from '../../composables/useLang';
 
-defineProps({
+const props = defineProps({
     projects: {
         type: Array,
         default: () => [],
+    },
+    categories: {
+        type: Array,
+        default: () => [],
+    },
+    title: {
+        type: Object,
+        default: null,
     },
 });
 
 const emit = defineEmits(['open']);
 
-const { isRtl, t } = useLang();
+const { t } = useLang();
+
+const ALL = 'all';
+const activeCategory = ref(ALL);
+
+// Only categories that actually hold a project make useful filters.
+const filters = computed(() =>
+    props.categories.filter((category) => props.projects.some((project) => project.category?.slug === category.slug)),
+);
+
+const visibleProjects = computed(() =>
+    activeCategory.value === ALL
+        ? props.projects
+        : props.projects.filter((project) => project.category?.slug === activeCategory.value),
+);
+
+const heading = computed(() => t(props.title) || t({ fa: 'نمونه‌کارها', en: 'Selected work' }));
+
+// A lead card keeps the two-column grid full: it is only needed when the count is odd.
+const hasLeadCard = computed(() => visibleProjects.value.length % 2 === 1);
 </script>
 
 <template>
-    <div class="grid gap-5 sm:grid-cols-2">
-        <a
-            v-for="project in projects"
-            :key="project.id"
-            :href="`/portfolio/${project.slug}`"
-            class="panel group flex flex-col overflow-hidden transition-colors hover:border-border-strong"
-            @click.prevent="emit('open', project.slug)"
-        >
-            <img
-                v-if="project.imageUrl"
-                :src="project.imageUrl"
-                :alt="t(project.title)"
-                width="1024"
-                height="640"
-                loading="lazy"
-                class="aspect-16/10 w-full border-b border-border object-cover opacity-85 transition-opacity group-hover:opacity-100"
-            />
+    <section id="projects" v-reveal="'projects'" class="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-10 sm:py-28">
+        <SectionHeader index="04" :label="t({ fa: 'نمونه‌کارها', en: 'Selected work' })" />
 
-            <div class="flex flex-1 flex-col p-6">
-                <div class="flex items-start justify-between gap-3">
-                    <h3 dir="auto" class="text-xl font-semibold transition-colors group-hover:text-primary">
-                        {{ t(project.title) }}
-                    </h3>
-                    <UiIcon
-                        name="arrowUpRight"
-                        :size="18"
-                        class="mt-1 text-muted-foreground transition-colors group-hover:text-primary"
-                        :class="isRtl ? '-scale-x-100' : ''"
-                    />
-                </div>
+        <div class="mt-9 flex flex-wrap items-end justify-between gap-7">
+            <h2 class="heading text-[clamp(1.75rem,3.6vw,3rem)]">{{ heading }}</h2>
 
-                <p dir="auto" class="mt-2.5 line-clamp-4 flex-1 text-base leading-relaxed text-muted-foreground">
-                    {{ t(project.text) }}
-                </p>
+            <div
+                v-if="filters.length > 1"
+                role="group"
+                :aria-label="t({ fa: 'فیلتر دسته‌بندی', en: 'Filter by category' })"
+                class="flex flex-wrap gap-2.5"
+            >
+                <button
+                    type="button"
+                    class="min-h-11 rounded-full border px-5 text-[0.9375rem] font-medium transition-colors"
+                    :class="
+                        activeCategory === ALL
+                            ? 'border-primary bg-primary font-semibold text-primary-foreground'
+                            : 'border-border-strong hover:border-primary'
+                    "
+                    :aria-pressed="activeCategory === ALL"
+                    @click="activeCategory = ALL"
+                >
+                    {{ t({ fa: 'همه', en: 'All' }) }}
+                </button>
 
-                <ul v-if="project.tags?.length" dir="ltr" class="mt-5 flex flex-wrap gap-2" :class="isRtl ? 'justify-end' : ''">
-                    <li
-                        v-for="tag in project.tags"
-                        :key="tag"
-                        class="rounded-md border border-border px-2.5 py-1 text-sm text-muted-foreground"
-                    >
-                        {{ tag }}
-                    </li>
-                </ul>
+                <button
+                    v-for="category in filters"
+                    :key="category.slug"
+                    type="button"
+                    class="min-h-11 rounded-full border px-5 text-[0.9375rem] font-medium transition-colors"
+                    :class="
+                        activeCategory === category.slug
+                            ? 'border-primary bg-primary font-semibold text-primary-foreground'
+                            : 'border-border-strong hover:border-primary'
+                    "
+                    :aria-pressed="activeCategory === category.slug"
+                    @click="activeCategory = category.slug"
+                >
+                    {{ t(category.title) }}
+                </button>
             </div>
-        </a>
-    </div>
+        </div>
+
+        <div class="mt-11 grid grid-cols-1 gap-6 md:grid-cols-2">
+            <ProjectCard
+                v-for="(project, index) in visibleProjects"
+                :key="project.id"
+                :project="project"
+                :featured="hasLeadCard && index === 0"
+                @open="emit('open', $event)"
+            />
+        </div>
+    </section>
 </template>

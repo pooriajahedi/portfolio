@@ -1,19 +1,21 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
-import StarfieldBackground from '../components/portfolio/StarfieldBackground.vue';
-import SiteHeader from '../components/portfolio/SiteHeader.vue';
-import SiteFooter from '../components/portfolio/SiteFooter.vue';
+import AboutSection from '../components/portfolio/AboutSection.vue';
+import CodeStreamBackground from '../components/portfolio/CodeStreamBackground.vue';
+import ContactSection from '../components/portfolio/ContactSection.vue';
+import ExperienceSection from '../components/portfolio/ExperienceSection.vue';
 import HeroSection from '../components/portfolio/HeroSection.vue';
-import PortfolioSection from '../components/portfolio/PortfolioSection.vue';
-import SkillsSection from '../components/portfolio/SkillsSection.vue';
-import ProjectsSection from '../components/portfolio/ProjectsSection.vue';
-import ResumeSection from '../components/portfolio/ResumeSection.vue';
-import ProjectDetail from '../components/portfolio/ProjectDetail.vue';
 import ImageModal from '../components/portfolio/ImageModal.vue';
+import ProjectDetail from '../components/portfolio/ProjectDetail.vue';
+import ProjectsSection from '../components/portfolio/ProjectsSection.vue';
+import SiteFooter from '../components/portfolio/SiteFooter.vue';
+import SiteHeader from '../components/portfolio/SiteHeader.vue';
+import SkillsSection from '../components/portfolio/SkillsSection.vue';
+import TechMarquee from '../components/portfolio/TechMarquee.vue';
 import { useLang } from '../composables/useLang';
 import { useSmoothScroll } from '../composables/useSmoothScroll';
 import { usePublicContentApi } from '../composables/usePublicContentApi';
-import { normalizeExternalUrl, resolveStorageUrl, telegramUrl, withVersion } from '../support/urls';
+import { compactUrl, normalizeExternalUrl, resolveStorageUrl, telegramUrl, withVersion } from '../support/urls';
 
 const props = defineProps({
     apiUrls: {
@@ -22,12 +24,15 @@ const props = defineProps({
     },
 });
 
+const PRIMARY_STACK_GROUPS = ['backend', 'database'];
+const PRIMARY_STACK_SIZE = 5;
+
 const { t } = useLang();
 const { scrollToElement } = useSmoothScroll();
 const { fetchSiteState, fetchPortfolioFeed, fetchPortfolioProject } = usePublicContentApi(props.apiUrls);
 
 const siteState = ref({});
-const projects = ref([]);
+const feed = ref({ title: null, categories: [], projects: [] });
 const loadingSite = ref(true);
 const loadingProjects = ref(true);
 
@@ -42,34 +47,69 @@ const modalImages = ref([]);
 const modalIndex = ref(0);
 
 const profile = computed(() => siteState.value.profile ?? {});
+const about = computed(() => siteState.value.about ?? null);
+const contact = computed(() => siteState.value.contact ?? null);
 const skillGroups = computed(() => siteState.value.skillGroups ?? []);
+const experience = computed(() => siteState.value.experience ?? []);
 const links = computed(() => siteState.value.links ?? {});
-const starfield = computed(() => siteState.value.appearance?.starfield ?? { enabled: true, opacity: 80 });
+const projects = computed(() => feed.value.projects ?? []);
 
+const handle = computed(() => profile.value.handle || 'pooria.jahedi');
 const resumeUrl = computed(() => withVersion(resolveStorageUrl(profile.value?.resumeFile), profile.value?.resumeFileVersion));
 
-const socials = computed(() => {
-    const items = [
-        { label: 'GitHub', href: normalizeExternalUrl(links.value.github), icon: links.value.githubIcon || 'mdi:github' },
-        { label: 'LinkedIn', href: normalizeExternalUrl(links.value.linkedin), icon: links.value.linkedinIcon || 'mdi:linkedin' },
-        { label: 'Telegram', href: telegramUrl(links.value.telegram), icon: links.value.telegramIcon || 'mdi:telegram' },
-        {
-            label: t({ fa: 'ایمیل', en: 'Email' }),
-            href: links.value.email ? `mailto:${links.value.email}` : '',
-            icon: links.value.emailIcon || 'logos:google-gmail',
-        },
-    ];
+const socialLinks = computed(() =>
+    [
+        { key: 'github', label: 'GitHub', value: compactUrl(links.value.github), href: normalizeExternalUrl(links.value.github), icon: 'github' },
+        { key: 'linkedin', label: 'LinkedIn', value: compactUrl(links.value.linkedin), href: normalizeExternalUrl(links.value.linkedin), icon: 'linkedin' },
+        { key: 'telegram', label: 'Telegram', value: String(links.value.telegram ?? '').trim(), href: telegramUrl(links.value.telegram), icon: 'send' },
+    ].filter((item) => item.href !== ''),
+);
 
-    return items.filter((item) => item.href !== '');
+const contactLinks = computed(() => {
+    const email = String(links.value.email ?? '').trim();
+    const emailLink = email
+        ? [{ key: 'email', label: t({ fa: 'ایمیل', en: 'Email' }), value: email, href: `mailto:${email}`, icon: 'mail' }]
+        : [];
+
+    return [...emailLink, ...socialLinks.value];
 });
 
-const nav = computed(() => [
-    { label: { fa: 'مهارت‌ها', en: 'Skills' }, href: '#skills' },
-    { label: { fa: 'پروژه‌ها', en: 'Projects' }, href: '#projects' },
-    { label: { fa: 'رزومه', en: 'Resume' }, href: '#resume' },
-]);
+const allSkills = computed(() => skillGroups.value.flatMap((group) => group.items.map((skill) => t(skill.title))));
+
+// The headline technologies on the portrait card come from the backend and database groups.
+const primaryStack = computed(() =>
+    PRIMARY_STACK_GROUPS.flatMap((key) => skillGroups.value.find((group) => group.key === key)?.items ?? [])
+        .slice(0, PRIMARY_STACK_SIZE)
+        .map((skill) => t(skill.title)),
+);
+
+// Whole years since the earliest experience entry started.
+const yearsOfExperience = computed(() => {
+    const starts = experience.value.map((item) => item.period?.start?.en).filter(Boolean);
+    if (starts.length === 0) return null;
+
+    const years = new Date().getFullYear() - Math.min(...starts);
+
+    return years > 0 ? years : null;
+});
+
+const nav = computed(() =>
+    [
+        { show: about.value !== null, label: { fa: 'درباره من', en: 'About' }, href: '#about' },
+        { show: skillGroups.value.length > 0, label: { fa: 'مهارت‌ها', en: 'Skills' }, href: '#skills' },
+        { show: experience.value.length > 0 || resumeUrl.value !== '', label: { fa: 'مسیر حرفه‌ای', en: 'Experience' }, href: '#experience' },
+        { show: projects.value.length > 0, label: { fa: 'نمونه‌کارها', en: 'Projects' }, href: '#projects' },
+    ].filter((item) => item.show),
+);
 
 const isDetailView = computed(() => selectedSlug.value !== '');
+
+const nextProject = computed(() => {
+    const index = projects.value.findIndex((project) => project.slug === selectedSlug.value);
+    if (index === -1 || projects.value.length < 2) return null;
+
+    return projects.value[(index + 1) % projects.value.length];
+});
 
 const slugFromPath = () => {
     const match = window.location.pathname.match(/^\/portfolio\/([^/]+)\/?$/i);
@@ -95,8 +135,7 @@ const loadProjectDetail = async (slug) => {
             en: 'This project could not be found, or something went wrong while loading it.',
         });
     } finally {
-        if (token !== detailRequestToken) return;
-        loadingDetail.value = false;
+        if (token === detailRequestToken) loadingDetail.value = false;
     }
 };
 
@@ -163,7 +202,7 @@ onMounted(async () => {
             }),
         fetchPortfolioFeed()
             .then((payload) => {
-                projects.value = payload?.projects ?? [];
+                feed.value = { title: payload?.title ?? null, categories: payload?.categories ?? [], projects: payload?.projects ?? [] };
             })
             .finally(() => {
                 loadingProjects.value = false;
@@ -178,56 +217,53 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="relative min-h-screen">
-        <StarfieldBackground :enabled="starfield.enabled !== false" :opacity="Number(starfield.opacity ?? 80)" />
+    <div id="top" class="relative isolate min-h-screen">
+        <CodeStreamBackground />
 
-        <SiteHeader :handle="profile.handle || 'pooria.jahedi'" :email="links.email || ''" :nav="nav" />
+        <SiteHeader :handle="handle" :nav="nav" :show-contact="contactLinks.length > 0" />
 
-        <main id="top" class="relative">
-            <div class="mx-auto max-w-4xl px-5">
-                <ProjectDetail
-                    v-if="isDetailView"
-                    :project="selectedProject"
-                    :loading="loadingDetail"
-                    :error="detailError"
-                    @back="closeProject()"
-                    @preview="openPreview"
+        <main class="relative">
+            <ProjectDetail
+                v-if="isDetailView"
+                :project="selectedProject"
+                :next="nextProject"
+                :loading="loadingDetail"
+                :error="detailError"
+                @back="closeProject()"
+                @open="openProject"
+                @preview="openPreview"
+            />
+
+            <div v-else class="transition-opacity duration-500" :class="loadingSite ? 'opacity-0' : 'opacity-100'">
+                <HeroSection
+                    :profile="profile"
+                    :socials="socialLinks"
+                    :stack="primaryStack"
+                    :years="yearsOfExperience"
+                    :resume-url="resumeUrl"
                 />
 
-                <div v-else class="transition-opacity duration-500" :class="loadingSite ? 'opacity-0' : 'opacity-100'">
-                    <HeroSection :profile="profile" :socials="socials" />
+                <TechMarquee :items="allSkills" />
 
-                    <PortfolioSection
-                        v-if="skillGroups.length"
-                        id="skills"
-                        index="01"
-                        :title="t({ fa: 'مهارت‌ها و تکنولوژی‌ها', en: 'Skills & Technologies' })"
-                    >
-                        <SkillsSection :groups="skillGroups" />
-                    </PortfolioSection>
+                <AboutSection v-if="about" :about="about" />
 
-                    <PortfolioSection
-                        v-if="!loadingProjects && projects.length"
-                        id="projects"
-                        index="02"
-                        :title="t({ fa: 'پروژه‌ها', en: 'Projects' })"
-                    >
-                        <ProjectsSection :projects="projects" @open="openProject" />
-                    </PortfolioSection>
+                <SkillsSection v-if="skillGroups.length" :groups="skillGroups" />
 
-                    <PortfolioSection
-                        v-if="resumeUrl"
-                        id="resume"
-                        index="03"
-                        :title="t({ fa: 'رزومه', en: 'Resume' })"
-                    >
-                        <ResumeSection :resume-url="resumeUrl" />
-                    </PortfolioSection>
-                </div>
+                <ExperienceSection v-if="experience.length || resumeUrl" :items="experience" :resume-url="resumeUrl" />
+
+                <ProjectsSection
+                    v-if="!loadingProjects && projects.length"
+                    :projects="projects"
+                    :categories="feed.categories"
+                    :title="feed.title"
+                    @open="openProject"
+                />
+
+                <ContactSection v-if="contactLinks.length" :contact="contact" :links="contactLinks" />
             </div>
         </main>
 
-        <SiteFooter :handle="profile.handle || 'pooria.jahedi'" :socials="socials" />
+        <SiteFooter :handle="handle" />
 
         <ImageModal
             :open="modalOpen"

@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import PortfolioHomePage from './pages/PortfolioHomePage.vue';
+import { reveal } from './directives/reveal';
 
 const container = document.getElementById('portfolioApp');
 
@@ -10,5 +11,5 @@ if (container) {
         portfolioShow: '/api/portfolio/__slug__',
     };
 
-    createApp(PortfolioHomePage, { apiUrls }).mount(container);
+    createApp(PortfolioHomePage, { apiUrls }).directive('reveal', reveal).mount(container);
 }

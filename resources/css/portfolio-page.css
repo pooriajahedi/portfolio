@@ -1,82 +1,119 @@
 /*
- * Design system for the public portfolio: a charcoal "deep space" dark theme.
- * Colours live here as semantic tokens — components never hardcode one.
+ * Design system for the public portfolio ("Signal").
+ *
+ * Colours are semantic tokens that flip with `data-theme` on <html>; typography
+ * flips with `lang`. Components never hardcode a colour or a font.
  */
 
+@import '@fontsource-variable/jetbrains-mono/wght.css';
+
 @font-face {
-    font-family: "Pinar";
-    src: url("/fonts/pinar/Pinar-DS1-FD-Light.ttf") format("truetype");
-    font-weight: 300;
+    font-family: "IRANSansX";
+    src: url("/fonts/iransans/IRANSansXVF.woff2") format("woff2");
+    font-weight: 100 1000;
     font-style: normal;
     font-display: swap;
 }
 
-@font-face {
-    font-family: "Pinar";
-    src: url("/fonts/pinar/Pinar-DS1-FD-Medium.ttf") format("truetype");
-    font-weight: 400 500;
-    font-style: normal;
-    font-display: swap;
+/* Dark is the default; the inline script in the layout sets data-theme before first paint. */
+:root {
+    color-scheme: dark;
+
+    --bg: #0b0c10;
+    --bg-2: #11131a;
+    --surface: #14161e;
+    --surface-2: #1b1e28;
+    --line: rgb(255 255 255 / 9%);
+    --line-strong: rgb(255 255 255 / 20%);
+    --text: #f3f4f6;
+    --muted: #a3a9b6;
+    --accent: #ff6a3d;
+    --accent-ink: #0b0c10;
+    --accent-soft: rgb(255 106 61 / 14%);
+    --ok: #3ddc97;
+    --shadow: 0 28px 50px -30px rgb(0 0 0 / 90%);
+
+    /* The photo is multiplied onto this backdrop, so it must stay light enough in light mode. */
+    --portrait-bg: var(--accent);
+    --portrait-filter: grayscale(1) contrast(1.12);
+
+    /* Background code stream: kept faint, it only sets the mood. */
+    --code-opacity: 0.1;
+    --code-keyword: var(--accent);
+    --code-string: var(--ok);
+    --code-function: #9cc2ff;
+    --code-type: #c4b5fd;
+    --code-number: #ffb454;
 }
 
-@font-face {
-    font-family: "Pinar";
-    src: url("/fonts/pinar/Pinar-DS1-FD-SemiBold.ttf") format("truetype");
-    font-weight: 600;
-    font-style: normal;
-    font-display: swap;
+:root[data-theme="light"] {
+    color-scheme: light;
+
+    --bg: #f5f6f8;
+    --bg-2: #eceef2;
+    --surface: #ffffff;
+    --surface-2: #f0f2f5;
+    --line: rgb(14 17 22 / 10%);
+    --line-strong: rgb(14 17 22 / 26%);
+    --text: #0e1116;
+    --muted: #555d6b;
+    --accent: #c93208;
+    --accent-ink: #ffffff;
+    --accent-soft: rgb(201 50 8 / 9%);
+    --ok: #0f7a55;
+    --shadow: 0 28px 50px -32px rgb(14 17 22 / 28%);
+
+    --portrait-bg: color-mix(in srgb, var(--accent) 20%, #ffffff);
+    --portrait-filter: brightness(1.1) contrast(1.02) saturate(0.95);
+
+    --code-opacity: 0.16;
+    --code-function: #1d4ed8;
+    --code-type: #5b45e0;
+    --code-number: #b45309;
 }
 
-@font-face {
-    font-family: "Pinar";
-    src: url("/fonts/pinar/Pinar-DS1-FD-Bold.ttf") format("truetype");
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
+/* Persian letters join, so tracking must stay 0; Latin copy gets tighter display tracking. */
+:root,
+:root[lang="fa"] {
+    --leading-body: 1.9;
+    --leading-display: 1.35;
+    --leading-heading: 1.6;
+    --tracking-display: 0;
+    --tracking-caps: 0;
+    --text-caps: none;
 }
 
-@font-face {
-    font-family: "Pinar";
-    src: url("/fonts/pinar/Pinar-DS1-FD-ExtraBold.ttf") format("truetype");
-    font-weight: 800;
-    font-style: normal;
-    font-display: swap;
+:root[lang="en"] {
+    --leading-body: 1.65;
+    --leading-display: 1.08;
+    --leading-heading: 1.2;
+    --tracking-display: -0.02em;
+    --tracking-caps: 0.08em;
+    --text-caps: uppercase;
 }
 
-@font-face {
-    font-family: "Pinar";
-    src: url("/fonts/pinar/Pinar-DS1-FD-Black.ttf") format("truetype");
-    font-weight: 900;
-    font-style: normal;
-    font-display: swap;
-}
+@theme inline {
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-3xl: 2.25rem;
 
-@theme {
-    --radius: 0.5rem;
-    --radius-sm: calc(var(--radius) - 4px);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) + 4px);
-    --radius-2xl: calc(var(--radius) + 8px);
+    --color-background: var(--bg);
+    --color-background-alt: var(--bg-2);
+    --color-card: var(--surface);
+    --color-card-alt: var(--surface-2);
+    --color-foreground: var(--text);
+    --color-muted-foreground: var(--muted);
+    --color-border: var(--line);
+    --color-border-strong: var(--line-strong);
+    --color-primary: var(--accent);
+    --color-primary-foreground: var(--accent-ink);
+    --color-primary-soft: var(--accent-soft);
+    --color-success: var(--ok);
 
-    --color-background: oklch(0.095 0.006 275);
-    --color-foreground: oklch(0.94 0.008 90);
-    --color-card: oklch(0.16 0.011 275);
-    --color-card-foreground: oklch(0.94 0.008 90);
-    --color-primary: oklch(0.82 0.16 158);
-    --color-primary-foreground: oklch(0.12 0.01 275);
-    --color-secondary: oklch(0.205 0.011 275);
-    --color-secondary-foreground: oklch(0.94 0.008 90);
-    --color-muted: oklch(0.2 0.01 275);
-    --color-muted-foreground: oklch(0.68 0.012 268);
-    --color-destructive: oklch(0.62 0.2 25);
-    --color-border: oklch(1 0 0 / 9%);
-    --color-border-strong: oklch(1 0 0 / 16%);
-    --color-ring: oklch(0.82 0.16 158 / 45%);
+    --font-sans: "IRANSansX", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono Variable", "IRANSansX", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-    --font-sans: "Pinar", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, "Cascadia Mono", monospace;
-    --font-display: "Pinar", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+    --shadow-float: var(--shadow);
 }
 
 @layer base {
@@ -84,82 +121,141 @@
     *::before,
     *::after {
         box-sizing: border-box;
-        border-color: var(--color-border);
+        border-color: var(--line);
+    }
+
+    html {
+        scroll-padding-top: 6rem;
     }
 
     body {
         margin: 0;
         min-height: 100vh;
-        background-color: var(--color-background);
-        color: var(--color-foreground);
+        background-color: var(--bg);
+        color: var(--text);
         font-family: var(--font-sans);
         font-size: 1.0625rem;
-        line-height: 1.85;
+        line-height: var(--leading-body);
         -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        transition: background-color 250ms ease, color 250ms ease;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+        margin: 0;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    button {
+        cursor: pointer;
     }
 
     ::selection {
-        background: oklch(0.82 0.16 158 / 28%);
+        background: var(--accent-soft);
     }
 
     :focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
-    }
-
-    /* Latin runs inside Persian copy should not inherit the Persian metrics. */
-    [dir="ltr"] body {
-        letter-spacing: -0.011em;
-        line-height: 1.75;
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
     }
 }
 
-/* Deep-space nebula: layered gas clouds over near-black, still restrained. */
-@utility nebula {
-    background:
-        radial-gradient(circle at 50% 45%, oklch(0.2 0.03 265 / 45%), transparent 70%),
-        radial-gradient(ellipse 60% 45% at 8% 2%, oklch(0.32 0.09 250 / 16%), transparent 72%),
-        radial-gradient(ellipse 50% 38% at 92% 14%, oklch(0.4 0.1 158 / 11%), transparent 72%),
-        radial-gradient(ellipse 70% 50% at 60% 104%, oklch(0.3 0.09 285 / 13%), transparent 74%);
-}
-
-/* Vignette that pushes the corners into deep space and centres the content. */
-@utility space-vignette {
-    background: radial-gradient(ellipse 85% 75% at 50% 45%, transparent 45%, oklch(0.04 0.005 275 / 72%) 100%);
-}
-
-/* Soft light that follows the pointer across the space background. */
-@utility cursor-glow {
-    background: radial-gradient(
-        260px circle at var(--mx, 50%) var(--my, 30%),
-        color-mix(in oklab, var(--color-primary) 7%, transparent),
-        transparent 70%
-    );
-    transition: background 120ms linear;
-}
-
-@utility panel {
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background-color: color-mix(in oklab, var(--color-card) 72%, transparent);
-    backdrop-filter: blur(6px);
-}
-
-/* Small caps label above a group of cards. */
-@utility mono-label {
+/* Small mono label: section names, meta rows, tag captions. */
+@utility label-mono {
     font-family: var(--font-mono);
-    font-size: 0.875rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: var(--tracking-caps);
+    text-transform: var(--text-caps);
     color: var(--color-muted-foreground);
 }
 
-[dir="rtl"] .mono-label {
+@utility font-display {
     font-family: var(--font-sans);
+    font-weight: 800;
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+}
+
+@utility heading {
+    font-weight: 700;
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-display);
+}
+
+/* Surface used by cards and panels. */
+@utility card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    background-color: var(--color-card);
+}
+
+/* Buttons: one shape, two fills. */
+@utility btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 3.375rem;
+    padding-inline: 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 1rem;
     font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 0;
-    text-transform: none;
+    line-height: 1;
+    transition: transform 200ms ease, filter 200ms ease, border-color 200ms ease, color 200ms ease;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+@utility btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+
+    &:hover {
+        filter: brightness(1.08);
+    }
+}
+
+@utility btn-ghost {
+    border-color: var(--color-border-strong);
+    color: var(--color-foreground);
+
+    &:hover {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+}
+
+/* Dotted blueprint grid, faded towards its edges. */
+@utility dot-grid {
+    background-image: radial-gradient(var(--line-strong) 1px, transparent 1.5px);
+    background-size: 30px 30px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 85% at 50% 30%, #000 25%, transparent 78%);
+    mask-image: radial-gradient(ellipse 75% 85% at 50% 30%, #000 25%, transparent 78%);
+}
+
+/* Section content fades in once as it scrolls into view (see directives/reveal.js). */
+.reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: none;
 }
 
 /* Icons rendered by IconGlyph. */
@@ -167,23 +263,6 @@
     display: inline-block;
     flex-shrink: 0;
     vertical-align: middle;
-}
-
-/* Rich text coming from the admin (project descriptions). */
-.rich-text > * + * {
-    margin-top: 1rem;
-}
-
-.rich-text a {
-    color: var(--color-primary);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-.rich-text ul,
-.rich-text ol {
-    padding-inline-start: 1.5rem;
-    list-style: revert;
 }
 
 /* Lenis smooth scroll */
@@ -208,5 +287,10 @@ html.lenis {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
     }
 }
