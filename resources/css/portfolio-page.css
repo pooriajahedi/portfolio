@@ -44,6 +44,11 @@
     --code-function: #9cc2ff;
     --code-type: #c4b5fd;
     --code-number: #ffb454;
+
+    /* Skill tiles: how strongly a brand colour tints its tile, and the light
+       outline that keeps black logos visible on the dark surface. */
+    --brand-tint: 16%;
+    --icon-outline: drop-shadow(0 0 0.6px #fff) drop-shadow(0 0 0.6px #fff);
 }
 
 :root[data-theme="light"] {
@@ -70,6 +75,9 @@
     --code-function: #1d4ed8;
     --code-type: #5b45e0;
     --code-number: #b45309;
+
+    --brand-tint: 11%;
+    --icon-outline: none;
 }
 
 /* Persian letters join, so tracking must stay 0; Latin copy gets tighter display tracking. */
@@ -263,6 +271,10 @@
     display: inline-block;
     flex-shrink: 0;
     vertical-align: middle;
+}
+
+.icon-outline {
+    filter: var(--icon-outline);
 }
 
 /* Lenis smooth scroll */
