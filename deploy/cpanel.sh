@@ -8,7 +8,8 @@
 # Never overwritten on the server: .env, storage/, vendor/ (Composer owns it),
 # and the .htaccess that cPanel's MultiPHP writes into the document root.
 # Server-only files are never deleted, except inside the code folders and
-# public/build, which only ever hold generated or versioned files.
+# public/build, which only ever hold versioned files. Only cp, mv and rm are
+# needed: rsync is not installed on shared hosting.
 
 set -euo pipefail
 
@@ -18,6 +19,9 @@ LOG_FILE="${LOG_FILE:-$(dirname "$CORE_DIR")/logs/portfolio-deploy.log}"
 
 # Folders that hold nothing but versioned code, so removed files may be removed here too.
 CODE_DIRS=(app config lang resources routes database/migrations database/seeders database/factories)
+
+# Top-level entries of the repository that never go into the core folder.
+SKIP_ENTRIES=(.git .cpanel.yml deploy .env public storage vendor node_modules tests .idea .github)
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
@@ -32,6 +36,78 @@ fi
 
 log() { printf '\n==> %s\n' "$*"; }
 fail() { printf '\nDEPLOY FAILED: %s\n' "$*" >&2; exit 1; }
+
+in_list() {
+    local needle="$1" item
+    shift
+    for item in "$@"; do
+        [ "$item" = "$needle" ] && return 0
+    done
+    return 1
+}
+
+# Replace a directory with a copy of another, swapping it in last so the old
+# one is only gone once the new one is complete.
+replace_dir() {
+    local source="$1" target="$2"
+
+    rm -rf "$target.new" "$target.old"
+    mkdir -p "$(dirname "$target")"
+    cp -a "$source" "$target.new"
+    [ ! -e "$target" ] || mv "$target" "$target.old"
+    mv "$target.new" "$target"
+    rm -rf "$target.old"
+}
+
+# Copy the application's files over the existing ones, leaving anything the
+# server owns (see SKIP_ENTRIES) and anything the repository lacks untouched.
+copy_application() {
+    local entry name file
+
+    for entry in "$REPO_DIR"/* "$REPO_DIR"/.[!.]*; do
+        [ -e "$entry" ] || continue
+        name="$(basename "$entry")"
+
+        in_list "$name" "${SKIP_ENTRIES[@]}" && continue
+        in_list "$name" "${CODE_DIRS[@]}" && continue
+
+        if [ "$name" = bootstrap ]; then
+            # bootstrap/cache belongs to the server.
+            mkdir -p "$CORE_DIR/bootstrap"
+            for file in "$entry"/*; do
+                [ "$(basename "$file")" = cache ] || cp -a "$file" "$CORE_DIR/bootstrap/"
+            done
+            continue
+        fi
+
+        cp -a "$entry" "$CORE_DIR/"
+    done
+
+    # Code folders are replaced, so a file removed from the repository goes too.
+    for name in "${CODE_DIRS[@]}"; do
+        [ -d "$REPO_DIR/$name" ] && replace_dir "$REPO_DIR/$name" "$CORE_DIR/$name"
+    done
+
+    return 0
+}
+
+# Copy public/ into the document root, keeping the host's own .htaccess.
+copy_public() {
+    local entry name
+
+    for entry in "$REPO_DIR/public"/* "$REPO_DIR/public"/.[!.]*; do
+        [ -e "$entry" ] || continue
+        name="$(basename "$entry")"
+
+        in_list "$name" .htaccess build && continue
+
+        cp -a "$entry" "$WEB_DIR/"
+    done
+
+    # Hashed build assets: drop the ones the new build no longer references.
+    replace_dir "$REPO_DIR/public/build" "$WEB_DIR/build"
+    [ -f "$WEB_DIR/.htaccess" ] || cp "$REPO_DIR/public/.htaccess" "$WEB_DIR/.htaccess"
+}
 
 find_php() {
     local candidate
@@ -89,24 +165,13 @@ COMPOSER="$(find_composer)"
 echo "PHP:      $PHP ($("$PHP" -r 'echo PHP_VERSION;'))"
 echo "Composer: $COMPOSER"
 
-command -v rsync >/dev/null || fail "rsync is not available on this server."
 [ -f "$REPO_DIR/public/build/manifest.json" ] \
     || fail "public/build is missing from the repository. Run 'npm run build' and commit public/build."
 [ -d "$CORE_DIR" ] || mkdir -p "$CORE_DIR"
 [ -d "$WEB_DIR" ] || mkdir -p "$WEB_DIR"
 
-log "Syncing application code to $CORE_DIR"
-rsync -a \
-    --exclude='/.git/' --exclude='/.cpanel.yml' --exclude='/deploy/' \
-    --exclude='/.env' --exclude='/public' --exclude='/storage/' --exclude='/vendor/' \
-    --exclude='/bootstrap/cache/' --exclude='/node_modules/' --exclude='/tests/' \
-    --exclude='/.idea/' --exclude='/.github/' \
-    "$REPO_DIR/" "$CORE_DIR/"
-
-for dir in "${CODE_DIRS[@]}"; do
-    [ -d "$REPO_DIR/$dir" ] || continue
-    rsync -a --delete "$REPO_DIR/$dir/" "$CORE_DIR/$dir/"
-done
+log "Copying application code to $CORE_DIR"
+copy_application
 
 mkdir -p "$CORE_DIR/bootstrap/cache" \
     "$CORE_DIR/storage/app/public" \
@@ -115,11 +180,8 @@ mkdir -p "$CORE_DIR/bootstrap/cache" \
     "$CORE_DIR/storage/framework/views" \
     "$CORE_DIR/storage/logs"
 
-log "Syncing public files to $WEB_DIR"
-rsync -a --exclude='/.htaccess' --exclude='/build/' "$REPO_DIR/public/" "$WEB_DIR/"
-# Hashed build assets: drop the ones the new build no longer references.
-rsync -a --delete "$REPO_DIR/public/build/" "$WEB_DIR/build/"
-[ -f "$WEB_DIR/.htaccess" ] || cp "$REPO_DIR/public/.htaccess" "$WEB_DIR/.htaccess"
+log "Copying public files to $WEB_DIR"
+copy_public
 
 log "Linking public/ and storage"
 # Laravel resolves public_path() to <core>/public. Pointing that at the document
