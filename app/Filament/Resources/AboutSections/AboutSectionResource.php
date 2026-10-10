@@ -53,19 +53,35 @@ class AboutSectionResource extends Resource
                 Tabs::make('about-editor-tabs')
                     ->persistTabInQueryString('about-tab')
                     ->tabs([
-                        Tab::make('متن رزومه (PDF)')
+                        Tab::make('درباره من')
                             ->schema([
                                 TextInput::make('title')
                                     ->label('عنوان درباره من')
                                     ->required()
                                     ->maxLength(255)
-                                    ->helperText('فقط در فایل رزومه PDF استفاده می‌شود و در سایت نمایش داده نمی‌شود.'),
-                                Textarea::make('paragraph_one')
-                                    ->label('متن درباره من')
-                                    ->required()
-                                    ->rows(8)
                                     ->helperText('فقط در فایل رزومه PDF استفاده می‌شود.')
                                     ->columnSpanFull(),
+                                TextInput::make('headline')
+                                    ->label('جمله‌ی شاخص (فارسی)')
+                                    ->maxLength(255)
+                                    ->helperText('تیتر درشت بخش «درباره من» در سایت.'),
+                                TextInput::make('headline_en')
+                                    ->label('جمله‌ی شاخص (انگلیسی)')
+                                    ->maxLength(255),
+                                Textarea::make('paragraph_one')
+                                    ->label('پاراگراف اول (فارسی)')
+                                    ->required()
+                                    ->rows(6)
+                                    ->helperText('در سایت و فایل رزومه PDF استفاده می‌شود.'),
+                                Textarea::make('paragraph_one_en')
+                                    ->label('پاراگراف اول (انگلیسی)')
+                                    ->rows(6),
+                                Textarea::make('paragraph_two')
+                                    ->label('پاراگراف دوم (فارسی)')
+                                    ->rows(4),
+                                Textarea::make('paragraph_two_en')
+                                    ->label('پاراگراف دوم (انگلیسی)')
+                                    ->rows(4),
                             ])
                             ->columns(2),
                         Tab::make('بیشتر روی چه چیزهایی تمرکز دارم')
@@ -78,18 +94,24 @@ class AboutSectionResource extends Resource
                                     ->itemNumbers()
                                     ->schema([
                                         TextInput::make('title')
-                                            ->label('عنوان')
+                                            ->label('عنوان (فارسی)')
                                             ->required()
                                             ->maxLength(255),
+                                        TextInput::make('title_en')
+                                            ->label('عنوان (انگلیسی)')
+                                            ->maxLength(255),
                                         Textarea::make('description')
-                                            ->label('توضیح')
+                                            ->label('توضیح (فارسی)')
                                             ->rows(3)
-                                            ->required()
-                                            ->columnSpanFull(),
+                                            ->required(),
+                                        Textarea::make('description_en')
+                                            ->label('توضیح (انگلیسی)')
+                                            ->rows(3),
                                         Toggle::make('is_active')
                                             ->label('فعال')
                                             ->default(true),
                                     ])
+                                    ->columns(2)
                                     ->collapsed()
                                     ->addActionLabel('افزودن کارت')
                                     ->reorderableWithButtons()

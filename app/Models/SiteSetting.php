@@ -9,8 +9,6 @@ class SiteSetting extends Model
     public const KEY_SOCIAL_PREVIEW_IMAGE = 'site_social_preview_image';
     public const KEY_CV_SIDE_IMAGE = 'site_cv_side_image';
     public const KEY_CV_SIDE_IMAGE_POSITION = 'site_cv_side_image_position';
-    public const KEY_STARFIELD_ENABLED = 'site_starfield_enabled';
-    public const KEY_STARFIELD_OPACITY = 'site_starfield_opacity';
 
     protected $fillable = [
         'key',
@@ -23,8 +21,6 @@ class SiteSetting extends Model
             self::KEY_SOCIAL_PREVIEW_IMAGE => '',
             self::KEY_CV_SIDE_IMAGE => '',
             self::KEY_CV_SIDE_IMAGE_POSITION => 'left',
-            self::KEY_STARFIELD_ENABLED => '1',
-            self::KEY_STARFIELD_OPACITY => '80',
         ];
     }
 

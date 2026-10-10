@@ -9,7 +9,9 @@ class ResumeItem extends Model
 {
     protected $fillable = [
         'title',
+        'title_en',
         'description',
+        'description_en',
         'start_year',
         'start_month',
         'start_day',

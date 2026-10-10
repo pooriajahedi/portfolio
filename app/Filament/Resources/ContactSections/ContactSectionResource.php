@@ -47,11 +47,20 @@ class ContactSectionResource extends Resource
                         TextInput::make('title')
                             ->label('عنوان')
                             ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        TextInput::make('headline')
+                            ->label('تیتر بخش تماس (فارسی)')
+                            ->maxLength(255),
+                        TextInput::make('headline_en')
+                            ->label('تیتر بخش تماس (انگلیسی)')
                             ->maxLength(255),
                         Textarea::make('description')
-                            ->label('توضیح')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                            ->label('توضیح (فارسی)')
+                            ->rows(3),
+                        Textarea::make('description_en')
+                            ->label('توضیح (انگلیسی)')
+                            ->rows(3),
                         TextInput::make('email')
                             ->label('ایمیل')
                             ->email()

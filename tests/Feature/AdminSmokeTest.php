@@ -35,13 +35,26 @@ class AdminSmokeTest extends TestCase
         }
     }
 
+    public function test_project_form_offers_a_cover_and_gallery_per_language(): void
+    {
+        $this->seed(PortfolioContentSeeder::class);
+
+        $this->actingAs(User::factory()->create())
+            ->get('/admin/portfolio-sections/'.PortfolioSection::query()->value('id').'/edit')
+            ->assertOk()
+            ->assertSee('نسخه‌ی فارسی')
+            ->assertSee('نسخه‌ی انگلیسی')
+            ->assertSee('image_path_en')
+            ->assertSee('gallery_paths_en');
+    }
+
     public function test_public_endpoints_respond(): void
     {
         $this->seed(PortfolioContentSeeder::class);
 
         $this->get('/')->assertOk();
         $this->getJson('/api/site')->assertOk()->assertJsonStructure([
-            'data' => ['profile', 'skillGroups', 'links', 'appearance'],
+            'data' => ['profile', 'about', 'skillGroups', 'experience', 'contact', 'links'],
         ]);
         $this->getJson('/api/portfolio')->assertOk()->assertJsonStructure([
             'data' => ['title', 'categories', 'projects'],

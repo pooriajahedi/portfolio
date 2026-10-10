@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects;
 
+use App\Filament\Forms\ProjectMediaTabs;
 use App\Filament\Resources\Projects\Pages\ManageProjects;
 use App\Models\Project;
 use BackedEnum;
@@ -9,8 +10,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -77,23 +79,18 @@ class ProjectResource extends Resource
                             ->default(fn () => ((int) Project::query()->max('sort_order')) + 1),
                         TagsInput::make('tags')
                             ->label('تگ ها'),
-                        FileUpload::make('image_path')
-                            ->label('تصویر کاور')
-                            ->image()
-                            ->disk('public')
-                            ->directory('projects')
-                            ->visibility('public')
-                            ->columnSpanFull(),
-                        FileUpload::make('gallery_paths')
-                            ->label('گالری تصاویر')
-                            ->image()
-                            ->multiple()
-                            ->reorderable()
-                            ->appendFiles()
-                            ->disk('public')
-                            ->directory('projects/gallery')
-                            ->visibility('public')
-                            ->columnSpanFull(),
+                        ColorPicker::make('brand_color')
+                            ->label('رنگ برند پروژه')
+                            ->regex('/^#[0-9a-fA-F]{6}$/')
+                            ->helperText('پس‌زمینه‌ی کاور و رنگ‌های داخل قاب‌ها از این رنگ ساخته می‌شود. اگر خالی بماند، رنگ تاکیدی سایت استفاده می‌شود.'),
+                        Select::make('cover_type')
+                            ->label('نوع کاور')
+                            ->options(Project::coverTypeOptions())
+                            ->default(Project::COVER_WEB)
+                            ->required()
+                            ->native(false)
+                            ->helperText('تصویر کاور داخل قاب مرورگر، موبایل یا هر دو نمایش داده می‌شود.'),
+                        ProjectMediaTabs::make(),
                         Textarea::make('description')
                             ->label('توضیح پروژه (فارسی)')
                             ->rows(4)

@@ -10,16 +10,20 @@ use Illuminate\Support\Str;
 class AboutSection extends Model
 {
     public const DEFAULT_SKILL_CATEGORIES = [
-        ['key' => 'frontend', 'label' => 'FRONTEND', 'label_en' => 'Frontend', 'is_active' => true],
-        ['key' => 'backend', 'label' => 'BACKEND', 'label_en' => 'Backend', 'is_active' => true],
-        ['key' => 'database', 'label' => 'DATABASE', 'label_en' => 'Database', 'is_active' => true],
-        ['key' => 'tools', 'label' => 'TOOLS', 'label_en' => 'Tools', 'is_active' => true],
+        ['key' => 'frontend', 'label' => 'فرانت‌اند', 'label_en' => 'Frontend', 'is_active' => true],
+        ['key' => 'backend', 'label' => 'بک‌اند', 'label_en' => 'Backend', 'is_active' => true],
+        ['key' => 'database', 'label' => 'دیتابیس', 'label_en' => 'Database', 'is_active' => true],
+        ['key' => 'tools', 'label' => 'ابزارها', 'label_en' => 'Tools', 'is_active' => true],
     ];
 
     protected $fillable = [
         'title',
+        'headline',
+        'headline_en',
         'paragraph_one',
+        'paragraph_one_en',
         'paragraph_two',
+        'paragraph_two_en',
         'skill_categories',
         'is_active',
     ];

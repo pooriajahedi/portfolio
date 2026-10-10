@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\PortfolioSections;
 
+use App\Filament\Forms\ProjectMediaTabs;
 use App\Filament\Resources\PortfolioSections\Pages\CreatePortfolioSection;
 use App\Filament\Resources\PortfolioSections\Pages\EditPortfolioSection;
 use App\Filament\Resources\PortfolioSections\Pages\ListPortfolioSections;
 use App\Models\PortfolioSection;
+use App\Models\Project;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -166,33 +168,18 @@ class PortfolioSectionResource extends Resource
                                             ->maxLength(255),
                                         TagsInput::make('tags')
                                             ->label('تگ‌ها'),
-                                        FileUpload::make('image_path')
-                                            ->label('تصویر پروژه')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('projects')
-                                            ->visibility('public')
-                                            ->imagePreviewHeight('220')
-                                            ->panelLayout('compact')
-                                            ->downloadable()
-                                            ->openable()
-                                            ->helperText('فرمت‌های مجاز: jpg, png, webp - حداکثر ۴ مگابایت')
-                                            ->columnSpanFull(),
-                                        FileUpload::make('gallery_paths')
-                                            ->label('گالری تصاویر پروژه')
-                                            ->image()
-                                            ->multiple()
-                                            ->reorderable()
-                                            ->appendFiles()
-                                            ->disk('public')
-                                            ->directory('projects/gallery')
-                                            ->visibility('public')
-                                            ->imagePreviewHeight('140')
-                                            ->panelLayout('grid')
-                                            ->downloadable()
-                                            ->openable()
-                                            ->helperText('می‌توانید چند تصویر برای صفحه سینگل انتخاب کنید.')
-                                            ->columnSpanFull(),
+                                        ColorPicker::make('brand_color')
+                                            ->label('رنگ برند پروژه')
+                                            ->regex('/^#[0-9a-fA-F]{6}$/')
+                                            ->helperText('پس‌زمینه‌ی کاور و رنگ‌های داخل قاب‌ها از این رنگ ساخته می‌شود.'),
+                                        Select::make('cover_type')
+                                            ->label('نوع کاور')
+                                            ->options(Project::coverTypeOptions())
+                                            ->default(Project::COVER_WEB)
+                                            ->required()
+                                            ->native(false)
+                                            ->helperText('تصویر پروژه داخل قاب مرورگر، موبایل یا هر دو نمایش داده می‌شود.'),
+                                        ProjectMediaTabs::make(),
                                         Textarea::make('description')
                                             ->label('توضیح پروژه (فارسی)')
                                             ->rows(4)
@@ -220,9 +207,10 @@ class PortfolioSectionResource extends Resource
                                                     'description' => trim((string) ($item['description'] ?? '')),
                                                     'description_en' => trim((string) ($item['description_en'] ?? '')),
                                                     'tags' => collect($item['tags'] ?? [])->filter()->values()->all(),
+                                                    'brand_color' => filled($item['brand_color'] ?? null) ? (string) $item['brand_color'] : null,
+                                                    'cover_type' => (string) ($item['cover_type'] ?? Project::COVER_WEB),
                                                     'project_url' => filled($item['project_url'] ?? null) ? trim((string) $item['project_url']) : null,
-                                                    'image_path' => filled($item['image_path'] ?? null) ? (string) $item['image_path'] : null,
-                                                    'gallery_paths' => collect($item['gallery_paths'] ?? [])->filter()->values()->all(),
+                                                    ...Project::mediaFromForm($item),
                                                     'project_category_id' => filled($item['project_category_id'] ?? null) ? (int) $item['project_category_id'] : null,
                                                     'sort_order' => (int) ($item['sort_order'] ?? 0),
                                                     'is_active' => (bool) ($item['is_active'] ?? true),
