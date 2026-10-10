@@ -24,7 +24,7 @@
     "src": "node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-vietnamese-wght-normal.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-D0uXTiG0.css",
+    "file": "assets/app-CFIirk3A.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -48,12 +48,12 @@
     "isEntry": true
   },
   "resources/js/portfolio.js": {
-    "file": "assets/portfolio-BNE3LurB.js",
+    "file": "assets/portfolio-DgvXvbcV.js",
     "name": "portfolio",
     "src": "resources/js/portfolio.js",
     "isEntry": true,
     "css": [
-      "assets/portfolio-DbX7w6pg.css"
+      "assets/portfolio-BgDIEonP.css"
     ]
   }
 }
