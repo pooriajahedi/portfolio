@@ -6,7 +6,8 @@
 #   <repo>/public/                       ->  $WEB_DIR    document root
 #
 # Never overwritten on the server: .env, storage/, vendor/ (Composer owns it),
-# and the .htaccess that cPanel's MultiPHP writes into the document root.
+# and the .htaccess that cPanel's MultiPHP writes into the document root. That
+# file only gets Laravel's rewrite rules appended when they are missing.
 # Server-only files are never deleted, except inside the code folders and
 # public/build, which only ever hold versioned files. Only cp, mv and rm are
 # needed: rsync is not installed on shared hosting.
@@ -91,6 +92,19 @@ copy_application() {
     return 0
 }
 
+# Laravel needs its rewrite rules to route /api/... and /portfolio/... to
+# index.php. The host's own .htaccess is kept and the rules are added below it.
+ensure_rewrite_rules() {
+    local target="$WEB_DIR/.htaccess" source="$REPO_DIR/public/.htaccess"
+
+    if [ ! -f "$target" ]; then
+        cp "$source" "$target"
+    elif ! grep -q 'index\.php \[L\]' "$target"; then
+        { printf '\n'; cat "$source"; } >> "$target"
+        echo "Laravel rewrite rules appended to $target"
+    fi
+}
+
 # Copy public/ into the document root, keeping the host's own .htaccess.
 copy_public() {
     local entry name
@@ -106,7 +120,7 @@ copy_public() {
 
     # Hashed build assets: drop the ones the new build no longer references.
     replace_dir "$REPO_DIR/public/build" "$WEB_DIR/build"
-    [ -f "$WEB_DIR/.htaccess" ] || cp "$REPO_DIR/public/.htaccess" "$WEB_DIR/.htaccess"
+    ensure_rewrite_rules
 }
 
 find_php() {
