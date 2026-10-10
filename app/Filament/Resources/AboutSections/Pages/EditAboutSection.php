@@ -32,10 +32,11 @@ class EditAboutSection extends EditRecord
         $data['skills_manager'] = Skill::query()
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get(['id', 'title', 'description', 'category', 'icon', 'is_active'])
+            ->get(['id', 'title', 'title_en', 'description', 'category', 'icon', 'is_active'])
             ->map(fn (Skill $skill): array => [
                 'id' => (string) $skill->id,
                 'title' => $skill->title,
+                'title_en' => $skill->title_en,
                 'description' => $skill->description,
                 'category' => $skill->category,
                 'icon' => $skill->icon,
@@ -66,6 +67,7 @@ class EditAboutSection extends EditRecord
                 return [
                     'id' => filled($item['id'] ?? null) ? (int) $item['id'] : null,
                     'title' => trim((string) ($item['title'] ?? '')),
+                    'title_en' => trim((string) ($item['title_en'] ?? '')),
                     'description' => trim((string) ($item['description'] ?? '')),
                     'category' => trim((string) ($item['category'] ?? '')),
                     'icon' => filled($item['icon'] ?? null) ? (string) $item['icon'] : null,
@@ -80,6 +82,7 @@ class EditAboutSection extends EditRecord
         foreach ($payload as $index => $item) {
             $data = [
                 'title' => $item['title'],
+                'title_en' => $item['title_en'] !== '' ? $item['title_en'] : null,
                 'description' => $item['description'],
                 'category' => $item['category'],
                 'icon' => $item['icon'],

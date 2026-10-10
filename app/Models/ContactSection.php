@@ -15,7 +15,10 @@ class ContactSection extends Model
 
     protected $fillable = [
         'title',
+        'headline',
+        'headline_en',
         'description',
+        'description_en',
         'email',
         'email_icon',
         'github',

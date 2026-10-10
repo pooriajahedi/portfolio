@@ -10,6 +10,7 @@ class ProjectCategory extends Model
 {
     protected $fillable = [
         'title',
+        'title_en',
         'slug',
         'sort_order',
         'is_active',

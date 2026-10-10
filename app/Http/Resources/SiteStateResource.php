@@ -14,12 +14,11 @@ class SiteStateResource extends JsonResource
     {
         return [
             'profile' => $this['profile'] ?? [],
-            'about' => $this['about'] ?? [],
-            'services' => $this['services'] ?? [],
-            'skillCategoryLabels' => $this['skillCategoryLabels'] ?? [],
-            'skills' => $this['skills'] ?? [],
-            'contacts' => $this['contacts'] ?? [],
-            'appearance' => $this['appearance'] ?? ['themeStyle' => 'gold'],
+            'about' => $this['about'] ?? null,
+            'skillGroups' => $this['skillGroups'] ?? [],
+            'experience' => $this['experience'] ?? [],
+            'contact' => $this['contact'] ?? null,
+            'links' => $this['links'] ?? [],
             'appVersion' => $this['appVersion'] ?? '1.0.0',
         ];
     }

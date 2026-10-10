@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Project;
 use App\Support\ProjectSlug;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -14,35 +15,43 @@ class ProjectResource extends JsonResource
     public function toArray(Request $request): array
     {
         $description = trim((string) $this->description);
+        $descriptionEn = trim((string) $this->description_en);
 
         return [
             'id' => (int) $this->id,
             'slug' => ProjectSlug::resolve($this->slug, (string) $this->title, $this->id),
-            'title' => (string) $this->title,
-            'text' => $description,
+            'title' => [
+                'fa' => (string) $this->title,
+                'en' => $this->title_en ?: (string) $this->title,
+            ],
+            'text' => [
+                'fa' => $description,
+                'en' => $descriptionEn !== '' ? $descriptionEn : $description,
+            ],
             'tags' => $this->tags ?? [],
+            'brandColor' => $this->resolveBrandColor(),
+            'coverType' => $this->resolveCoverType(),
             'projectUrl' => $this->project_url,
-            'imageUrl' => $this->resolveImageUrl(),
-            'galleryImages' => $this->resolveGalleryImages(),
+            'image' => $this->localizedImage(),
+            'gallery' => $this->localizedGallery(),
             'category' => $this->category ? new ProjectCategoryResource($this->category) : null,
             'readingMinutes' => $this->estimateReadingMinutes($description),
             'publishedAt' => optional($this->created_at)?->toDateString(),
         ];
     }
 
-    private function resolveImageUrl(): ?string
+    private function resolveBrandColor(): ?string
     {
-        if (! filled($this->image_path)) {
-            return null;
-        }
+        $color = trim((string) $this->brand_color);
 
-        $path = trim((string) $this->image_path);
+        return preg_match('/^#[0-9a-f]{6}$/i', $color) === 1 ? strtolower($color) : null;
+    }
 
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return $path;
-        }
-
-        return '/storage/' . ltrim($path, '/');
+    private function resolveCoverType(): string
+    {
+        return array_key_exists((string) $this->cover_type, Project::coverTypeOptions())
+            ? (string) $this->cover_type
+            : Project::COVER_WEB;
     }
 
     private function estimateReadingMinutes(string $text): int
@@ -54,12 +63,34 @@ class ProjectResource extends JsonResource
     }
 
     /**
+     * The cover for each language; a language without its own cover borrows the other one.
+     *
+     * @return array{fa: string|null, en: string|null}
+     */
+    private function localizedImage(): array
+    {
+        $fa = $this->resolvePath($this->image_path);
+        $en = $this->resolvePath($this->image_path_en);
+
+        return ['fa' => $fa ?? $en, 'en' => $en ?? $fa];
+    }
+
+    /**
+     * @return array{fa: array<int, string>, en: array<int, string>}
+     */
+    private function localizedGallery(): array
+    {
+        $fa = $this->resolveGallery($this->gallery_paths);
+        $en = $this->resolveGallery($this->gallery_paths_en);
+
+        return ['fa' => $fa !== [] ? $fa : $en, 'en' => $en !== [] ? $en : $fa];
+    }
+
+    /**
      * @return array<int, string>
      */
-    private function resolveGalleryImages(): array
+    private function resolveGallery(mixed $items): array
     {
-        $items = $this->gallery_paths ?? [];
-
         if (! is_array($items)) {
             return [];
         }

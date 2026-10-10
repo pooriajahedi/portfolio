@@ -46,15 +46,23 @@ class ResumeItemResource extends Resource
                 Section::make('آیتم رزومه')
                     ->schema([
                         TextInput::make('title')
-                            ->label('عنوان')
+                            ->label('عنوان (فارسی)')
                             ->required()
+                            ->maxLength(255),
+                        TextInput::make('title_en')
+                            ->label('عنوان (انگلیسی)')
                             ->maxLength(255),
                         Hidden::make('sort_order')
                             ->default(fn () => ((int) ResumeItem::query()->max('sort_order')) + 1),
                         Textarea::make('description')
-                            ->label('توضیح')
+                            ->label('توضیح (فارسی)')
                             ->rows(4)
                             ->required()
+                            ->columnSpanFull(),
+                        Textarea::make('description_en')
+                            ->label('توضیح (انگلیسی)')
+                            ->rows(4)
+                            ->helperText('اگر خالی بماند، در حالت انگلیسی همان متن فارسی نمایش داده می‌شود.')
                             ->columnSpanFull(),
                         Section::make('بازه زمانی رزومه (شمسی)')
                             ->schema([

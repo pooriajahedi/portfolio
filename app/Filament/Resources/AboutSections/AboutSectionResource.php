@@ -39,12 +39,12 @@ class AboutSectionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    protected static ?string $navigationLabel = 'درباره من';
+    protected static ?string $navigationLabel = 'مهارت‌ها و متن رزومه';
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $modelLabel = 'درباره من';
+    protected static ?string $modelLabel = 'مهارت‌ها و متن رزومه';
 
-    protected static ?string $pluralModelLabel = 'درباره من';
+    protected static ?string $pluralModelLabel = 'مهارت‌ها و متن رزومه';
 
     public static function form(Schema $schema): Schema
     {
@@ -58,12 +58,30 @@ class AboutSectionResource extends Resource
                                 TextInput::make('title')
                                     ->label('عنوان درباره من')
                                     ->required()
+                                    ->maxLength(255)
+                                    ->helperText('فقط در فایل رزومه PDF استفاده می‌شود.')
+                                    ->columnSpanFull(),
+                                TextInput::make('headline')
+                                    ->label('جمله‌ی شاخص (فارسی)')
+                                    ->maxLength(255)
+                                    ->helperText('تیتر درشت بخش «درباره من» در سایت.'),
+                                TextInput::make('headline_en')
+                                    ->label('جمله‌ی شاخص (انگلیسی)')
                                     ->maxLength(255),
                                 Textarea::make('paragraph_one')
-                                    ->label('متن درباره من')
+                                    ->label('پاراگراف اول (فارسی)')
                                     ->required()
-                                    ->rows(8)
-                                    ->columnSpanFull(),
+                                    ->rows(6)
+                                    ->helperText('در سایت و فایل رزومه PDF استفاده می‌شود.'),
+                                Textarea::make('paragraph_one_en')
+                                    ->label('پاراگراف اول (انگلیسی)')
+                                    ->rows(6),
+                                Textarea::make('paragraph_two')
+                                    ->label('پاراگراف دوم (فارسی)')
+                                    ->rows(4),
+                                Textarea::make('paragraph_two_en')
+                                    ->label('پاراگراف دوم (انگلیسی)')
+                                    ->rows(4),
                             ])
                             ->columns(2),
                         Tab::make('بیشتر روی چه چیزهایی تمرکز دارم')
@@ -76,18 +94,24 @@ class AboutSectionResource extends Resource
                                     ->itemNumbers()
                                     ->schema([
                                         TextInput::make('title')
-                                            ->label('عنوان')
+                                            ->label('عنوان (فارسی)')
                                             ->required()
                                             ->maxLength(255),
+                                        TextInput::make('title_en')
+                                            ->label('عنوان (انگلیسی)')
+                                            ->maxLength(255),
                                         Textarea::make('description')
-                                            ->label('توضیح')
+                                            ->label('توضیح (فارسی)')
                                             ->rows(3)
-                                            ->required()
-                                            ->columnSpanFull(),
+                                            ->required(),
+                                        Textarea::make('description_en')
+                                            ->label('توضیح (انگلیسی)')
+                                            ->rows(3),
                                         Toggle::make('is_active')
                                             ->label('فعال')
                                             ->default(true),
                                     ])
+                                    ->columns(2)
                                     ->collapsed()
                                     ->addActionLabel('افزودن کارت')
                                     ->reorderableWithButtons()
@@ -102,7 +126,7 @@ class AboutSectionResource extends Resource
                                     ->itemNumbers()
                                     ->schema([
                                         TextInput::make('label')
-                                            ->label('عنوان دسته')
+                                            ->label('عنوان دسته (فارسی)')
                                             ->required()
                                             ->maxLength(120)
                                             ->live(onBlur: true)
@@ -113,6 +137,9 @@ class AboutSectionResource extends Resource
 
                                                 $set('key', Str::slug((string) $state));
                                             }),
+                                        TextInput::make('label_en')
+                                            ->label('عنوان دسته (انگلیسی)')
+                                            ->maxLength(120),
                                         TextInput::make('key')
                                             ->label('کلید دسته')
                                             ->required()
@@ -125,9 +152,13 @@ class AboutSectionResource extends Resource
                                     ->mutateDehydratedStateUsing(function (?array $state): array {
                                         return collect($state ?? [])
                                             ->map(function (array $item): array {
+                                                $label = trim((string) ($item['label'] ?? ''));
+                                                $labelEn = trim((string) ($item['label_en'] ?? ''));
+
                                                 return [
                                                     'key' => Str::slug((string) ($item['key'] ?? '')),
-                                                    'label' => trim((string) ($item['label'] ?? '')),
+                                                    'label' => $label,
+                                                    'label_en' => $labelEn !== '' ? $labelEn : $label,
                                                     'is_active' => (bool) ($item['is_active'] ?? true),
                                                 ];
                                             })
@@ -170,6 +201,7 @@ class AboutSectionResource extends Resource
                                     ->itemNumbers()
                                     ->table([
                                         TableColumn::make('عنوان')->markAsRequired(),
+                                        TableColumn::make('عنوان انگلیسی'),
                                         TableColumn::make('دسته‌بندی')->markAsRequired(),
                                         TableColumn::make('آیکن'),
                                         TableColumn::make('وضعیت'),
@@ -182,6 +214,11 @@ class AboutSectionResource extends Resource
                                         TextInput::make('title')
                                             ->label('عنوان مهارت')
                                             ->required()
+                                            ->disabled()
+                                            ->dehydrated()
+                                            ->maxLength(255),
+                                        TextInput::make('title_en')
+                                            ->label('عنوان انگلیسی')
                                             ->disabled()
                                             ->dehydrated()
                                             ->maxLength(255),
@@ -217,6 +254,9 @@ class AboutSectionResource extends Resource
                                                     ->label('عنوان مهارت')
                                                     ->required()
                                                     ->maxLength(255),
+                                                TextInput::make('title_en')
+                                                    ->label('عنوان مهارت (انگلیسی)')
+                                                    ->maxLength(255),
                                                 Select::make('category')
                                                     ->label('دسته‌بندی')
                                                     ->options(fn (): array => Skill::categoryOptions())
@@ -242,6 +282,7 @@ class AboutSectionResource extends Resource
                                                 $items[] = [
                                                     'id' => null,
                                                     'title' => trim((string) ($data['title'] ?? '')),
+                                                    'title_en' => trim((string) ($data['title_en'] ?? '')),
                                                     'description' => trim((string) ($data['description'] ?? '')),
                                                     'category' => trim((string) ($data['category'] ?? '')),
                                                     'icon' => $data['icon'] ?? null,
@@ -266,6 +307,9 @@ class AboutSectionResource extends Resource
                                                 TextInput::make('title')
                                                     ->label('عنوان مهارت')
                                                     ->required()
+                                                    ->maxLength(255),
+                                                TextInput::make('title_en')
+                                                    ->label('عنوان مهارت (انگلیسی)')
                                                     ->maxLength(255),
                                                 Select::make('category')
                                                     ->label('دسته‌بندی')
@@ -298,6 +342,7 @@ class AboutSectionResource extends Resource
                                                 $items[$itemKey] = [
                                                     ...$items[$itemKey],
                                                     'title' => trim((string) ($data['title'] ?? '')),
+                                                    'title_en' => trim((string) ($data['title_en'] ?? '')),
                                                     'description' => trim((string) ($data['description'] ?? '')),
                                                     'category' => trim((string) ($data['category'] ?? '')),
                                                     'icon' => $data['icon'] ?? null,

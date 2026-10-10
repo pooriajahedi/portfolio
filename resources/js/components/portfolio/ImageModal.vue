@@ -1,23 +1,20 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import IconGlyph from '../IconGlyph.vue';
+import UiIcon from './UiIcon.vue';
+import { useLang } from '../../composables/useLang';
 
 const props = defineProps({
     open: {
         type: Boolean,
         required: true,
     },
-    src: {
-        type: String,
-        default: '',
+    images: {
+        type: Array,
+        default: () => [],
     },
     alt: {
         type: String,
         default: '',
-    },
-    images: {
-        type: Array,
-        default: () => [],
     },
     startIndex: {
         type: Number,
@@ -27,77 +24,94 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
+const { t } = useLang();
+
 const activeIndex = ref(0);
 
-const galleryImages = computed(() => {
-    const images = Array.isArray(props.images) ? props.images.filter((item) => String(item ?? '').trim() !== '') : [];
-    if (images.length > 0) return images;
-
-    return props.src ? [props.src] : [];
-});
+const galleryImages = computed(() =>
+    (Array.isArray(props.images) ? props.images : []).filter((item) => String(item ?? '').trim() !== ''),
+);
 
 const hasMultiple = computed(() => galleryImages.value.length > 1);
-const activeImageSrc = computed(() => galleryImages.value[activeIndex.value] || '');
+const activeImageSrc = computed(() => galleryImages.value[activeIndex.value] ?? '');
 
-const clampIndex = (value) => {
-    if (galleryImages.value.length === 0) return 0;
-    return Math.min(Math.max(value, 0), galleryImages.value.length - 1);
-};
-
-const prev = () => {
+const step = (delta) => {
     if (!hasMultiple.value) return;
-    activeIndex.value = activeIndex.value === 0 ? galleryImages.value.length - 1 : activeIndex.value - 1;
-};
-
-const next = () => {
-    if (!hasMultiple.value) return;
-    activeIndex.value = activeIndex.value === galleryImages.value.length - 1 ? 0 : activeIndex.value + 1;
+    const total = galleryImages.value.length;
+    activeIndex.value = (activeIndex.value + delta + total) % total;
 };
 
 const onKeydown = (event) => {
-    if (!props.open || !hasMultiple.value) return;
+    if (!props.open) return;
 
-    if (event.key === 'ArrowRight') {
-        prev();
+    if (event.key === 'Escape') {
+        emit('close');
+        return;
     }
 
-    if (event.key === 'ArrowLeft') {
-        next();
-    }
+    if (event.key === 'ArrowRight') step(1);
+    if (event.key === 'ArrowLeft') step(-1);
 };
 
 watch(
-    () => [props.open, props.startIndex, galleryImages.value.length],
+    () => [props.open, props.startIndex],
     () => {
         if (!props.open) return;
-        activeIndex.value = clampIndex(Number(props.startIndex ?? 0));
+        const total = galleryImages.value.length;
+        activeIndex.value = total === 0 ? 0 : Math.min(Math.max(Number(props.startIndex ?? 0), 0), total - 1);
     },
-    { immediate: true }
+    { immediate: true },
 );
 
-onMounted(() => {
-    window.addEventListener('keydown', onKeydown);
-});
-
-onBeforeUnmount(() => {
-    window.removeEventListener('keydown', onKeydown);
-});
+onMounted(() => window.addEventListener('keydown', onKeydown));
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown));
 </script>
 
 <template>
-    <div class="image-modal" :class="{ 'is-open': open }" id="imageModal" :aria-hidden="(!open).toString()">
-        <div class="image-modal-backdrop" @click="emit('close')"></div>
-        <button class="image-modal-close" type="button" aria-label="بستن تصویر" @click="emit('close')">
-            <IconGlyph icon="mdi:close" alt="بستن" :size="24" />
-        </button>
-        <div class="image-modal-dialog" role="dialog" aria-modal="true" aria-label="نمایش تصویر">
-            <img id="imageModalImage" :src="activeImageSrc" :alt="alt">
+    <div
+        v-if="open"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="t({ fa: 'نمایش تصویر', en: 'Image viewer' })"
+    >
+        <div class="absolute inset-0 bg-background/90 backdrop-blur-sm" @click="emit('close')"></div>
 
-            <template v-if="hasMultiple">
-                <button type="button" class="image-modal-nav image-modal-prev" aria-label="تصویر قبلی" @click="prev">‹</button>
-                <button type="button" class="image-modal-nav image-modal-next" aria-label="تصویر بعدی" @click="next">›</button>
-                <small class="image-modal-counter">{{ activeIndex + 1 }} / {{ galleryImages.length }}</small>
-            </template>
+        <button
+            type="button"
+            class="absolute end-4 top-4 z-10 rounded-md border border-border-strong bg-background/70 p-2.5 text-foreground transition-colors hover:border-primary hover:text-primary"
+            :aria-label="t({ fa: 'بستن', en: 'Close' })"
+            @click="emit('close')"
+        >
+            <UiIcon name="close" :size="20" />
+        </button>
+
+        <div class="relative z-10 flex max-h-full w-full max-w-4xl flex-col items-center gap-4">
+            <img :src="activeImageSrc" :alt="alt" class="max-h-[75vh] w-auto rounded-lg border border-border object-contain" />
+
+            <div v-if="hasMultiple" class="flex items-center gap-4">
+                <button
+                    type="button"
+                    class="rounded-md border border-border-strong p-2.5 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                    :aria-label="t({ fa: 'تصویر قبلی', en: 'Previous image' })"
+                    @click="step(-1)"
+                >
+                    <UiIcon name="arrowLeft" :size="18" />
+                </button>
+
+                <span class="font-mono text-sm text-muted-foreground">
+                    {{ activeIndex + 1 }} / {{ galleryImages.length }}
+                </span>
+
+                <button
+                    type="button"
+                    class="rounded-md border border-border-strong p-2.5 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                    :aria-label="t({ fa: 'تصویر بعدی', en: 'Next image' })"
+                    @click="step(1)"
+                >
+                    <UiIcon name="arrowRight" :size="18" />
+                </button>
+            </div>
         </div>
     </div>
 </template>

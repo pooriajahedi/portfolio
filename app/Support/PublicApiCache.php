@@ -9,9 +9,7 @@ class PublicApiCache
 {
     public const VERSION_KEY = 'public_api.version';
     public const SITE_KEY = 'public_api.site';
-    public const RESUME_KEY = 'public_api.resume';
     public const PORTFOLIO_KEY = 'public_api.portfolio';
-    public const BLOG_KEY = 'public_api.blog';
 
     public static function remember(string $key, Closure $callback, int $ttlSeconds = 1800): mixed
     {
@@ -32,20 +30,13 @@ class PublicApiCache
     {
         return [
             self::SITE_KEY,
-            self::RESUME_KEY,
             self::PORTFOLIO_KEY,
-            self::BLOG_KEY,
         ];
     }
 
     public static function portfolioProjectKey(string $slug): string
     {
         return self::PORTFOLIO_KEY . '.show.' . $slug;
-    }
-
-    public static function blogPostKey(string $slug): string
-    {
-        return self::BLOG_KEY . '.show.' . $slug;
     }
 
     private static function buildKey(string $key): string

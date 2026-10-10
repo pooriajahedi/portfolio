@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    # Everything lives in deploy/cpanel.sh so it can be read, tested and versioned.
+    - /bin/bash deploy/cpanel.sh

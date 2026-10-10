@@ -8,5 +8,6 @@ class PortfolioSection extends Model
 {
     protected $fillable = [
         'title',
+        'title_en',
     ];
 }

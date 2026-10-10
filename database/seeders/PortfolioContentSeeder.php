@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\AboutSection;
 use App\Models\AboutServiceCard;
-use App\Models\BlogPost;
 use App\Models\ContactSection;
 use App\Models\HeroSection;
 use App\Models\PortfolioSection;
@@ -22,7 +21,11 @@ class PortfolioContentSeeder extends Seeder
             ['id' => 1],
             [
                 'name' => 'پوریا جاهدی',
+                'name_en' => 'Pooria Jahedi',
                 'role' => 'برنامه نویس ارشد بک اند و فول استک',
+                'role_en' => 'Senior Backend & Full-Stack Developer',
+                'tagline' => 'بک‌اند و فول‌استک می‌نویسم؛ تمرکزم روی کد تمیز، API استاندارد و سیستم‌هایی است که زیر بار هم سرپا می‌مانند.',
+                'tagline_en' => 'I build fast, dependable web products — clean backends, standard APIs and systems that hold up under load.',
                 'avatar_image' => '/images/hero/pooria-hero.jpeg',
                 'current_status' => HeroSection::STATUS_LOOKING_FOR_JOB,
             ],
@@ -32,8 +35,12 @@ class PortfolioContentSeeder extends Seeder
             ['id' => 1],
             [
                 'title' => 'درباره من',
+                'headline' => 'یک دهه تجربه؛ از نگهداری کدهای قدیمی تا مهاجرت کامل به معماری مدرن.',
+                'headline_en' => 'A decade across the whole product lifecycle — from legacy upkeep to full migrations onto modern architecture.',
                 'paragraph_one' => 'من در طی یک دهه فعالیت حرفه ای، تقریبا تمام چرخه حیات یک محصول را تجربه کرده ام: از نگهداری کدهای قدیمی و پرچالش تا بازنویسی ماژول های کلیدی و مهاجرت کامل سیستم های Legacy به معماری مدرن. رویکرد من همیشه این بوده که علاوه بر حل مشکل امروز، مسیر توسعه فردا را هم باز نگه دارم.',
+                'paragraph_one_en' => 'Over a decade of professional work I have lived through nearly the entire life of a product: maintaining old, difficult codebases, rewriting key modules, and migrating legacy systems onto a modern architecture. My approach has always been to solve today’s problem while keeping tomorrow’s path open.',
                 'paragraph_two' => 'علاقه اصلی من کم کردن پیچیدگی، استانداردسازی خروجی APIها، بهینه سازی کوئری ها و طراحی جریان های پایدار برای پردازش های سنگین است.',
+                'paragraph_two_en' => 'What I care about most is cutting complexity, standardising API output, optimising queries and designing stable flows for heavy workloads.',
                 'skill_categories' => AboutSection::DEFAULT_SKILL_CATEGORIES,
                 'is_active' => true,
             ],
@@ -43,10 +50,30 @@ class PortfolioContentSeeder extends Seeder
 
         if ($aboutSectionId) {
             $serviceCards = [
-                ['title' => 'بهینه‌سازی سیستم‌های در حال اجرا', 'description' => 'تحلیل گلوگاه‌ها، کاهش خطاهای زمان‌بر و افزایش پایداری سرویس‌ها.'],
-                ['title' => 'بازنویسی بخش‌های Legacy', 'description' => 'تبدیل منطق‌های قدیمی و هاردکد به معماری قابل توسعه و تست‌پذیر.'],
-                ['title' => 'طراحی API و خروجی استاندارد', 'description' => 'بازطراحی خروجی وب‌سرویس‌ها برای مصرف‌پذیری بهتر و نگهداری ساده‌تر.'],
-                ['title' => 'بهینه‌سازی دیتابیس و کوئری', 'description' => 'ایندکس‌گذاری، بازنویسی کوئری‌های پرتکرار و استفاده هدفمند از کش.'],
+                [
+                    'title' => 'بهینه‌سازی سیستم‌های در حال اجرا',
+                    'title_en' => 'Optimising running systems',
+                    'description' => 'تحلیل گلوگاه‌ها، کاهش خطاهای زمان‌بر و افزایش پایداری سرویس‌ها.',
+                    'description_en' => 'Bottleneck analysis, fewer timeouts and more stable services.',
+                ],
+                [
+                    'title' => 'بازنویسی بخش‌های Legacy',
+                    'title_en' => 'Rewriting legacy modules',
+                    'description' => 'تبدیل منطق‌های قدیمی و هاردکد به معماری قابل توسعه و تست‌پذیر.',
+                    'description_en' => 'Turning old, hard-coded logic into an extensible, testable architecture.',
+                ],
+                [
+                    'title' => 'طراحی API و خروجی استاندارد',
+                    'title_en' => 'API design & standard output',
+                    'description' => 'بازطراحی خروجی وب‌سرویس‌ها برای مصرف‌پذیری بهتر و نگهداری ساده‌تر.',
+                    'description_en' => 'Reshaping web-service responses for easier consumption and simpler upkeep.',
+                ],
+                [
+                    'title' => 'بهینه‌سازی دیتابیس و کوئری',
+                    'title_en' => 'Database & query tuning',
+                    'description' => 'ایندکس‌گذاری، بازنویسی کوئری‌های پرتکرار و استفاده هدفمند از کش.',
+                    'description_en' => 'Indexing, rewriting hot queries and using caching with intent.',
+                ],
             ];
 
             foreach ($serviceCards as $index => $card) {
@@ -56,7 +83,9 @@ class PortfolioContentSeeder extends Seeder
                         'title' => $card['title'],
                     ],
                     [
+                        'title_en' => $card['title_en'],
                         'description' => $card['description'],
+                        'description_en' => $card['description_en'],
                         'sort_order' => $index + 1,
                         'is_active' => true,
                     ],
@@ -68,7 +97,10 @@ class PortfolioContentSeeder extends Seeder
             ['id' => 1],
             [
                 'title' => 'تماس با من',
+                'headline' => 'بیایید چیزی بسازیم که زیر بار هم سرپا بماند.',
+                'headline_en' => 'Let’s build something that holds up under load.',
                 'description' => 'اگر دنبال همکاری برای بهینه سازی یک محصول در حال اجرا، بازنویسی بخش های حساس یا توسعه فیچر جدید هستید، خوشحال می شوم گفتگو کنیم.',
+                'description_en' => 'If you are looking for help optimising a running product, rewriting sensitive parts or building a new feature, I would be glad to talk.',
                 'email' => 'you@example.com',
                 'email_icon' => ContactSection::ICON_EMAIL,
                 'github' => 'github.com/your-username',
@@ -85,6 +117,7 @@ class PortfolioContentSeeder extends Seeder
             ['id' => 1],
             [
                 'title' => 'نمونه کارها',
+                'title_en' => 'Selected work',
             ],
         );
 
@@ -124,7 +157,9 @@ class PortfolioContentSeeder extends Seeder
         $resumeItems = [
             [
                 'title' => 'تکامل پروژه در یک شرکت',
+                'title_en' => 'Evolving one product inside a company',
                 'description' => 'در طول سال ها روی کدهای چند نسل مختلف کار کردم؛ تمرکزم بازنویسی بخش های پرریسک و کاهش پیچیدگی بود.',
+                'description_en' => 'Over the years I worked across several generations of code, focusing on rewriting high-risk parts and reducing complexity.',
                 'start_year' => 1394,
                 'start_month' => 1,
                 'start_day' => 1,
@@ -132,7 +167,9 @@ class PortfolioContentSeeder extends Seeder
             ],
             [
                 'title' => 'گزارش گیری چانک/استریم',
+                'title_en' => 'Chunked / streamed reporting',
                 'description' => 'سیستم خروجی اکسل را بازطراحی کردم تا انتظار طولانی و خطای 504 حذف شود و تاریخچه گزارش ها ثبت بماند.',
+                'description_en' => 'Redesigned the Excel export so long waits and 504 errors disappear and report history is kept.',
                 'start_year' => 1398,
                 'start_month' => 4,
                 'start_day' => 1,
@@ -143,7 +180,9 @@ class PortfolioContentSeeder extends Seeder
             ],
             [
                 'title' => 'بازنویسی منطق قیمت گذاری',
+                'title_en' => 'Pricing-logic rewrite',
                 'description' => 'منطق هاردکد قدیمی را به ساختار توسعه پذیر تبدیل کردم تا اضافه کردن قوانین جدید ساده شود.',
+                'description_en' => 'Turned hard-coded legacy logic into an extensible structure so new rules are easy to add.',
                 'start_year' => 1401,
                 'start_month' => 1,
                 'start_day' => 1,
@@ -154,7 +193,9 @@ class PortfolioContentSeeder extends Seeder
             ],
             [
                 'title' => 'بهینه سازی زیرساخت داده',
+                'title_en' => 'Data infrastructure tuning',
                 'description' => 'روی دیتابیسی با 180 جدول، با تحلیل لاگ و کوئری های پرتکرار، ایندکس گذاری و اصلاح ساختار انجام دادم.',
+                'description_en' => 'On a 180-table database, I analysed logs and hot queries, then re-indexed and fixed the structure.',
                 'start_year' => 1403,
                 'start_month' => 1,
                 'start_day' => 1,
@@ -166,7 +207,9 @@ class PortfolioContentSeeder extends Seeder
             ResumeItem::query()->updateOrCreate(
                 ['title' => $item['title']],
                 [
+                    'title_en' => $item['title_en'],
                     'description' => $item['description'],
+                    'description_en' => $item['description_en'],
                     'start_year' => $item['start_year'] ?? null,
                     'start_month' => $item['start_month'] ?? null,
                     'start_day' => $item['start_day'] ?? null,
@@ -181,9 +224,9 @@ class PortfolioContentSeeder extends Seeder
         }
 
         $projectCategories = [
-            ['title' => 'اپلیکیشن‌ها', 'slug' => 'applications'],
-            ['title' => 'توسعه وب', 'slug' => 'web-development'],
-            ['title' => 'زیرساخت', 'slug' => 'infrastructure'],
+            ['title' => 'اپلیکیشن‌ها', 'title_en' => 'Applications', 'slug' => 'applications'],
+            ['title' => 'توسعه وب', 'title_en' => 'Web development', 'slug' => 'web-development'],
+            ['title' => 'زیرساخت', 'title_en' => 'Infrastructure', 'slug' => 'infrastructure'],
         ];
 
         $categoryMap = [];
@@ -193,6 +236,7 @@ class PortfolioContentSeeder extends Seeder
                 ['slug' => $category['slug']],
                 [
                     'title' => $category['title'],
+                    'title_en' => $category['title_en'],
                     'sort_order' => $index + 1,
                     'is_active' => true,
                 ],
@@ -204,20 +248,32 @@ class PortfolioContentSeeder extends Seeder
         $projects = [
             [
                 'title' => 'سیستم گزارش گیری مقاوم',
+                'title_en' => 'Resilient reporting system',
                 'description' => 'گزارش گیری اکسل با Stream و Queue برای حذف Timeout، نمایش وضعیت دریافت و نگهداری تاریخچه فایل ها.',
+                'description_en' => 'Excel reporting built on streams and queues — no more timeouts, live download status and a kept history of files.',
                 'tags' => ['Laravel', 'Queue', 'Stream', 'Excel'],
+                'brand_color' => '#1d9bf0',
+                'cover_type' => Project::COVER_WEB,
                 'category_slug' => 'web-development',
             ],
             [
                 'title' => 'سامانه Push مقیاس پذیر',
+                'title_en' => 'Scalable push platform',
                 'description' => 'ارسال پوش دسته ای با فاصله زمانی، ثبت دقیق تاریخچه و جلوگیری از ارسال تکراری برای کاربران.',
+                'description_en' => 'Batched push delivery with pacing, exact history logging and duplicate-send protection.',
                 'tags' => ['Batch', 'Queue', 'Notification', 'Scalability'],
+                'brand_color' => '#8b5cf6',
+                'cover_type' => Project::COVER_APP,
                 'category_slug' => 'applications',
             ],
             [
                 'title' => 'آپلود رمزگذاری شده ویدیو',
+                'title_en' => 'Encrypted video upload',
                 'description' => 'آپلود تکه ای، رمزگذاری هر Chunk با aes-128-ctr و اتصال نهایی با پردازش صف برای سبک سازی سرور.',
+                'description_en' => 'Chunked upload, per-chunk aes-128-ctr encryption and final assembly through queue processing to keep the server light.',
                 'tags' => ['AES-128-CTR', 'Chunk Upload', 'Queue'],
+                'brand_color' => '#10b981',
+                'cover_type' => Project::COVER_BOTH,
                 'category_slug' => 'infrastructure',
             ],
         ];
@@ -226,8 +282,12 @@ class PortfolioContentSeeder extends Seeder
             Project::query()->updateOrCreate(
                 ['title' => $project['title']],
                 [
+                    'title_en' => $project['title_en'],
                     'description' => $project['description'],
+                    'description_en' => $project['description_en'],
                     'tags' => $project['tags'],
+                    'brand_color' => $project['brand_color'],
+                    'cover_type' => $project['cover_type'],
                     'project_category_id' => $categoryMap[$project['category_slug']] ?? null,
                     'sort_order' => $index + 1,
                     'is_active' => true,
@@ -235,34 +295,5 @@ class PortfolioContentSeeder extends Seeder
             );
         }
 
-        $blogPosts = [
-            [
-                'title' => 'Using Custom Tailwind Classes in the Filament Panel (Laravel 12 + Filament 3)',
-                'excerpt' => 'راهنمای حل ناسازگاری Tailwind v4 در Laravel 12 با Filament 3 (Tailwind v3) و پیاده‌سازی تم سفارشی بدون شکستن استایل پیش‌فرض پنل.',
-                'content' => '<p>این مقاله تجربه عملی من برای استفاده از کلاس‌های سفارشی Tailwind در پنل Filament روی Laravel 12 است. چالش اصلی، ناسازگاری نسخه‌ها بود: Laravel 12 به‌صورت پیش‌فرض Tailwind v4 دارد اما Filament 3 روی Tailwind v3 کار می‌کند.</p><p>در این مطلب مسیر کامل را توضیح داده‌ام: ساخت theme اختصاصی، ثبت آن در Panel Provider، اضافه‌کردن فایل theme در ورودی‌های Vite، و تنظیم preset/preflight برای جلوگیری از override شدن استایل‌های پیش‌فرض Filament.</p><p><a href=\"https://medium.com/@pooria.jahedi/using-custom-tailwind-classes-in-the-filament-panel-laravel-12-filament-3-4c49473a2048?source=user_profile_page---------0-------------b7419a727440----------------------\" target=\"_blank\" rel=\"noopener noreferrer\">مشاهده مقاله کامل در Medium</a></p>',
-            ],
-            [
-                'title' => 'چطور یک ماژول Legacy را بدون توقف سرویس بازنویسی کردم',
-                'excerpt' => 'تجربه عملی بازنویسی تدریجی ماژول‌های قدیمی با کمترین ریسک برای کاربران نهایی.',
-                'content' => '<p>در این مقاله تجربه بازنویسی تدریجی یک ماژول Legacy را بررسی می‌کنم. تمرکز اصلی روی کاهش ریسک انتشار، جلوگیری از Downtime و حفظ سازگاری با داده‌های قبلی بود.</p><p>اول از همه جریان‌های پرترافیک را با لاگ دقیق شناسایی کردیم، سپس مسیرهای جدید را به صورت Feature Flag وارد کردیم تا بتوانیم تدریجی سوئیچ کنیم.</p>',
-            ],
-            [
-                'title' => 'بهینه‌سازی کوئری‌های سنگین در دیتابیس‌های بزرگ',
-                'excerpt' => 'چک‌لیست عملی برای تحلیل، بازنویسی و ایندکس‌گذاری کوئری‌های پرتکرار در سیستم‌های واقعی.',
-                'content' => '<p>وقتی تعداد جدول‌ها بالا می‌رود، بهینه‌سازی کورکورانه جواب نمی‌دهد. در این مسیر ابتدا از لاگ کوئری برای پیدا کردن مسیرهای پرتکرار استفاده کردم.</p><p>بعد از بازنویسی Queryهای پرهزینه، ایندکس‌ها بر اساس الگوی مصرف واقعی تعریف شدند و بار سیستم به شکل محسوسی کاهش پیدا کرد.</p>',
-            ],
-        ];
-
-        foreach ($blogPosts as $index => $post) {
-            BlogPost::query()->updateOrCreate(
-                ['title' => $post['title']],
-                [
-                    'excerpt' => $post['excerpt'],
-                    'content' => $post['content'],
-                    'sort_order' => $index + 1,
-                    'is_active' => true,
-                ],
-            );
-        }
     }
 }

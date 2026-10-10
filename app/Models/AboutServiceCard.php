@@ -11,7 +11,9 @@ class AboutServiceCard extends Model
     protected $fillable = [
         'about_section_id',
         'title',
+        'title_en',
         'description',
+        'description_en',
         'sort_order',
         'is_active',
     ];

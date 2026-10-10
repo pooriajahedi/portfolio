@@ -13,7 +13,7 @@ class PortfolioFeedResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'title' => (string) ($this['title'] ?? 'نمونه کارها'),
+            'title' => $this['title'] ?? ['fa' => 'نمونه کارها', 'en' => 'Projects'],
             'categories' => $this['categories'] ?? [],
             'projects' => $this['projects'] ?? [],
         ];

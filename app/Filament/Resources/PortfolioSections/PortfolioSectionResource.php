@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\PortfolioSections;
 
+use App\Filament\Forms\ProjectMediaTabs;
 use App\Filament\Resources\PortfolioSections\Pages\CreatePortfolioSection;
 use App\Filament\Resources\PortfolioSections\Pages\EditPortfolioSection;
 use App\Filament\Resources\PortfolioSections\Pages\ListPortfolioSections;
 use App\Models\PortfolioSection;
+use App\Models\Project;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -59,6 +61,7 @@ class PortfolioSectionResource extends Resource
                                     ->addActionLabel('افزودن دسته‌بندی')
                                     ->table([
                                         TableColumn::make('عنوان')->markAsRequired(),
+                                        TableColumn::make('عنوان انگلیسی'),
                                         TableColumn::make('کلید'),
                                         TableColumn::make('وضعیت'),
                                     ])
@@ -66,7 +69,7 @@ class PortfolioSectionResource extends Resource
                                         Hidden::make('id'),
                                         Hidden::make('sort_order'),
                                         TextInput::make('title')
-                                            ->label('عنوان دسته‌بندی')
+                                            ->label('عنوان دسته‌بندی (فارسی)')
                                             ->required()
                                             ->maxLength(120)
                                             ->live(onBlur: true)
@@ -77,6 +80,9 @@ class PortfolioSectionResource extends Resource
 
                                                 $set('slug', Str::slug((string) $state));
                                             }),
+                                        TextInput::make('title_en')
+                                            ->label('عنوان دسته‌بندی (انگلیسی)')
+                                            ->maxLength(120),
                                         TextInput::make('slug')
                                             ->label('کلید دسته (لاتین)')
                                             ->required()
@@ -92,6 +98,7 @@ class PortfolioSectionResource extends Resource
                                                 return [
                                                     'id' => $item['id'] ?? null,
                                                     'title' => trim((string) ($item['title'] ?? '')),
+                                                    'title_en' => trim((string) ($item['title_en'] ?? '')),
                                                     'slug' => Str::slug((string) ($item['slug'] ?? '')),
                                                     'sort_order' => (int) ($item['sort_order'] ?? 0),
                                                     'is_active' => (bool) ($item['is_active'] ?? true),
@@ -119,7 +126,7 @@ class PortfolioSectionResource extends Resource
                                         Hidden::make('id'),
                                         Hidden::make('sort_order'),
                                         TextInput::make('title')
-                                            ->label('عنوان پروژه')
+                                            ->label('عنوان پروژه (فارسی)')
                                             ->required()
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, callable $set, callable $get): void {
@@ -129,6 +136,10 @@ class PortfolioSectionResource extends Resource
 
                                                 $set('slug', Str::slug((string) $state));
                                             })
+                                            ->maxLength(255)
+                                            ->columnSpan(1),
+                                        TextInput::make('title_en')
+                                            ->label('عنوان پروژه (انگلیسی)')
                                             ->maxLength(255)
                                             ->columnSpan(1),
                                         TextInput::make('slug')
@@ -157,37 +168,27 @@ class PortfolioSectionResource extends Resource
                                             ->maxLength(255),
                                         TagsInput::make('tags')
                                             ->label('تگ‌ها'),
-                                        FileUpload::make('image_path')
-                                            ->label('تصویر پروژه')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('projects')
-                                            ->visibility('public')
-                                            ->imagePreviewHeight('220')
-                                            ->panelLayout('compact')
-                                            ->downloadable()
-                                            ->openable()
-                                            ->helperText('فرمت‌های مجاز: jpg, png, webp - حداکثر ۴ مگابایت')
-                                            ->columnSpanFull(),
-                                        FileUpload::make('gallery_paths')
-                                            ->label('گالری تصاویر پروژه')
-                                            ->image()
-                                            ->multiple()
-                                            ->reorderable()
-                                            ->appendFiles()
-                                            ->disk('public')
-                                            ->directory('projects/gallery')
-                                            ->visibility('public')
-                                            ->imagePreviewHeight('140')
-                                            ->panelLayout('grid')
-                                            ->downloadable()
-                                            ->openable()
-                                            ->helperText('می‌توانید چند تصویر برای صفحه سینگل انتخاب کنید.')
-                                            ->columnSpanFull(),
+                                        ColorPicker::make('brand_color')
+                                            ->label('رنگ برند پروژه')
+                                            ->regex('/^#[0-9a-fA-F]{6}$/')
+                                            ->helperText('پس‌زمینه‌ی کاور و رنگ‌های داخل قاب‌ها از این رنگ ساخته می‌شود.'),
+                                        Select::make('cover_type')
+                                            ->label('نوع کاور')
+                                            ->options(Project::coverTypeOptions())
+                                            ->default(Project::COVER_WEB)
+                                            ->required()
+                                            ->native(false)
+                                            ->helperText('تصویر پروژه داخل قاب مرورگر، موبایل یا هر دو نمایش داده می‌شود.'),
+                                        ProjectMediaTabs::make(),
                                         Textarea::make('description')
-                                            ->label('توضیح پروژه')
+                                            ->label('توضیح پروژه (فارسی)')
                                             ->rows(4)
                                             ->required()
+                                            ->columnSpanFull(),
+                                        Textarea::make('description_en')
+                                            ->label('توضیح پروژه (انگلیسی)')
+                                            ->rows(4)
+                                            ->helperText('اگر خالی بماند، در حالت انگلیسی همان متن فارسی نمایش داده می‌شود.')
                                             ->columnSpanFull(),
                                         Toggle::make('is_active')
                                             ->label('وضعیت نمایش')
@@ -201,12 +202,15 @@ class PortfolioSectionResource extends Resource
                                                 return [
                                                     'id' => $item['id'] ?? null,
                                                     'title' => trim((string) ($item['title'] ?? '')),
+                                                    'title_en' => trim((string) ($item['title_en'] ?? '')),
                                                     'slug' => filled($item['slug'] ?? null) ? Str::slug((string) $item['slug']) : null,
                                                     'description' => trim((string) ($item['description'] ?? '')),
+                                                    'description_en' => trim((string) ($item['description_en'] ?? '')),
                                                     'tags' => collect($item['tags'] ?? [])->filter()->values()->all(),
+                                                    'brand_color' => filled($item['brand_color'] ?? null) ? (string) $item['brand_color'] : null,
+                                                    'cover_type' => (string) ($item['cover_type'] ?? Project::COVER_WEB),
                                                     'project_url' => filled($item['project_url'] ?? null) ? trim((string) $item['project_url']) : null,
-                                                    'image_path' => filled($item['image_path'] ?? null) ? (string) $item['image_path'] : null,
-                                                    'gallery_paths' => collect($item['gallery_paths'] ?? [])->filter()->values()->all(),
+                                                    ...Project::mediaFromForm($item),
                                                     'project_category_id' => filled($item['project_category_id'] ?? null) ? (int) $item['project_category_id'] : null,
                                                     'sort_order' => (int) ($item['sort_order'] ?? 0),
                                                     'is_active' => (bool) ($item['is_active'] ?? true),
