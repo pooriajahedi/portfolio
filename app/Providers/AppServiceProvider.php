@@ -13,6 +13,7 @@ use App\Models\ResumeItem;
 use App\Models\SiteSetting;
 use App\Models\Skill;
 use App\Observers\PublicContentCacheObserver;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Indexed strings must fit older MySQL/MariaDB key limits (767 bytes on
+        // InnoDB, 1000 on MyISAM): 191 characters of utf8mb4 is 764 bytes.
+        Schema::defaultStringLength(191);
+
         $observer = PublicContentCacheObserver::class;
 
         AboutSection::observe($observer);
