@@ -16,7 +16,9 @@ use Throwable;
  * would break the day a model changes.
  *
  * Publishing twice is harmless. A project that already exists keeps everything except its pictures
- * and link, which are replaced when the folder carries different ones.
+ * and link, which are replaced when the folder carries different ones. Two per-item flags in data.json
+ * widen that: `sync_text` also replaces the title and description of an existing project, and
+ * `update_only` makes sure a project missing from this database is never created.
  */
 final class ProjectCatalog
 {
@@ -32,6 +34,13 @@ final class ProjectCatalog
         try {
             DB::transaction(function () use ($data, $disk, &$written, &$replaced): void {
                 foreach ($data['projects'] as $item) {
+                    $existing = $this->find($item);
+
+                    // An update-only item never creates a project that is missing from this database.
+                    if ($existing === null && ($item['update_only'] ?? false)) {
+                        continue;
+                    }
+
                     foreach ($this->paths($item) as $path) {
                         if (! $disk->exists($path)) {
                             $disk->put($path, file_get_contents("{$this->directory}/files/{$path}"));
@@ -39,12 +48,16 @@ final class ProjectCatalog
                         }
                     }
 
-                    $existing = $this->find($item);
-
                     if ($existing === null) {
                         $this->create($item, collect($data['categories'])->firstWhere('slug', $item['category_slug'] ?? null));
-                    } else {
-                        array_push($replaced, ...$this->refresh($existing, $item));
+
+                        continue;
+                    }
+
+                    array_push($replaced, ...$this->refresh($existing, $item));
+
+                    if ($item['sync_text'] ?? false) {
+                        $this->syncText($existing, $item);
                     }
                 }
             });
@@ -178,6 +191,23 @@ final class ProjectCatalog
         ]);
 
         return $this->paths($existing);
+    }
+
+    /**
+     * Replace the titles and descriptions of an existing project (only for items marked `sync_text`).
+     *
+     * @param  array<string, mixed>  $item
+     */
+    private function syncText(object $existing, array $item): void
+    {
+        $text = array_filter([
+            'title' => $item['title'] ?? null,
+            'title_en' => $item['title_en'] ?? null,
+            'description' => $item['description'] ?? null,
+            'description_en' => $item['description_en'] ?? null,
+        ], fn (?string $value): bool => filled($value));
+
+        DB::table('projects')->where('id', $existing->id)->update($text + ['updated_at' => now()]);
     }
 
     /** @return list<string> */
