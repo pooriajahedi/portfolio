@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\HeroSection;
 use App\Models\Project;
 use App\Services\Cv\CvPdfGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -98,6 +99,25 @@ class CvPdfGeneratorTest extends TestCase
 
         $this->assertStringContainsString('سوابق حرفه‌ای', $html);
         $this->assertStringContainsString('@font-face', $html);
+    }
+
+    public function test_the_avatar_is_cut_into_a_circle_for_the_pdf(): void
+    {
+        Storage::fake('public');
+        $square = imagecreatetruecolor(200, 200);
+        imagefill($square, 0, 0, imagecolorallocate($square, 200, 30, 30));
+        ob_start();
+        imagepng($square);
+        Storage::disk('public')->put('hero/avatar.png', (string) ob_get_clean());
+        HeroSection::query()->create(['name' => 'نمونه', 'role' => 'نقش', 'avatar_image' => 'hero/avatar.png']);
+
+        $uri = app(CvPdfGenerator::class)->previewDataForPdf()['avatarPath'];
+
+        $this->assertStringStartsWith('data:image/png;base64,', $uri);
+        $picture = imagecreatefromstring((string) base64_decode(substr($uri, strlen('data:image/png;base64,'))));
+        // the corner is cut away, the centre keeps the picture
+        $this->assertSame(127, (imagecolorat($picture, 0, 0) >> 24) & 0x7F);
+        $this->assertSame(0, (imagecolorat($picture, 180, 180) >> 24) & 0x7F);
     }
 
     public function test_a_project_shows_only_its_first_sentences_on_the_cv(): void
