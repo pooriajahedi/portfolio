@@ -1,0 +1,87 @@
+{
+    "categories": [
+        {
+            "slug": "web-application",
+            "title": "اپلیکیشن ها",
+            "title_en": "Web Applications"
+        }
+    ],
+    "projects": [
+        {
+            "slug": "delsa-gallery",
+            "title": "گالری طلای دلسا؛ ویترین و کیف امانی طلا",
+            "title_en": "Delsa Gallery — Gold Storefront & Wallet",
+            "description": "دلسا گالری سامانه‌ای کامل برای یک گالری طلاست: ویترین آنلاین، کیف امانی طلای مشتری و پنل مدیریت برای صدور فاکتور. مشتری موجودی طلایش را به گرم می‌بیند و درخواست خرید یا تسویه ثبت می‌کند. مدیر فاکتور حضوری صادر می‌کند و تعهدات گالری را با موجودی گاوصندوق می‌سنجد. رابط کاربری فارسی و راست‌به‌چپ است.",
+            "description_en": "Delsa Gallery is a complete system for a gold shop: an online storefront, a customer gold wallet and a back-office panel for issuing invoices. Customers see their held gold in grams and submit purchase or settlement requests. Staff issue in-store invoices and track the shop's liabilities against its vault. The interface is Persian and right-to-left.",
+            "tags": [
+                "Laravel",
+                "Filament",
+                "Livewire",
+                "Alpine.js",
+                "Tailwind CSS",
+                "MySQL"
+            ],
+            "brand_color": "#163a31",
+            "cover_type": "web",
+            "project_url": "https://delsagalleries.ir/",
+            "category_slug": "web-application",
+            "image_path": "projects/01M7YAW68TBVMJHHECQ6VGKQS2.webp",
+            "image_path_en": "projects/01M7YAW68WDP8CZR6ZDDYCJBN8.webp",
+            "gallery_paths": [
+                "projects/gallery/01M7YAW68YGD2VQWDX9R4FYR0G.webp",
+                "projects/gallery/01M7YAW691RTCMT4HCW9R8S5N5.webp",
+                "projects/gallery/01M7YAW693J42NK87C8S15YKMN.webp",
+                "projects/gallery/01M7YAW696KSHTN6PQS7HBTAJT.webp",
+                "projects/gallery/01M7YAW697HY8D2ZXZEBRK5EA6.webp",
+                "projects/gallery/01M7YAW698P9BEFQJT6H1YZ2TT.webp"
+            ],
+            "gallery_paths_en": [
+                "projects/gallery/01M7YAW699AGA1PCG8W1GXY8PD.webp",
+                "projects/gallery/01M7YAW69CMFGBQGAVC6JVKPD9.webp",
+                "projects/gallery/01M7YAW69D4XD8DXFEXTS6126B.webp",
+                "projects/gallery/01M7YAW69FM43BGTWRC7W0E9H2.webp",
+                "projects/gallery/01M7YAW69FM43BGTWRC7W0E9H3.webp",
+                "projects/gallery/01M7YAW69GKPB27XT8BPAHK8TT.webp"
+            ],
+            "is_active": true
+        },
+        {
+            "slug": "lenz-trading-journal",
+            "title": "ژورنال معاملاتی لنز؛ ثبت و تحلیل معاملات",
+            "title_en": "Lenz Trading Journal: trade log and analytics",
+            "description": "لنز یک ژورنال معاملاتی تحت وب برای معامله‌گران فارکس، کریپتو و سهام است. هر معامله با نقطه‌ی ورود و خروج، حد ضرر، یادداشت و تصویر چارت ثبت می‌شود و داشبورد نرخ برد، ضریب سود، امید ریاضی و تقویم سود و زیان را نشان می‌دهد. ضررهای سنگین در بخش «هرگز دوباره» جمع می‌شوند، چارت برای بک‌تست قابل ریپلی است و اکسپرت Lenz Pro معامله‌های متاتریدر ۵ را خودکار ثبت می‌کند.",
+            "description_en": "Lenz is a web-based trading journal for forex, crypto and stock traders. Each trade is logged with entry, exit, stop loss, notes and a chart screenshot, and the dashboard shows win rate, profit factor, expectancy and a P&L calendar. Heavy losses are collected in a Never Again section, charts can be replayed for backtesting, and the Lenz Pro expert advisor logs MetaTrader 5 trades automatically.",
+            "tags": [
+                "Laravel",
+                "Vue 3",
+                "Vuetify",
+                "Pinia",
+                "MySQL",
+                "Sanctum"
+            ],
+            "brand_color": "#696cff",
+            "cover_type": "web",
+            "project_url": "https://lenz.pooriajahedi.ir",
+            "category_slug": "web-application",
+            "image_path": "projects/01M7YBTVZ1ZW51RM7YGM8DY0KW.webp",
+            "image_path_en": "projects/01M7YBTVZ28JKYDMS8KSWCNXE5.webp",
+            "gallery_paths": [
+                "projects/gallery/01M7YBTVZ3ES7ZV3JM2M73YRZ6.webp",
+                "projects/gallery/01M7YBTVZ4BAQ7VBQPJKCB5C9R.webp",
+                "projects/gallery/01M7YBTVZ58NC6EXT440EYXN4S.webp",
+                "projects/gallery/01M7YBTVZ7GX3W1YJ6QQXZ9QH9.webp",
+                "projects/gallery/01M7YBTVZ8NC14J99QMCQMEBTE.webp",
+                "projects/gallery/01M7YBTVZ9QW6BXQ588KSPYT29.webp"
+            ],
+            "gallery_paths_en": [
+                "projects/gallery/01M7YBTVZBVZA9ZPWTMN59MZZD.webp",
+                "projects/gallery/01M7YBTVZCWQV3G1Y2B5MYDHYQ.webp",
+                "projects/gallery/01M7YBTVZDHDMWTTXCTCAF9XFX.webp",
+                "projects/gallery/01M7YBTVZEGCWEAVWYCEBD8J0W.webp",
+                "projects/gallery/01M7YBTVZFPZ2NWAXD3F4R2FH5.webp",
+                "projects/gallery/01M7YBTVZH9P3JD1YQ3VG7E1Z5.webp"
+            ],
+            "is_active": true
+        }
+    ]
+}
