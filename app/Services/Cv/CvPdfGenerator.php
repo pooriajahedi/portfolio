@@ -10,56 +10,90 @@ use App\Models\ResumeItem;
 use App\Models\SiteSetting;
 use App\Models\Skill;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Browsershot\Browsershot;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 
 class CvPdfGenerator
 {
+    private const STRIP_WIDTH_MM = 13;
+
+    /**
+     * Render the CV, store it as the next numbered file in `resume-files/` and return its path on the public disk.
+     */
     public function generate(): string
     {
-        $data = $this->previewDataForPdf();
         $relativePath = $this->nextVersionedRelativePath();
         $absolutePath = Storage::disk('public')->path($relativePath);
-        $targetDirectory = dirname($absolutePath);
 
-        if (! is_dir($targetDirectory)) {
-            mkdir($targetDirectory, 0775, true);
+        if (! is_dir(dirname($absolutePath))) {
+            mkdir(dirname($absolutePath), 0775, true);
         }
 
-        $tempDir = storage_path('app/browsershot-temp');
+        $data = $this->previewDataForPdf();
+
+        file_put_contents($absolutePath, $this->pdfFromHtml(view('cv.template', $data)->render(), sideStrip: $data['sideStrip']));
+
+        return $relativePath;
+    }
+
+    /**
+     * The PDF bytes for an HTML document, laid out right-to-left in Vazirmatn.
+     *
+     * `useOTL` and `useKashida` have to sit inside the font's own `fontdata` entry: mPDF reads them only there and
+     * silently ignores them anywhere else. Without them every Persian letter is drawn in its isolated form instead
+     * of joining its neighbours, and a low-resolution preview hides the difference.
+     */
+    public function pdfFromHtml(string $html, bool $compress = true, ?string $sideStrip = null): string
+    {
+        $tempDir = storage_path('app/mpdf-temp');
 
         if (! is_dir($tempDir)) {
             mkdir($tempDir, 0775, true);
         }
 
-        $html = view('cv.template', $data + ['isPdf' => true])->render();
+        $paths = (new ConfigVariables())->getDefaults();
+        $fonts = (new FontVariables())->getDefaults();
 
-        $browser = Browsershot::html($html)
-            ->setChromePath($this->resolveChromePath())
-            ->setOption('waitUntil', 'networkidle0')
-            ->setOption('printBackground', true)
-            ->showBackground()
-            ->margins(0, 0, 0, 0)
-            ->format('A4')
-            ->timeout(120)
-            ->setTemporaryDirectory($tempDir)
-            ->newHeadless()
-            ->noSandbox();
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'margin_left' => 0,
+            'margin_right' => 0,
+            'margin_top' => 16,
+            'margin_bottom' => 16,
+            'tempDir' => $tempDir,
+            'fontDir' => array_merge($paths['fontDir'], [resource_path('fonts/vazirmatn')]),
+            'fontdata' => $fonts['fontdata'] + [
+                'vazirmatn' => [
+                    'R' => 'Vazirmatn-Regular.ttf',
+                    'B' => 'Vazirmatn-Bold.ttf',
+                    'useOTL' => 0xFF,
+                    'useKashida' => 75,
+                ],
+            ],
+            'default_font' => 'vazirmatn',
+            'directionality' => 'rtl',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => false,
+        ]);
 
-        if ($nodeBinary = $this->resolveNodeBinary()) {
-            $browser->setNodeBinary($nodeBinary);
+        $mpdf->SetCompression($compress);
+        $mpdf->SetTitle('رزومه');
+
+        if ($sideStrip !== null) {
+            // A watermark image repeats on every page, which `position: fixed` does not do in mPDF.
+            $mpdf->SetWatermarkImage($sideStrip, 1, [self::STRIP_WIDTH_MM, 297], [210 - self::STRIP_WIDTH_MM, 0]);
+            $mpdf->showWatermarkImage = true;
+            $mpdf->watermarkImgBehind = true;
         }
 
-        if ($npmBinary = $this->resolveNpmBinary()) {
-            $browser->setNpmBinary($npmBinary);
-        }
+        $mpdf->WriteHTML($html);
 
-        $browser->setIncludePath($this->resolveIncludePath());
-        $browser->setNodeModulePath(base_path('node_modules'));
-
-        $browser->savePdf($absolutePath);
-
-        return $relativePath;
+        return $mpdf->Output('', Destination::STRING_RETURN);
     }
+
 
     private function nextVersionedRelativePath(): string
     {
@@ -164,7 +198,7 @@ class CvPdfGenerator
 
                 return [
                     'title' => (string) $project->title,
-                    'description' => trim((string) $project->description),
+                    'description' => $this->projectSummary((string) $project->description),
                     'tags' => $tags,
                     'url' => $projectUrl,
                 ];
@@ -174,21 +208,128 @@ class CvPdfGenerator
         return [
             'name' => (string) ($hero?->name ?: 'پوریا جاهدی'),
             'role' => (string) ($hero?->role ?: 'Senior Backend & Full-Stack Developer'),
-            'avatarPath' => $this->resolveImageSource((string) ($hero?->avatar_image ?? ''), $forPdf),
+            'avatarPath' => $forPdf
+                ? ($this->roundedAvatar((string) ($hero?->avatar_image ?? '')) ?? $this->resolveImageSource((string) ($hero?->avatar_image ?? ''), true))
+                : $this->resolveImageSource((string) ($hero?->avatar_image ?? ''), false),
             'summary' => trim(implode("\n\n", array_filter([
                 (string) ($about?->paragraph_one ?? ''),
                 (string) ($about?->paragraph_two ?? ''),
             ]))),
-            'codePatternPath' => $this->resolveSideImageSource($cvSideImage, $forPdf),
+            'codePatternPath' => $forPdf ? null : $this->resolveSideImageSource($cvSideImage, false),
+            'sideStrip' => $forPdf ? $this->sideStrip($cvSideImage, $cvSideImagePosition) : null,
             'codePatternPosition' => in_array($cvSideImagePosition, ['left', 'center', 'right'], true) ? $cvSideImagePosition : 'left',
-            'fontMediumSrc' => $this->resolveFontSource('fonts/pinar/Pinar-DS1-FD-Medium.ttf', $forPdf),
-            'fontBoldSrc' => $this->resolveFontSource('fonts/pinar/Pinar-DS1-FD-Bold.ttf', $forPdf),
             'skillsByCategory' => $skillsByCategory,
             'skillCategoryLabels' => $skillCategoryLabels,
             'resumeItems' => $resumeItems,
             'projects' => $projects,
             'contactItems' => $this->buildContactItems($contact, $forPdf),
         ];
+    }
+
+    /**
+     * The first sentences of a project's description, up to about $max characters. The portfolio texts run to
+     * several paragraphs, which would turn a two-page CV into four.
+     */
+    private function projectSummary(string $text, int $max = 360): string
+    {
+        $sentences = preg_split('/(?<=[.!؟])\s+/u', trim((string) preg_replace('/\s+/u', ' ', $text)), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $summary = '';
+
+        foreach ($sentences as $sentence) {
+            $next = trim($summary.' '.$sentence);
+
+            if ($summary !== '' && mb_strlen($next) > $max) {
+                break;
+            }
+
+            $summary = $next;
+        }
+
+        return $summary;
+    }
+
+    /**
+     * The narrow vertical strip down the page edge, as a JPEG data URI: the side image cropped like CSS
+     * `object-fit: cover` would, laid over the dark base colour. Without a usable raster image (none set, or an
+     * SVG, which GD cannot read) the strip is just the base colour.
+     */
+    private function sideStrip(string $path, string $position): string
+    {
+        $width = self::STRIP_WIDTH_MM * 10;
+        $height = 2970;
+        $canvas = imagecreatetruecolor($width, $height);
+        imagefill($canvas, 0, 0, imagecolorallocate($canvas, 11, 18, 32));
+
+        $absolutePath = trim($path) === '' ? null : $this->resolveAbsolutePath(trim($path));
+        $source = $absolutePath !== null ? @imagecreatefromstring((string) @file_get_contents($absolutePath)) : false;
+
+        if ($source !== false) {
+            $cropWidth = max(1, (int) round(imagesy($source) * $width / $height));
+            $cropWidth = min($cropWidth, imagesx($source));
+            $spare = imagesx($source) - $cropWidth;
+            $x = match ($position) {
+                'right' => $spare,
+                'center' => intdiv($spare, 2),
+                default => 0,
+            };
+
+            $layer = imagecreatetruecolor($width, $height);
+            imagecopyresampled($layer, $source, 0, 0, $x, 0, $width, $height, $cropWidth, imagesy($source));
+            imagecopymerge($canvas, $layer, 0, 0, 0, 0, $width, $height, 92);
+        }
+
+        ob_start();
+        imagejpeg($canvas, null, 88);
+
+        return 'data:image/jpeg;base64,'.base64_encode((string) ob_get_clean());
+    }
+
+    /**
+     * The avatar as a square, circle-masked PNG data URI. mPDF ignores `border-radius` on images, so the circle is
+     * cut here; any failure (no GD, unreadable file) returns null and the original image is used instead.
+     */
+    private function roundedAvatar(string $path): ?string
+    {
+        $absolutePath = trim($path) === '' ? null : $this->resolveAbsolutePath(trim($path));
+
+        if ($absolutePath === null || ! function_exists('imagecreatefromstring')) {
+            return null;
+        }
+
+        $source = @imagecreatefromstring((string) @file_get_contents($absolutePath));
+
+        if ($source === false) {
+            return null;
+        }
+
+        $size = 360;
+        $side = min(imagesx($source), imagesy($source));
+        $canvas = imagecreatetruecolor($size, $size);
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        imagefill($canvas, 0, 0, imagecolorallocatealpha($canvas, 255, 255, 255, 127));
+        imagecopyresampled($canvas, $source, 0, 0, intdiv(imagesx($source) - $side, 2), intdiv(imagesy($source) - $side, 2), $size, $size, $side, $side);
+
+        $radius = $size / 2;
+
+        for ($y = 0; $y < $size; $y++) {
+            for ($x = 0; $x < $size; $x++) {
+                $distance = hypot($x + .5 - $radius, $y + .5 - $radius);
+
+                if ($distance > $radius) {
+                    imagesetpixel($canvas, $x, $y, imagecolorallocatealpha($canvas, 255, 255, 255, 127));
+                } elseif ($distance > $radius - 1.5) {
+                    $rgb = imagecolorsforindex($canvas, imagecolorat($canvas, $x, $y));
+                    $alpha = (int) round(127 * ($distance - ($radius - 1.5)) / 1.5);
+                    imagesetpixel($canvas, $x, $y, imagecolorallocatealpha($canvas, $rgb['red'], $rgb['green'], $rgb['blue'], $alpha));
+                }
+            }
+        }
+
+        ob_start();
+        imagepng($canvas);
+
+        return 'data:image/png;base64,'.base64_encode((string) ob_get_clean());
     }
 
     private function resolveWebImagePath(string $path): ?string
@@ -267,21 +408,6 @@ class CvPdfGenerator
 
         return $this->resolveImageSource($fallback, $forPdf)
             ?? $this->resolvePublicAssetUrl($fallback);
-    }
-
-    private function resolveFontSource(string $relativePublicPath, bool $forPdf): string
-    {
-        if (! $forPdf) {
-            return url('/' . ltrim($relativePublicPath, '/'));
-        }
-
-        $absolutePath = public_path(ltrim($relativePublicPath, '/'));
-
-        if (is_file($absolutePath)) {
-            return $this->fileToDataUri($absolutePath);
-        }
-
-        return url('/' . ltrim($relativePublicPath, '/'));
     }
 
     private function resolveAbsolutePath(string $path): ?string
@@ -490,131 +616,5 @@ class CvPdfGenerator
             '8' => '۸',
             '9' => '۹',
         ]);
-    }
-
-    private function resolveChromePath(): string
-    {
-        $fromEnv = trim((string) env('BROWSERSHOT_CHROME_PATH', ''));
-
-        if ($fromEnv !== '' && is_file($fromEnv)) {
-            return $fromEnv;
-        }
-
-        return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-    }
-
-    private function resolveNodeBinary(): ?string
-    {
-        $fromEnv = trim((string) env('BROWSERSHOT_NODE_BINARY', ''));
-
-        if ($fromEnv !== '' && is_file($fromEnv) && $this->isSupportedNodePath($fromEnv)) {
-            return $fromEnv;
-        }
-
-        foreach ($this->candidateNodePaths() as $path) {
-            if (is_file($path) && $this->isSupportedNodePath($path)) {
-                return $path;
-            }
-        }
-
-        return null;
-    }
-
-    private function resolveNpmBinary(): ?string
-    {
-        $fromEnv = trim((string) env('BROWSERSHOT_NPM_BINARY', ''));
-
-        if ($fromEnv !== '' && is_file($fromEnv)) {
-            return $fromEnv;
-        }
-
-        foreach ($this->candidateNpmPaths() as $path) {
-            if (is_file($path)) {
-                return $path;
-            }
-        }
-
-        return null;
-    }
-
-    private function resolveIncludePath(): string
-    {
-        $paths = array_filter(array_unique(array_merge(
-            explode(':', (string) getenv('PATH')),
-            ['/usr/local/bin', '/opt/homebrew/bin', '/opt/local/bin'],
-            $this->candidateNodeBinDirectories()
-        )));
-
-        return implode(':', $paths);
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function candidateNodePaths(): array
-    {
-        return array_values(array_unique(array_merge(
-            ['/usr/local/bin/node', '/opt/homebrew/bin/node', '/opt/local/bin/node'],
-            $this->globHomePaths('/.nvm/versions/node/*/bin/node')
-        )));
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function candidateNpmPaths(): array
-    {
-        return array_values(array_unique(array_merge(
-            ['/usr/local/bin/npm', '/opt/homebrew/bin/npm', '/opt/local/bin/npm'],
-            $this->globHomePaths('/.nvm/versions/node/*/bin/npm')
-        )));
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function candidateNodeBinDirectories(): array
-    {
-        return array_values(array_unique(array_map('dirname', array_merge(
-            $this->globHomePaths('/.nvm/versions/node/*/bin/node'),
-            $this->globHomePaths('/.nvm/versions/node/*/bin/npm')
-        ))));
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function globHomePaths(string $suffixPattern): array
-    {
-        $home = rtrim((string) getenv('HOME'), '/');
-
-        if ($home === '') {
-            return [];
-        }
-
-        $matches = glob($home . $suffixPattern) ?: [];
-        usort($matches, function (string $a, string $b): int {
-            return version_compare($this->extractNodeVersionFromPath($b), $this->extractNodeVersionFromPath($a));
-        });
-
-        return $matches;
-    }
-
-    private function extractNodeVersionFromPath(string $path): string
-    {
-        if (preg_match('#/node/v([0-9]+(?:\.[0-9]+){0,2})/#', $path, $matches) === 1) {
-            return $matches[1];
-        }
-
-        return '0.0.0';
-    }
-
-    private function isSupportedNodePath(string $path): bool
-    {
-        if (preg_match('#/node/v([0-9]+)(?:\.[0-9]+){0,2}/#', $path, $matches) === 1) {
-            return (int) $matches[1] >= 18;
-        }
-
-        return true;
     }
 }
