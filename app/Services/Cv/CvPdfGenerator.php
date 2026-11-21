@@ -253,7 +253,19 @@ class CvPdfGenerator
      * `object-fit: cover` would, laid over the dark base colour. Without a usable raster image (none set, or an
      * SVG, which GD cannot read) the strip is just the base colour.
      */
-    private function sideStrip(string $path, string $position): string
+    private function sideStrip(string $path, string $position): ?string
+    {
+        // Decoration as well: without the strip the page is simply plain.
+        try {
+            return $this->drawSideStrip($path, $position);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return null;
+        }
+    }
+
+    private function drawSideStrip(string $path, string $position): string
     {
         $width = self::STRIP_WIDTH_MM * 10;
         $height = 2970;
@@ -290,6 +302,18 @@ class CvPdfGenerator
      */
     private function roundedAvatar(string $path): ?string
     {
+        // The rounding is decoration: a GD function the host has disabled must not cost the whole CV.
+        try {
+            return $this->cropToCircle($path);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return null;
+        }
+    }
+
+    private function cropToCircle(string $path): ?string
+    {
         $absolutePath = trim($path) === '' ? null : $this->resolveAbsolutePath(trim($path));
 
         if ($absolutePath === null || ! function_exists('imagecreatefromstring')) {
@@ -314,7 +338,8 @@ class CvPdfGenerator
 
         for ($y = 0; $y < $size; $y++) {
             for ($x = 0; $x < $size; $x++) {
-                $distance = hypot($x + .5 - $radius, $y + .5 - $radius);
+                // Not hypot(): some shared hosts list it in `disable_functions`, and an operator cannot be disabled.
+                $distance = (($x + .5 - $radius) ** 2 + ($y + .5 - $radius) ** 2) ** .5;
 
                 if ($distance > $radius) {
                     imagesetpixel($canvas, $x, $y, imagecolorallocatealpha($canvas, 255, 255, 255, 127));
