@@ -34,7 +34,7 @@
   - پیش‌نمایش PDF داخل مودال در پنل
 
 ## سیستم رزومه PDF
-- تولید PDF با **Browsershot (Headless Chrome)**
+- تولید PDF با **mPDF** و فونت وزیرمتن، بدون نیاز به Chrome یا Node
 - قالب رزومه سفارشی و فارسی
 - پشتیبانی از فونت سفارشی
 - نمایش آیکن‌های شبکه اجتماعی در خروجی
@@ -52,7 +52,7 @@
 ![Vite](https://img.shields.io/badge/Vite-7-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Puppeteer](https://img.shields.io/badge/Puppeteer-Browsershot-40B5A4?style=for-the-badge&logo=puppeteer&logoColor=white)
+![mPDF](https://img.shields.io/badge/mPDF-8-0B6BCB?style=for-the-badge)
 
 ## پیش‌نیازها
 قبل از اجرا مطمئن شوید نصب هستند:
@@ -60,7 +60,6 @@
 - Composer
 - Node.js 18+ و npm
 - MySQL
-- Google Chrome (برای تولید PDF با Browsershot)
 
 ## نصب و اجرا
 
@@ -136,7 +135,7 @@ php artisan serve
 (براساس وضعیت پروژه ممکن است نام/خروجی بعضی endpointها تغییر کند.)
 
 ## نکات Deployment
-- برای تولید PDF روی سرور، Chrome/Chromium باید در دسترس باشد.
+- برای تولید PDF رزومه فقط افزونه‌های PHP به نام `mbstring` و `gd` لازم است؛ Chrome و Node لازم نیست.
 - مجوز نوشتن برای `storage/` و `bootstrap/cache/` الزامی است.
 - بعد از دیپلوی:
 ```bash

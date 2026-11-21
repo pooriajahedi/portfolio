@@ -1,0 +1,85 @@
+{
+    "categories": [
+        {
+            "slug": "web-application",
+            "title": "اپلیکیشن ها",
+            "title_en": "Web Applications"
+        }
+    ],
+    "projects": [
+        {
+            "slug": "vesam-academy",
+            "title": "وسام آکادمی؛ پلتفرم فروش و آموزش دوره",
+            "title_en": "Vesam Academy: course selling platform",
+            "description": "وسام آکادمی پلتفرمی برای فروش و آموزش دوره است که بیش از ده کسب‌وکار مختلف از آن استفاده می‌کنند، و من هسته‌ی مشترکش را نگه می‌دارم.\n\nهر مشتری یک شاخه‌ی دائمی دارد و main هسته‌ی مشترک است. شاخه‌ها آن‌قدر از هم دور شده‌اند که مرجِ برگشتی عملاً ممکن نیست، برای همین یک قاعده گذاشتیم: هر چیزِ مخصوص یک مشتری باید در «نقاط توسعه» بنشیند، نه در فایل‌های هسته. یعنی مسیر و صفحه‌ی اختصاصی، تنظیم محتوا و روشن و خاموش کردن ماژول‌ها از جدول‌های دیتابیس، رنگ و لوگو با CSS variable، درگاه پرداخت به‌شکل یک رکورد دیتابیس، و قابلیت‌های بزرگ‌تر مثل آزمون و CRM فروش تلفنی به‌شکل پکیج جدا. باگ‌ها را روی main درست می‌کنم و با cherry-pick به شاخه‌ی مشتری‌ها می‌برم.\n\nسمت فروشش ساده است و همین دردسر درست می‌کند: یک رکورد پرداخت با وضعیت «پرداخت‌شده» یعنی دسترسی کاربر، جدول ثبت‌نام جدا نداریم. چون نوعِ مدل به‌شکل نام کلاس در دیتابیس ذخیره می‌شود، جابه‌جا کردن یک فایل مدل می‌توانست دسترسی همه‌ی خریدهای قبلی را از کار بیندازد؛ این را در مستندات به‌عنوان خطر ثبت کرده‌ام. از کارهای اخیرم روی هسته: صف و زمان‌بند (جلوگیری از انباشته شدن workerها و تمام شدن اتصال‌های دیتابیس)، ورود گروهی کاربرها با اکسل که حساب‌های ثبت‌نشده را خودکار می‌سازد، ارسال مجدد پوش به‌شکل یک ارسال تازه و نه تکرارِ ارسال قبلی، و یک ماژول ادمین برای جابه‌جایی محتوای دوره‌ها.\n\nاپ دانشجو یک PWA با Vue ۲ داخل Blade است؛ صف‌ها با Redis و Horizon اجرا می‌شوند، پوش با Firebase می‌رود و پرداخت از شش درگاه ایرانی (زرین‌پال، زیبال، آیدی‌پی، پی‌پینگ، نکست‌پی و ملت) پشتیبانی می‌شود.",
+            "description_en": "Vesam Academy is a platform for selling and teaching courses that more than ten different businesses run, and I maintain its shared core.\n\nEach customer has a permanent branch, and main is the common core. The branches have drifted so far apart that merging back is practically off the table, so we made a rule: anything specific to one customer goes into extension points, never into core files. That means custom routes and pages, content settings and module switches stored in database tables, colours and logos through CSS variables, payment gateways as database records, and bigger features such as quizzes and a phone-sales CRM as separate packages. Fixes land on main and are cherry-picked into the customer branches.\n\nThe sales side is simple, which is exactly what makes it tricky: a payment record with a paid status is the user's access, there is no separate enrolment table. Because model types are stored as class names in the database, moving a model file could have broken access for every past purchase, so I documented that as a hazard. My recent work on the core includes the queue and scheduler (stopping workers from piling up and exhausting database connections), bulk user access from Excel that creates missing accounts automatically, push resends that go out as a fresh send instead of replaying the old one, and an admin module for moving course content around.\n\nThe student-facing app is a PWA built with Vue 2 inside Blade. Queues run on Redis and Horizon, push goes through Firebase, and payments support six Iranian gateways (ZarinPal, Zibal, IDPay, PayPing, NextPay and Mellat).",
+            "tags": [
+                "Laravel",
+                "Vue.js",
+                "Redis",
+                "Horizon",
+                "PWA",
+                "Bootstrap"
+            ],
+            "brand_color": "#059669",
+            "cover_type": "web",
+            "project_url": null,
+            "category_slug": "web-application",
+            "image_path": "projects/01M7YEEN5HQDWJSH1HKT63E456.webp",
+            "image_path_en": "projects/01M7YEEN5KP1J50MB3C04TP5GR.webp",
+            "gallery_paths": [
+                "projects/gallery/01M7YEEN5KP1J50MB3C04TP5GS.webp",
+                "projects/gallery/01M7YEEN5M3BFHJM3YC4XKDFJ6.webp",
+                "projects/gallery/01M7YEEN5NDANBQM7H0QRVDZB9.webp",
+                "projects/gallery/01M7YEEN5P16383S7YGPPGZ4NC.webp",
+                "projects/gallery/01M7YEEN5Q55X52JMF6R09J91J.webp",
+                "projects/gallery/01M7YEEN5Q55X52JMF6R09J91K.webp"
+            ],
+            "gallery_paths_en": [
+                "projects/gallery/01M7YEEN5RZRM8KQTPMF9X6CXQ.webp",
+                "projects/gallery/01M7YEEN5SN1VAVD073CRVZM4Y.webp",
+                "projects/gallery/01M7YEEN5T2X6Q37RYN5E85912.webp",
+                "projects/gallery/01M7YEEN5VJR6X7XP8P8F1MGSQ.webp",
+                "projects/gallery/01M7YEEN5WKTZ0C4MQS5F9XRVS.webp",
+                "projects/gallery/01M7YEEN5XGVN7F0XH6V5VTMR5.webp"
+            ],
+            "is_active": true
+        },
+        {
+            "slug": "parvaresheafkar",
+            "title": "اپلیکیشن آموزشی پرورش افکار",
+            "title_en": "Parvaresh-e Afkar Learning Platform",
+            "description": "پرورش افکار یک پلتفرم آموزشی است با دوره‌های رایگان و پولی، تمرین و پشتیبانی آموزشی. اولین کارم روی آن یک مهاجرت بود: سیستم قدیمی بدون هیچ فریم‌ورکی نوشته شده بود و باید به Laravel می‌رفت. بخش‌های سفارشی را دوباره نوشتم، ساختار دیتابیس قدیم و جدید را با هم تطبیق دادم و کاربرها، پرداخت‌ها و صورت‌حساب‌ها را به نسخه‌ی جدید منتقل کردم.\n\nاز آن به بعد روی بخش فروش و پشتیبانی‌اش کار می‌کنم: کمپین‌های فروش با صفحه‌ی «پرداخت موفق» که بسته به محصول یا اطلاعیه نشان می‌دهد یا اطلاعات پشتیبان فروش را، یک CRM برای فروشنده‌های تلفنی که با اپ همگام است، و خروجی اکسل از کاربرها (مثلاً زمان نصب اپ و نام نماینده).",
+            "description_en": "Parvaresh-e Afkar is a learning platform with free and paid courses, exercises and student support. My first job on it was a migration: the old system had been written without any framework and had to move to Laravel. I rewrote the custom modules, reconciled the old and new database structures, and carried users, payments and invoices over to the new version.\n\nSince then I've been working on its sales and support side: sales campaigns with a payment-success page that shows either a notice or the buyer's sales-support contact depending on the product, a phone-sales CRM kept in sync with the app, and Excel exports of users (for example when they installed the app and which sales rep they belong to).",
+            "update_only": true,
+            "sync_text": true
+        },
+        {
+            "slug": "edna-english-club",
+            "title": "کلوپ انگلیسی ادنا؛ وب‌سایت آکادمی زبان",
+            "title_en": "Edna English Club: language academy site",
+            "description": "این وب‌سایت عمومی کلوپ انگلیسی ادنا است؛ آکادمی زبانی که با متد کوچینگ VIC درس می‌دهد. بازدیدکننده دوره‌ها را بر اساس دسته و سطح می‌گردد، با متد آشنا می‌شود، تعیین سطح می‌دهد و دوره را به سبد خرید اضافه می‌کند. ورود هم با کد یک‌بارمصرف است، پس کسی لازم نیست رمز عبور یادش بماند.\n\nسایت دو تکه است: یک فرانت Next.js و یک بک‌اند Laravel با پنل Filament که تیم از آن برای صفحه‌ها، دوره‌ها و سفارش‌ها استفاده می‌کند. بک‌اند را من نوشتم و فرانت را با یک همکار ساختیم.\n\nجالب‌ترین بخش کار، وصل کردن سایت به اپلیکیشن موبایل ادنا بود. این دو پروژه‌ی جدا هستند، ولی کاربر، دسترسی به دوره‌ها، کیف پول، کد معرف و رزرو جلسه‌ها باید در هر دو یکی باشد. اپ مرجع هویت و پول است و سایت از آن می‌پرسد. درخواست‌ها امضا می‌شوند، تغییرها از یک صف خروجی می‌روند و هر رویداد ورودی فقط یک بار پردازش می‌شود. اما پول و آخرین صندلی یک جلسه از صف رد نمی‌شوند: همان لحظه از اپ پرسیده می‌شود و اگر جوابی نیامد، خرید انجام نمی‌شود. «نتوانستم بپرسم» و «پرسیدم و جواب نه بود» را هم عمداً دو حالت جدا نگه داشتم.\n\nفرانت با Next.js ۱۵، React ۱۹، TypeScript و Tailwind است و با next-intl هم فارسی (راست‌به‌چپ) دارد هم انگلیسی. بک‌اند روی Laravel ۱۲ و MySQL است.",
+            "description_en": "This is the public website of Edna English Club, a language academy that teaches with the VIC coaching method. Visitors browse courses by category and level, read about the method, take the placement test and add a course to their cart. Sign-in is by one-time code, so nobody has to remember a password.\n\nThe site has two halves: a Next.js frontend and a Laravel backend with a Filament panel where the team manages pages, courses and orders. I wrote the backend, and the frontend I built together with a colleague.\n\nThe most interesting part was connecting the site to Edna's mobile app. They are two separate projects, yet a user, their course access, wallet, referral code and session bookings have to be the same in both. The app is the source of truth for identity and money, and the site asks it. Requests are signed, changes travel through an outbox, and each incoming event is processed exactly once. Money and the last seat in a session never go through the queue, though: the site asks the app on the spot, and if there is no answer the purchase simply doesn't happen. I kept \"I couldn't ask\" and \"I asked and the answer was no\" as two separate outcomes on purpose.\n\nThe frontend uses Next.js 15, React 19, TypeScript and Tailwind, in Persian (right-to-left) and English through next-intl. The backend runs on Laravel 12 and MySQL.",
+            "update_only": true,
+            "sync_text": true
+        },
+        {
+            "slug": "delsa-gallery",
+            "title": "گالری طلای دلسا؛ ویترین و کیف امانی طلا",
+            "title_en": "Delsa Gallery: gold storefront and wallet",
+            "description": "دلسا گالری یک گالری طلاست که هم ویترین آنلاین می‌خواست و هم راهی که مشتری‌هایش بدون تماس تلفنی طلای امانی‌شان را ببینند. ویترین، پنل مشتری و پنل مدیریت را از صفر ساختم.\n\nمشتری وارد حسابش می‌شود، موجودی طلایش را به گرم می‌بیند و اگر بخواهد درخواست خرید یا تسویه ثبت می‌کند. سمت گالری، مدیر برای خرید حضوری فاکتور می‌زند و همان‌جا می‌بیند مجموع تعهدات گالری به مشتری‌ها با طلای داخل گاوصندوق می‌خواند یا نه؛ اگر کسری پیدا شود، هشدار می‌گیرد.\n\nبیشتر وقتم صرف چیزهایی شد که در پول و طلا نباید خراب شوند. وزن به‌جای گرمِ اعشاری با «سوت» (یک‌هزارم گرم) و فقط با عدد صحیح نگه داشته می‌شود تا خطای گرد کردن اصلاً پیش نیاید. قیمت طلا هر دو دقیقه در پس‌زمینه تازه می‌شود و اگر سرویس قیمت قطع شد، آخرین قیمتِ درست نشان داده می‌شود، نه عددی که من از خودم گذاشته باشم. نسخه‌ی اولم خواندن قیمت را کاملاً بی‌اینترنت کرده بود و روی سرور، وقتی کرون عقب افتاد، داشبورد مشتری خطای ۵۰۰ داد؛ حالا برای آن یک مسیر اضطراری دارد. هر شب هم دفتر کل با موجودی کیف‌ها تطبیق داده می‌شود.\n\nسایت روی هاست اشتراکی بالا است و پروسه‌ی دائمیِ صف ندارد، پس یک کرون هر دقیقه صف را خالی می‌کند. با Laravel، Filament (پنل فارسی با تقویم شمسی)، Livewire، Alpine و Tailwind نوشته شده است.",
+            "description_en": "Delsa Gallery is a gold shop that wanted an online storefront and, just as importantly, a way for customers to see the gold they keep with the shop without having to call. I built all of it from scratch: the storefront, the customer area and the back-office panel.\n\nA customer signs in, sees their balance in grams and can file a purchase or settlement request. In the shop, staff issue invoices for walk-in sales and can check at a glance whether what the shop owes its customers matches the gold actually in the vault. If it doesn't, they get an alert.\n\nMost of my time went into the things that must never drift when money and gold are involved. Weight is stored in \"soot\" (a thousandth of a gram) as whole numbers, so there is no rounding error to chase. The gold price refreshes in the background every two minutes, and if the price service goes down the last good price is shown, never a number I made up. My first version made price reads completely network-free; on the server, when the cron fell behind, the customer dashboard threw a 500. It now has an emergency path for that. Every night the ledger is also reconciled against the wallet balances.\n\nIt runs on shared hosting with no long-running queue worker, so a cron job drains the queue every minute. Built with Laravel, Filament (a Persian panel with a Jalali calendar), Livewire, Alpine and Tailwind.",
+            "update_only": true,
+            "sync_text": true
+        },
+        {
+            "slug": "lenz-trading-journal",
+            "title": "ژورنال معاملاتی لنز؛ ثبت و تحلیل معاملات",
+            "title_en": "Lenz Trading Journal: trade log and analytics",
+            "description": "لنز یک ژورنال معاملاتی تحت وب برای معامله‌گرهای فارکس، کریپتو و سهام است. هر معامله را با ورود و خروج، حد ضرر، احساس آن لحظه، استراتژی و اسکرین‌شات چارت ثبت می‌کنی و داشبورد و تقویم سود و زیان نشان می‌دهند چه چیزی واقعاً جواب می‌دهد و چه چیزی نه.\n\nبخش متفاوتش «هرگز دوباره» است. هر معامله‌ی بسته‌ای که دست‌کم دو درصد موجودی حساب را برده باشد (آستانه قابل تغییر است) خودکار تبدیل به یک پرونده می‌شود: چقدر ضرر شد، موجودی قبل و بعد، و کدام قانون شکسته شد؛ مثلاً بدون حد ضرر، حجم بیش از معمول یا ورود عجولانه بعد از یک ضرر. خودت اشتباه را در یک جمله و قانون دفعه‌ی بعد را می‌نویسی، «متعهد می‌شوم» را می‌زنی و اسلایدر بالای داشبورد هر روز یادآوری‌اش می‌کند.\n\nبرای متاتریدر ۵ یک اکسپرت به اسم Lenz Pro نوشتم: روی چارت خط حد ضرر می‌کشی و حجم معامله از روی درصد ریسک حساب می‌شود، و معامله‌ها با اسپرد، کمیسیون و سواپ واقعی بروکر خودکار در ژورنال ثبت می‌شوند. تاریخچه‌ی قدیمی را هم می‌شود از اکسل وارد کرد. بک‌تست روی چارت با ابزار رسم هست و اشتراک‌ها با کریپتو (USDT، TON، BTC) پرداخت می‌شوند؛ فاکتور QR دارد و مبلغ دقیقش ۳۰ دقیقه معتبر است.\n\nرابط فارسی و انگلیسی است، با تقویم شمسی و میلادی. با Laravel، Vue ۳، Vuetify و MySQL ساخته شده.",
+            "description_en": "Lenz is a web-based trading journal for forex, crypto and stock traders. You log each trade with entry, exit, stop loss, how you felt, the strategy and a chart screenshot, and the dashboard and P&L calendar show what is actually working and what isn't.\n\nThe part that sets it apart is \"Never Again\". Any closed trade that cost at least two percent of the account (the threshold is adjustable) automatically becomes a case file: how much was lost, the balance before and after, and which rule was broken, such as no stop loss, an oversized position or a rushed re-entry after a loss. You write the mistake in one sentence and the rule for next time, press \"I commit\", and a slider at the top of the dashboard keeps reminding you.\n\nFor MetaTrader 5 I wrote an expert advisor called Lenz Pro: you drag a stop-loss line on the chart and the position size is worked out from your risk percentage, and trades land in the journal on their own, with the broker's real spread, commission and swap. Older history can be imported from Excel. There is a backtesting chart with drawing tools, and subscriptions are paid in crypto (USDT, TON, BTC) with a QR invoice whose exact amount stays valid for 30 minutes.\n\nThe interface is in Persian and English with Jalali and Gregorian calendars. It's built with Laravel, Vue 3, Vuetify and MySQL.",
+            "update_only": true,
+            "sync_text": true
+        }
+    ]
+}

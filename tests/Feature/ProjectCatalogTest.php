@@ -132,6 +132,48 @@ class ProjectCatalogTest extends TestCase
         Storage::disk('public')->assertMissing(['projects/cover-fa-a.webp', 'projects/gallery/one-en-a.webp']);
     }
 
+    public function test_sync_text_replaces_the_text_of_an_existing_project(): void
+    {
+        $this->catalog();
+        $this->publish();
+
+        $this->catalog('a', ['description' => 'متن تازه', 'description_en' => 'New text', 'sync_text' => true]);
+        $this->publish();
+
+        $project = DB::table('projects')->where('slug', 'demo')->first();
+
+        $this->assertSame('متن تازه', $project->description);
+        $this->assertSame('New text', $project->description_en);
+    }
+
+    public function test_an_update_only_item_is_never_created(): void
+    {
+        $this->catalog('a', ['update_only' => true, 'sync_text' => true]);
+
+        $this->publish();
+
+        $this->assertSame(0, DB::table('projects')->count());
+        $this->assertSame([], Storage::disk('public')->allFiles());
+    }
+
+    public function test_an_update_only_item_without_pictures_changes_text_and_leaves_the_pictures(): void
+    {
+        $this->catalog();
+        $this->publish();
+
+        $this->catalog('a', [
+            'update_only' => true, 'sync_text' => true, 'description' => 'فقط متن',
+            'image_path' => null, 'image_path_en' => null, 'gallery_paths' => [], 'gallery_paths_en' => [],
+        ]);
+        $this->publish();
+
+        $project = DB::table('projects')->where('slug', 'demo')->first();
+
+        $this->assertSame('فقط متن', $project->description);
+        $this->assertSame('projects/cover-fa-a.webp', $project->image_path);
+        Storage::disk('public')->assertExists('projects/cover-fa-a.webp');
+    }
+
     public function test_a_missing_picture_stops_everything_before_anything_is_written(): void
     {
         $this->catalog();
